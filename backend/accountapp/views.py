@@ -32,7 +32,7 @@ class AccountCreateAPI(APIView):
             user.save()
 
             current_site = get_current_site(request)
-            mail_subject = '[ Mongle ]이메일 인증을 완료해주세요!'
+            mail_subject = '[ chow ]이메일 인증을 완료해주세요!'
             # URL 생성
             activation_link = request.build_absolute_uri(
                 reverse('account:activate', kwargs={
@@ -48,7 +48,7 @@ class AccountCreateAPI(APIView):
             send_mail(
                 subject=mail_subject, 
                 message="", 
-                from_email='dev.mongle@gmail.com', 
+                from_email='chow3mail@gmail.com', 
                 recipient_list=[to_email], 
                 html_message=html_message
             )
@@ -140,7 +140,7 @@ class UsernameRecoveryAPI(APIView):
             return Response({'error': '해당 이메일로 등록된 사용자가 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         current_site = get_current_site(request)
-        mail_subject = '[몽글몽글] 아이디 찾기 요청 결과입니다'
+        mail_subject = '[chow] 아이디 찾기 요청 결과입니다'
         message = "귀하의 아이디 찾기 요청에 대한 정보입니다. 이 메일은 HTML 형식으로 보내진 메일입니다. 메일 클라이언트가 HTML을 지원하지 않는 경우, 이 텍스트 메시지를 보게 됩니다."
         html_message = render_to_string('accountapp/recover_username_email.html', {
             'username': user.username,
@@ -150,7 +150,7 @@ class UsernameRecoveryAPI(APIView):
         send_mail(
             subject=mail_subject, 
             message=message, 
-            from_email='dev.mongle@gmail.com', 
+            from_email='chow3mail@gmail.com', 
             recipient_list=[email], 
             fail_silently=False,
             html_message=html_message
@@ -173,14 +173,14 @@ class PasswordResetRequestAPI(APIView): # 등록된 이메일인지확인, 새�
         user.save()
         
         # 이메일에 보낼 내용 구성
-        mail_subject = '[몽글몽글] 비밀번호 변경 안내'
+        mail_subject = '[chow] 비밀번호 변경 안내'
         message = f"새로운 비밀번호: {new_password}\n로그인 후에 비밀번호를 변경해주세요.\n변경방법: 계정관리 > 비밀번호 변경"
         
         # 이메일 보내기
         send_mail(
             subject=mail_subject,
             message=message,
-            from_email='dev.mongle@gmail.com',
+            from_email='chow3mail@gmail.com',
             recipient_list=[email],
             fail_silently=False,
         )
