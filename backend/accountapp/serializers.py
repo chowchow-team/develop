@@ -13,7 +13,7 @@ from django.conf import settings
 class AccountCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["username", "school", "email", "password"]
+        fields = ["username","email", "password"]
         extra_kwargs = {
             'password': {'write_only': True}
         }
