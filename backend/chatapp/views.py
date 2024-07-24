@@ -9,7 +9,7 @@ from .serializers import MessageSerializer
 from notificationapp.models import Notification
 from rest_framework.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
-import aioredis
+#import aioredis
 
 #class SendMessageAPI(APIView):
 #    permission_classes = [IsAuthenticated]
