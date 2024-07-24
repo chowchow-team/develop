@@ -4,7 +4,6 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 import asyncio
 from django.contrib.auth import get_user_model
-from utils.school_loader import load_schools_from_json
 import notificationapp
 import os
 import uuid

@@ -6,7 +6,6 @@ from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.core.validators import RegexValidator, EmailValidator
 from django.utils import timezone
-from utils.school_loader import load_school_choices
 
 # 이미지 사이트 컨버트용
 from PIL import Image
@@ -15,8 +14,6 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 import sys
 from django.core.files.storage import default_storage
 import os
-    
-SCHOOL_CHOICES = load_school_choices()
 
 class UserManager(BaseUserManager):
     use_in_migrations = True

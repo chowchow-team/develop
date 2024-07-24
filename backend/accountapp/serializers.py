@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
-from utils.school_loader import load_schools_from_json
 from .models import User, Profile
 import json
 
@@ -18,29 +17,7 @@ class AccountCreateSerializer(serializers.ModelSerializer):
             'password': {'write_only': True}
         }
 
-    def validate_email(self, value):
-        school_domains = load_schools_from_json()
-
-        domain = value.split('@')[1]
-        school = self.initial_data['school']
-
-        try:
-            school_id = int(school)
-        except ValueError:
-            raise ValidationError("학교 ID가 유효하지 않습니다.")
-
-        # 학교 ID를 기반으로 도메인 정보 찾기
-        school_domain_info = next((item for item in school_domains if item['id'] == school_id), None)
-        # 학교 정보가 없거나 도메인 영역이 빈 배열일 경우 예외 처리
-        if school_domain_info is None or not school_domain_info['domains']:
-            raise ValidationError("해당 학교는 아직 준비중입니다.")
-
-        # 도메인 검증
-        if domain not in school_domain_info['domains']:
-            raise ValidationError("자신의 학교 계정 이메일을 입력해주세요!")
-
-        return value
-
+    
     def create(self, validated_data):
         # 사용자 생성 로직
         user = User.objects.create_user(**validated_data)

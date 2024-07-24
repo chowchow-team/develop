@@ -21,7 +21,6 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth import update_session_auth_hash
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
-from utils.school_loader import load_schools_from_json
 
 class AccountCreateAPI(APIView):
     def post(self, request):
@@ -188,34 +187,6 @@ class PasswordResetRequestAPI(APIView): # 등록된 이메일인지확인, 새�
         return Response({'message': '새로운 비밀번호를 이메일로 전송하였습니다.'}, status=status.HTTP_200_OK)
 
 
-#class PasswordResetConfirmAPI(APIView):
-#    def post(self, request, uidb64, token):
-#        try:
-#            uid = force_str(urlsafe_base64_decode(uidb64))
-#            user = User.objects.get(pk=uid)
-#        except(TypeError, ValueError, OverflowError, User.DoesNotExist):
-#            user = None
-#        
-#        if user is not None and default_token_generator.check_token(user, token):
-#            new_password = request.data.get('new_password')
-#            user.set_password(new_password)
-#            user.save()
-#            return Response({'message': '비밀번호가 재설정되었습니다.'}, status=status.HTTP_200_OK)
-#        else:
-#            return Response({'error': '비밀번호 재설정 링크가 유효하지 않습니다.'}, status=status.HTTP_400_BAD_REQUEST)
-#    
-#    def get(self, request, uidb64, token):
-#        try:
-#            uid = force_str(urlsafe_base64_decode(uidb64))
-#            user = get_user_model().objects.get(pk=uid)
-#        except (TypeError, ValueError, OverflowError, get_user_model().DoesNotExist):
-#            user = None
-#
-#        if user is not None and default_token_generator.check_token(user, token):
-#            return HttpResponseRedirect(f'http://localhost:3000/password-reset/{uidb64}/{token}')
-#        else:
-#            return HttpResponseBadRequest('비밀번호 재설정 요청이 유효하지 않습니다.')
-
 class AccountDeleteAPI(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -241,11 +212,3 @@ class ChangePasswordAPI(APIView):
         update_session_auth_hash(request, user)
         
         return Response({'message': '비밀번호가 성공적으로 변경되었습니다.'}, status=status.HTTP_200_OK)
-
-class SchoolListView(APIView):
-    def get(self, request, format=None):
-        try:
-            schools = load_schools_from_json()
-            return Response(schools, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

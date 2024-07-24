@@ -4,7 +4,7 @@ from django.views.generic import RedirectView
 
 from accountapp.views import AccountCreateAPI
 from accountapp.views import ActivateAccountAPI
-from accountapp.views import LoginAPI, LogoutAPI, UserProfileUpdateAPI, UserProfileDetailAPI, PasswordResetRequestAPI, UsernameRecoveryAPI, AccountDeleteAPI, ChangePasswordAPI, SchoolListView
+from accountapp.views import LoginAPI, LogoutAPI, UserProfileUpdateAPI, UserProfileDetailAPI, PasswordResetRequestAPI, UsernameRecoveryAPI, AccountDeleteAPI, ChangePasswordAPI
 
 app_name = 'account'
 
@@ -21,5 +21,4 @@ urlpatterns = [
     path('recover-username/', UsernameRecoveryAPI.as_view(), name='recover_username'),
     path('delete-account/', AccountDeleteAPI.as_view(), name='delete_account'),
     path('pw-change/', ChangePasswordAPI.as_view(), name='pw_change'),
-    path('get-schools/', SchoolListView.as_view(), name='school-list'),
 ]

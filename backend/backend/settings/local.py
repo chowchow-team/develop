@@ -44,11 +44,11 @@ CSRF_TRUSTED_ORIGINS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-DEFAULT_FROM_EMAIL = 'dev.mongle@gmail.com'
+DEFAULT_FROM_EMAIL = 'chow3mail@gmail.com'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'dev.mongle@gmail.com'  # 이메일 계정
+EMAIL_HOST_USER = 'chow3mail@gmail.com'  # 이메일 계정
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')   # 이메일 비밀번호
 EMAIL_USE_TLS = True
