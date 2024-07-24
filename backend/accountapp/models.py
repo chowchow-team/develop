@@ -21,13 +21,12 @@ SCHOOL_CHOICES = load_school_choices()
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
-    def create_user(self, username, email=None, password=None, school=None):
+    def create_user(self, username, email=None, password=None):
         if not username:
             raise ValueError('must have username')
         user=self.model(
             username=username,
             email=self.normalize_email(email),
-            school=school,
         )
         user.set_password(password)
         user.save()
@@ -56,7 +55,6 @@ class User(AbstractBaseUser):
     is_admin = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
-    school = models.CharField(choices=SCHOOL_CHOICES, max_length=20, null=True)
     date_joined = models.DateTimeField(auto_now_add=True)
 
     USERNAME_FIELD = 'username'
@@ -68,23 +66,25 @@ class User(AbstractBaseUser):
     def has_module_perms(self, app_label):
         return self.is_admin
     
-    def get_school_display(self):
-        for code, name in SCHOOL_CHOICES:
-            if self.school == code:
-                return name
-        return "학교정보없음"
-    
     def save(self, *args, **kwargs):
         is_new = self._state.adding
         super().save(*args, **kwargs)
         if is_new:
             Profile.objects.create(user=self)
+
+    @classmethod
+    def can_register(cls, username, email):
+        if User.objects.filter(username=username, is_active=True).exists():
+            return False, "이미 사용중인 사용자 이름입니다."
+        if User.objects.filter(email=email, is_active=True).exists():
+            return False, "이미 사용중인 이메일입니다."
+        return True, ""
     
 
 User = get_user_model()
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    nickname = models.CharField(max_length=13, blank=True, default='익명의 몽글')
+    nickname = models.CharField(max_length=13, blank=True, default='익명의 챠우')
     profile_pic = models.ImageField(upload_to='profile_pics/', blank=True, null=True, default='default.png')
     bio = models.TextField(blank=True, max_length=100)
 
