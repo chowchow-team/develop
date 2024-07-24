@@ -1,0 +1,171 @@
+/* 404.css */
+.not-found-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* 전체 높이를 차지하도록 설정 */
+    text-align: center;
+    background-color: #f2f2f2; /* 배경색 설정 */
+  }
+  
+  .not-found-title {
+    font-size: 2.5rem; /* 제목 크기 설정 */
+    color: #333; /* 제목 색상 설정 */
+    margin-bottom: 20px; /* 마진 설정 */
+  }
+  
+  .not-found-description {
+    font-size: 1.2rem; /* 설명 텍스트 크기 설정 */
+    color: #666; /* 설명 텍스트 색상 설정 */
+  }
+
+/* Footer.css */
+/* Footer.css */
+
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* 전체 높이를 화면에 맞춤 */
+}
+
+.content-wrap {
+  flex: 1; /* 내용이 적을 때 푸터를 아래로 밀어내도록 flex-grow 사용 */
+}
+
+.footer-container {
+    text-align: center;
+    padding: 5px 0;
+    color: #333;
+    font-size: 0.7rem;
+    margin-top: auto;
+}
+
+.footer-container p {
+  margin: .5rem 0;
+}
+
+.main-footer, .email {
+  font-size: 0.8rem;
+}
+
+.email {
+  font-family: Arial;
+}
+.email span {
+  font-family: 'Dovemayo_gothic', sans-serif;
+  color: #F07489;
+}
+.email span:hover {
+  text-decoration: underline;
+}
+
+.copyright {
+  color: #666;
+  margin: 0!important;
+}
+
+/* BackButton.css */
+.back-button {
+    cursor: pointer;
+    width: 25px;
+    height: 25px;
+    transition: background-color 0.3s; /* 배경색 변경 애니메이션 */
+    border-radius: .5rem;
+    padding: 5px;
+}
+
+.back-button:hover {
+  background-color: pink; /* hover 상태일 때 배경색 */
+}
+
+/* Policy */
+.policy-container {
+  background-color: #f7f7f7;
+  padding: 20px;
+  margin: 20px;
+  border-radius: 10px;
+  font-family: 'Dovemayo_gothic', sans-serif;
+  color: #333;
+  font-size: 1rem;
+}
+.policy-container h1 {
+  font-size: 1.5rem;
+}
+.policy-container h2 {
+  font-size: 1.2rem;
+}
+
+.policy-container h1, .policy-container h2 {
+  color: #2c3e50;
+}
+
+.policy-container p, .policy-container li {
+  line-height: 1.6;
+}
+
+.policy-container ul {
+  margin-left: 20px;
+}
+
+/* online-user */
+.online-user {
+  position: relative;
+  display: inline-block;
+  padding-left: 20px;
+  margin-top: .5rem;
+  font-size: 1rem;
+  float: right;
+}
+
+.online-user::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  background-color: #4CA771;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  animation: blink 2s infinite;
+}
+
+@keyframes blink {
+  0%, 100% {
+      opacity: 1;
+  }
+  50% {
+      opacity: 0;
+  }
+}
+
+/* 모바일환경: 768px*/
+@media screen and (max-width: 768px) {
+  .policy-container {
+    padding: 10px;
+    margin: 10px;
+  }
+  .policy-container h1 {
+    font-size: 1.2rem;
+  }
+  .policy-container h2 {
+    font-size: 1rem;
+  }
+  .policy-container p, .policy-container li {
+    font-size: 0.9rem;
+  }
+  .policy-container ul {
+    margin-left: -15px;
+  }
+  .online-user {
+    font-size: 0.8rem;
+    margin-right: 4.5rem;
+  }
+}
+
+@media screen and (max-width: 400px){
+  .online-user {
+    margin-right: 3.5rem;
+  }
+}
