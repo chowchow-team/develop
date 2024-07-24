@@ -2,13 +2,13 @@ import json
 import random
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
-import aioredis
 import asyncio
 from django.contrib.auth import get_user_model
 from utils.school_loader import load_schools_from_json
 import notificationapp
 import os
 import uuid
+import redis.asyncio as redis
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -33,7 +33,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if self.user.is_authenticated:
             await self.accept()
             # Redis에 연결 # 주소 잠깐 서버용으로. 로컬과 범용성있게 바꿀것. 환경변수활용
-            self.redis = await aioredis.from_url(redis_url, encoding="utf-8", decode_responses=True)
+            self.redis = await redis.from_url(redis_url, encoding="utf-8", decode_responses=True)
             # 매칭 로직 실행
             #asyncio.create_task(self.attempt_matching())
 
@@ -440,7 +440,7 @@ class CountConsumer(AsyncWebsocketConsumer):
         redis_url = os.environ.get('REDIS_URL')
         if redis_url != "redis://redis":
             redis_url = "redis://localhost"
-        self.redis = await aioredis.from_url(redis_url, encoding="utf-8", decode_responses=True)
+        self.redis = await redis.from_url(redis_url, encoding="utf-8", decode_responses=True)
         self.user = self.scope["user"]
         if self.user.is_authenticated:
             await self.channel_layer.group_add("online_users_group", self.channel_name)
@@ -480,7 +480,7 @@ class CountConsumer(AsyncWebsocketConsumer):
         redis_url = os.environ.get('REDIS_URL')
         if redis_url != "redis://redis":
             redis_url = "redis://localhost"
-        redis = await aioredis.from_url(redis_url, encoding="utf-8", decode_responses=True)
+        redis = await redis.from_url(redis_url, encoding="utf-8", decode_responses=True)
         online_users = await redis.lrange("online_users_list", 0, -1)
         return len(online_users)
 
