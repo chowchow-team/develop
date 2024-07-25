@@ -27,7 +27,8 @@ INSTALLED_APPS = [
     'notificationapp',
     'communityapp',
     'e1i5',
-
+    'mainapp',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
