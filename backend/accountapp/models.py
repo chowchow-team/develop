@@ -38,6 +38,7 @@ class UserManager(BaseUserManager):
         superuser.is_admin=True
         superuser.is_superuser=True
         superuser.is_staff=True
+        superuser.is_active=True
         superuser.save()
         return superuser
     

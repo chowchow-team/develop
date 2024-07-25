@@ -45,37 +45,6 @@ def save_image_as_png(image, user):
     # ContentFile을 사용하여 메모리상의 이미지 데이터를 저장
     user.profile_pic.save(file_name, ContentFile(image_data), save=False)
 
-#class ProfileSerializer(serializers.ModelSerializer):
-#    username = serializers.CharField(source='user.username')
-#
-#    class Meta:
-#        model = Profile
-#        fields = ['nickname', 'profile_pic', 'bio', 'username']
-#
-#    def update(self, instance, validated_data):
-#        instance.nickname = validated_data.get('nickname', instance.nickname)
-#        instance.bio = validated_data.get('bio', instance.bio)
-#        
-#        if 'profile_pic' in validated_data:
-#            profile_pic = validated_data.pop('profile_pic')
-#            if profile_pic.name.endswith(('.heif', '.HEIF', '.heic', '.HEIC')):
-#                heif_file = pyheif.read(profile_pic)
-#                image = Image.frombytes(
-#                    heif_file.mode, 
-#                    heif_file.size, 
-#                    heif_file.data,
-#                    "raw",
-#                    heif_file.mode,
-#                    heif_file.stride,
-#                )
-#            else:
-#                image = Image.open(profile_pic)
-#
-#            # 이제 모든 이미지를 PNG로 저장하는 save_image_as_png 함수를 사용
-#            save_image_as_png(image, instance)
-#
-#        instance.save()
-#        return instance
     
 class ProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username')
