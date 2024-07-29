@@ -74,7 +74,7 @@ function NavForm() {
     // 경로에 따른 로고 및 이름 설정
     const isE1I5Path = location.pathname.startsWith('/e1i5');
     const currentLogo = isE1I5Path ? e1i5logo : logo;
-    const logoName = isE1I5Path ? 'PUP CARE' : '몽글몽글';
+    const logoName = isE1I5Path ? 'PUP CARE' : '챠우챠우';
 
     return (
         <nav>

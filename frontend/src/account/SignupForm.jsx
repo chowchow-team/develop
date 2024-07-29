@@ -10,54 +10,13 @@ function SignupForm() {
         username: '',
         email: '',
         password: '',
-        school: '',
     });
     const [error, setError] = useState('');
     const [tempMessage, setTempMessage] = useState('');
-    const [schoolItem, setSchoolItem] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
     const API_BASE_URL = URLManagement('http');
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    useEffect(() => {
-        const fetchSchools = async () => {
-            try {
-                const response = await axios.get(`${API_BASE_URL}/api/get-schools/`);
-                setSchoolItem(response.data);
-            } catch (error) {
-                console.error("학교 목록을 불러오는 데 실패했습니다.", error);
-            }
-        };
-        fetchSchools();
-    }, []);
-
-    const handleSearchChange = (e) => {
-        const value = e.target.value;
-        setSearchTerm(value);
-
-        // 숫자가 포함된 경우 경고 메시지 설정
-        if (/\d/.test(value)) {
-            setTempMessage("학교입력란입니다.");
-            setTimeout(() => {
-                setTempMessage('');
-            }, 2000);
-        } else {
-            setTempMessage('');
-        }
-    };
-
-    const filteredSchools = searchTerm.length > 0
-        ? schoolItem.filter(school =>
-            school.name.toLowerCase().includes(searchTerm.toLowerCase())
-          )
-        : [];
-    
-    const handleSchoolSelect = (school) => {
-        setFormData({ ...formData, school: school.id }); // 선택한 학교의 ID를 formData에 설정
-        setSearchTerm(school.name); // 검색창에 학교 이름 표시
     };
 
     const handleSubmit = async (e) => {
@@ -87,8 +46,6 @@ function SignupForm() {
                     setError(error_msg.email);
                 } else if (error_msg.password) {
                     setError(error_msg.password);
-                } else if (error_msg.school) {
-                    setError(error_msg.school);
                 } else {
                     setError('회원가입 실패. 다시 시도해주세요.');
                 }
@@ -114,18 +71,18 @@ function SignupForm() {
     return (
         <div className="signup-container">
             <SEOMetaTag 
-                title='몽글몽글: 회원가입'
-                description='[회원가입하기] 대학생 커뮤니티 몽글몽글에서 다른 학교의 친구들을 만나보세요'
-                keywords='몽글몽글, mongle, 랜덤채팅, 커뮤니티, 회원가입'
+                title='챠우챠우: 회원가입'
+                description='[회원가입하기] 챠우챠우'
+                keywords='챠우챠우, 유기동물, 유기견, 유기묘, 입양'
                 image='https://mongles.com/og_image.png'
                 url='https://mongles.com/signup/'
             />
             <div className='logo-img'>
                 <img src={logo} alt="Logo" />
                 <div className='logo-span'>
-                    <span className='logo-s'>대학생 랜덤채팅</span>
+                    <span className='logo-s'>대충 소제목</span>
                     <span className='logo-l'>
-                        몽글몽글
+                        챠우챠우
                     </span>
                 </div>
             </div>
@@ -145,7 +102,7 @@ function SignupForm() {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder="학교 이메일"
+                    placeholder="이메일"
                 />
                 <input
                     className="signup-input"
@@ -155,31 +112,6 @@ function SignupForm() {
                     onChange={handleChange}
                     placeholder="비밀번호"
                 />
-                <input
-                    className="signup-input"
-                    type="text"
-                    value={searchTerm}
-                    onChange={handleSearchChange}
-                    placeholder="학교 검색"
-                />
-                {searchTerm.length > 0 && filteredSchools.length > 0 ? (
-                    <ul className="search-results">
-                        {filteredSchools.map(school => (
-                            <li
-                                key={school.id}
-                                onClick={() => handleSchoolSelect(school)}
-                                style={{cursor: 'pointer'}}
-                                className='search-item'
-                            >
-                                {school.name}
-                            </li>
-                        ))}
-                    </ul>
-                ): searchTerm.length > 0 && filteredSchools.length === 0 ? (
-                    <ul className="search-results">
-                        <li>학교 검색 결과가 없습니다.</li>
-                    </ul>
-                ) : null}
 
                 <button className="signup-button" type="submit">회원가입</button>
                 <p className='signup-notice'>메일전송에는 최대 3분이 소요될 수 있습니다.</p>

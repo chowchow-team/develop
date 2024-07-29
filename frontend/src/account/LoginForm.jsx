@@ -85,7 +85,7 @@ function LoginForm() {
     return (
         <div className='login-container'>
             <SEOMetaTag 
-                title='몽글몽글: 로그인'
+                title='챠우챠우: 로그인'
                 description='대학생 커뮤니티 몽글몽글에서 다른 학교의 친구들을 만나보세요'
                 keywords='몽글몽글, mongle, 랜덤채팅, 커뮤니티, 로그인'
                 image='https://mongles.com/og_image.png'
@@ -96,7 +96,7 @@ function LoginForm() {
                 <div className='logo-span'>
                     <span className='logo-s'>대학생 랜덤채팅</span>
                     <span className='logo-l'>
-                        몽글몽글
+                        챠우챠우
                     </span>
                 </div>
             </div>
@@ -119,7 +119,7 @@ function LoginForm() {
                 <button type="submit">로그인</button>
             </form>
             <Link to="/signup" className='signup-link'>
-                <p>몽글몽글에 처음이신가요? <span style={{color:"#F07489", marginLeft:"1rem"}}>회원가입</span></p>
+                <p>챠우챠우에 처음이신가요? <span style={{color:"#F07489", marginLeft:"1rem"}}>회원가입</span></p>
             </Link>
             <Link to="/find-id" className='signup-link'>
                 <p style={{color:"#737373"}}>아이디/비밀번호 찾기</p>
