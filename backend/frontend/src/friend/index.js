@@ -1,1 +1,0 @@
-export {default as FriendListForm} from './FriendListForm';
