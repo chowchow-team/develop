@@ -4,77 +4,24 @@ import { UserContext } from '../UserContext';
 import { useNavigate } from 'react-router-dom';
 import { BackButton } from '../snippets';
 import './friend.css';
-import deleteIcon from '../static/img/delete.png';
-import chatIcon from '../static/img/chat.png';
 import { URLManagement, getCookie } from '../snippets';
 
 function FriendListForm() {
     const [friends, setFriends] = useState([]);
-    const [ws, setWs] = useState(null);
     const { user } = useContext(UserContext);
     const { setFriendUsername} = useContext(UserContext);
     const { setFriendID } = useContext(UserContext);
     const API_BASE_URL = URLManagement('http');
-    const WS_BASE_URL = URLManagement('ws');
 
     const [activeTab, setActiveTab] = useState('follower');
 
     const navigate = useNavigate();
 
-    const initiateDM = (friendUsername, friendID) => {
-        setFriendUsername(friendUsername);
-        setFriendID(friendID);
-        navigate(`/dm/${friendID}`);
-    };
-
-    const deleteFriend = async (friendUsername, friendNickname) => {
-        // 사용자에게 삭제 확인 요청
-        const isConfirmed = window.confirm(`정말로 "${friendNickname}"을(를) 친구 목록에서 삭제하시겠습니까? 삭제후엔 되돌릴 수 없습니다.`);
-        if (isConfirmed) {
-            try {
-                const csrfToken = getCookie('csrftoken');
-                // 친구삭제요청
-                await axios.delete(`${API_BASE_URL}/api/friend/remove/${friendUsername}/`, {
-                    headers: {
-                        'X-CSRFToken': csrfToken
-                    },
-                    withCredentials: true
-                });
-                // 메세지삭제요청
-                await axios.delete(`${API_BASE_URL}/api/chat/remove-messages/${friendUsername}/`, {
-                    headers: {'X-CSRFToken': csrfToken},
-                    withCredentials: true
-                });
-                // 양쪽 알림삭제
-                await axios.delete(`${API_BASE_URL}/api/notification/delete-both/dm/${friendUsername}/`, {
-                    headers: {'X-CSRFToken': csrfToken},
-                    withCredentials: true
-                });
-                // 성공적으로 삭제되면 친구 목록에서 해당 친구 제거
-                setFriends(friends.filter(friend => friend.username !== friendUsername));
-            } catch (error) {
-                console.error("친구 삭제에 실패했습니다.", error);
-            }
-        }
-    };
-
-    const deleteNotification = async (friendUsername) => {
-        try {
-            const csrfToken = getCookie('csrftoken');
-            await axios.post(`${API_BASE_URL}/api/notification/delete/dm/${friendUsername}/`, {}, { // 두 번째 인자로 빈 객체를 전달
-                headers: {
-                    'X-CSRFToken': csrfToken
-                },
-                withCredentials: true
-            });
-        } catch (error) {
-            console.error("알림 삭제에 실패했습니다.", error);
-        }
-    };
+    
 
     const fetchFriends = async () => {
         try {
-            const response = await axios.get(`${API_BASE_URL}/api/friend/list`, {
+            const response = await axios.get(`${API_BASE_URL}/api/main/follower/list/`, {
                 withCredentials: true
             });
             setFriends(response.data);
@@ -89,29 +36,10 @@ function FriendListForm() {
             navigate('/login');
             return;
         }
-        fetchFriends(); // 최초 로드 시 친구 목록 가져오기
-        //const intervalId = setInterval(fetchFriends, 1000); // 1초마다 친구 목록 갱신
-        //return () => clearInterval(intervalId); 
+        fetchFriends();
     }, [user, navigate]);
+    console.log(friends);
 
-    useEffect(() => {
-        const newWs = new WebSocket(`${WS_BASE_URL}/ws/chat/dm/?type=friend_list&friend_username=none`);
-        newWs.onopen = () => {
-            const friendUsernameList = friends.map(friend => friend.username);
-            newWs.send(JSON.stringify({ type: 'friend_list', username_list: friendUsernameList}));
-        };
-
-        newWs.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            // 새로운 DM이 있을 때만 친구 목록을 갱신
-            if (data.type === 'dm_message') {
-                fetchFriends();
-            }
-        };
-        return () => {
-            newWs.close();
-        };
-    }, [user, friends]);
 
     return (
         <div className="friendListForm-container">
@@ -144,11 +72,10 @@ function FriendListForm() {
                                 <span className="friendUsername">{friend.username}</span>
                                 <span className="friendBio">{friend.bio}</span>
                             </div>
-                            {/* follow/unfollow button */}
+                            {/* 팔로우여부 확인필요. 팔로잉탭에선 그냥 다 팔로우로 함됨 */}
                             <button className='follow-btn'>
                                 팔로우
                             </button>
-
                         </li> 
                     ))}
                 </ul>
