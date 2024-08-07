@@ -1,0 +1,479 @@
+/* SignupForm */
+
+.signup-container {
+  position: relative; /* 절대 위치에서 상대 위치로 변경 */
+  margin: 10% auto 0; /* 상단에 여백을 주고 가운데 정렬 */
+  width: 400px;
+}
+
+.signup-container > .logo-img {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.signup-container > .logo-img > img {
+  height: 70px;
+  margin-right: .5rem;
+}
+.signup-container > .logo-img > .logo-span {
+  display: flex;
+  flex-direction: column;
+}
+
+.signup-container form {
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+}
+
+.signup-container input,
+.signup-container select,
+.signup-container button {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box; 
+}
+
+.signup-container button {
+  background: #F07489;
+  color: white;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.signup-container button:hover {
+  background: pink;
+}
+
+.signup-container input::placeholder {
+  color: #bbb;
+}
+
+.signup-container select {
+  background: white;
+  color: #333;
+}
+
+.signup-container select option {
+  color: #333;
+}
+
+.search-results {
+  max-height: 160px; /* 검색 결과 목록의 최대 높이 설정 */
+  overflow-y: auto; /* 내용이 많을 경우 스크롤바 표시 */
+  position: relative; /* 절대 위치 대신 상대 위치 사용 */
+  z-index: 1;
+}
+
+.search-results > li {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  font-weight: 100;
+}
+
+.search-results > li:hover {
+  cursor: pointer;
+  color: #F07489;
+}
+
+@media (max-width: 768px) {
+  .signup-container {
+    max-width: 95%;
+  }
+}
+
+/* LoginForm */
+
+.login-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+}
+
+.login-container > .error, .signup-container > .error, .findaccount-container > .error {
+  position: fixed; /* 팝업을 화면에 고정 */
+  top: 20%; /* 상단에서부터의 위치 */
+  left: 50%; /* 왼쪽에서부터의 위치 */
+  transform: translate(-50%, -50%); /* 정확한 중앙 위치 조정 */
+  z-index: 1000; /* 다른 요소들 위에 표시 */
+  background-color: rgba(0, 0, 0, 0.7); /* 반투명 검정색 배경 */
+  color: #fff; /* 텍스트 색상 */
+  padding: 20px 40px; /* 내부 여백 */
+  border-radius: 5px; /* 모서리 둥글게 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+  font-size: 1rem; /* 폰트 크기 */
+  text-align: center; /* 텍스트 중앙 정렬 */
+  max-width: 80%; /* 최대 너비 설정 */
+  word-wrap: break-word; /* 긴 텍스트 처리 */
+  font-family: "Dovemayo_gothic";
+}
+
+.login-container > form {
+  margin: 0px auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+.login-container .logo-l,.signup-container .logo-l {
+  font-size: 2rem;
+  font-family: "Dovemayo_gothic";
+  color: black;
+}
+.login-container .logo-s,.signup-container .logo-s {
+  font-size: 0.9rem;
+  margin-left: 0.2rem;
+  color: black;
+}
+.login-container > .logo-img {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-container > .logo-img > img {
+  height: 70px;
+  margin-right: .5rem;
+}
+.login-container > .logo-img > .logo-span {
+  display: flex;
+  flex-direction: column;
+}
+
+
+.login-container
+input[type="text"],
+input[type="password"] {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  outline: none;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+  border-color: #F07489;
+}
+
+button {
+  padding: 10px 15px;
+  color: white;
+  background-color: #F07489;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-family: Dovemayo_gothic;
+}
+
+button:hover {
+  background-color: pink;
+}
+
+button:active {
+  background-color: #F07489;
+}
+
+.signup-link {
+  text-align: center;
+  text-decoration: none;
+  color: #333;
+}
+.signup-link > p {
+  margin: .5rem 0;
+}
+
+.signup-notice {
+  font-size: .8rem;
+  color: gray;
+  text-align: center;
+  padding: 0;
+
+}
+
+/* Responsive adjustments */
+@media (max-width: 400px) {
+  .login-container > form {
+    width: 65%!important;
+  }
+  .login-container .logo-l,.signup-container .logo-l {
+    font-size: 1.5rem;
+  }
+  .login-container .logo-s,.signup-container .logo-s {
+    font-size: 0.75rem;
+  }
+  .signup-link {
+    font-size: .75rem;
+  }
+  .signup-link > p {
+    margin: .3rem 0;
+  }
+  .signup-link > p > span {
+    margin-left: .2rem!important;
+  }
+  .signup-container {
+    margin: 10% auto 0!important;
+  }
+  .signup-container > form {
+    margin: 10px auto;
+  }
+  .search-results > li {
+    font-size: .85rem;
+  }
+  .login-container > .error, .signup-container > .error, .findaccount-container > .error {
+    padding: 10px 20px; /* 내부 여백 */
+    font-size: .85rem; /* 폰트 크기 */
+    width: 65%; /* 최대 너비 설정 */
+  }
+}
+@media (max-width: 600px) {
+  .login-container > form {
+    width: 80%;
+    background: none;
+    border: none;
+    box-shadow: none;
+    margin-top: 0;
+  }
+  .signup-container {
+    margin: 20% auto 0; /* 상단에 여백을 주고 가운데 정렬 */
+  }
+  .login-container > .error, .signup-container > .error, .findaccount-container > .error {
+    font-size: 0.85rem;
+  }
+}
+
+/* FindForm */
+
+/* 공통 스타일 */
+.findaccount-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Arial', sans-serif;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 500px;
+}
+
+.findaccount-container form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.findaccount-container input[type="email"] {
+  margin-top: 5px;
+  padding: 10px;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  width: 94%;
+}
+
+.findaccount-container button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #F07489;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.findaccount-container button:hover {
+  background-color: pink;
+}
+
+.forgot-link p {
+  margin: 0;
+  padding: 10px;
+  cursor: pointer;
+  color: black; /* 클릭 이전 글자색 검은색 */
+  text-decoration: none; /* 밑줄 제거 */
+  font-family: "Dovemayo_gothic";
+}
+.findaccount-container > form {
+  width: 100%;
+  display: block;
+}
+
+.findaccount-container > form > input {
+  width: 50%;
+}
+.findaccount-container > form > button {
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.findaccount-container > .notice p {
+  font-size: .8rem;
+  margin: 5px;
+}
+
+.active-link p {
+  color: #F07489; /* 클릭 이후 글자색 핑크색 */
+  font-weight: bold;
+  border-bottom: 3px solid #F07489; /* 밑줄 추가 */
+}
+
+.link-box{
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.forgot-link {
+  display: flex;
+  flex-direction: row;
+  text-decoration: none;
+}
+
+/* settingForm.css */
+.setting-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 5rem auto;
+  padding: 20px;
+  border-radius: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 35%;
+}
+.setting-container p {
+  margin: 1rem 0;
+}
+.setting-box {
+  width: 100%;
+}
+.setting-box div {
+  cursor: pointer;
+}
+.setting-box .setPassword {
+  border-bottom: 1px solid #ddd;
+}
+.setting-box div > p:nth-child(2){
+  color: #808080;
+  font-size: 1rem;
+}
+@media (max-width: 768px) {
+  .setting-container {
+    width: 60%;
+  }
+}
+
+/* PWResetForm */
+.pwreset-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 5rem auto;
+  padding: 20px;
+  border-radius: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 35%;
+}
+.pwreset-container input {
+  box-sizing: border-box; /* padding과 border를 너비 계산에 포함 */
+}
+
+.pwreset-container p {
+  font-size: 1rem;
+  color: #808080;
+  margin: .5rem 0;
+}
+.pwreset-container > form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 400px;
+}
+.currentpw {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.currentpw > input {
+  margin-bottom: 1rem;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  width: 100%;
+}
+.newpw {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.newpw > input {
+  margin-bottom: 1rem;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  width: 100%;
+}
+
+.pwconfirm {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.pwconfirm > input {
+  margin-bottom: 1rem;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  width: 100%;
+}
+.pwreset-btn {
+  padding: 10px 20px;
+  background-color: #F07489;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .pwreset-container {
+    box-shadow: none;
+    width: 100%;
+    padding: 0;
+  }
+  .pwreset-container > form {
+    max-width: 300px;
+  }
+  .findaccount-container {
+    width: 95%;
+  }
+}
+
+@media (max-width: 400px) {
+  .findaccount-container{
+    border: none;
+    background: none;
+    box-shadow: none;
+    width: 85%;
+  }
+  .forgot-link p {
+    font-size: .85rem;
+  }
+}
