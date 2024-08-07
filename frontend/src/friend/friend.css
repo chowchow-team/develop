@@ -12,6 +12,25 @@
 .friendListForm-container > .back-btn {
     margin-right: auto;
 }
+.friendListForm-container .ctrl-box{
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+.friendListForm-container .ctrl-box button {
+    background-color: transparent;
+    border: none;
+    font-size: 1.2rem;
+    color: #2c3e50;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    width: 7rem;
+}
+.friendListForm-container .ctrl-box .active{
+    /* 밑줄만들기 */
+    border-bottom: 2px solid #F07489;
+}
 
 .friendList {
     list-style-type: none;

@@ -1,7 +1,7 @@
 /* NavForm */
 
 .nav-wrapper > .nav-logo > img {
-    height: 70px; /* 로고 이미지 높이 */
+    height: 50px; /* 로고 이미지 높이 */
     margin-right: 20px; /* 로고와 텍스트 사이의 마진 */
 }
 .nav-wrapper {
@@ -9,7 +9,7 @@
     align-items: center;
     justify-content: space-between;
     background-color: none; /* 배경색을 흰색으로 설정 */
-    padding: 0 10px; /* 양쪽 패딩 설정 */
+    padding: 20px 20px; /* 양쪽 패딩 설정 */
     box-shadow: 0 1px 0px rgba(0, 0, 0, 0.1); /* 그림자 효과 추가 */
     z-index: 10;
 }
@@ -18,7 +18,7 @@
     margin-left: .2rem;
 }
 .logo-name-l {
-    font-size: 2.2rem !important;
+    font-size: 1.8rem !important;
     font-family: 'Dovemayo_gothic' !important;
     color: black;
 }
@@ -65,6 +65,19 @@
 .nav-menu a:hover {
     color: #F07489; /* 링크 호버 색상 */
     transition: .3s;
+}
+
+.nav-menu .login{
+    color: #F07489;
+    border: 1px solid #F07489;
+    padding: 5px 10px;
+    border-radius: 15px;
+}
+
+.nav-menu .login:hover {
+    color: white;
+    background-color: #F07489;
+    transition: .6s;
 }
 
 .notification-dot {

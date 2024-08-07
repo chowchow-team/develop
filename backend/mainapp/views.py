@@ -40,18 +40,18 @@ class PostControlAPIView(APIView): # 페이지 생성, 불러오기
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-    #def get(self,request):
-        #title = request.GET.get('title','')
-        #timestamp = request.GET.get('timestamp','')
-        #filters = {}
-        #if title:
-        #    filters['title'] = title
-        #if timestamp:
-        #    filters['timestamp'] = timestamp
+    def get(self,request):
+        title = request.GET.get('title','')
+        timestamp = request.GET.get('timestamp','')
+        filters = {}
+        if title:
+            filters['title'] = title
+        if timestamp:
+            filters['timestamp'] = timestamp
         
-        #post = Post.objects.filter(**filters)
-        #serializer = PostSerializer(post)
-        #return Response(serializer.data)
+        post = Post.objects.filter(**filters)
+        serializer = PostSerializer(post)
+        return Response(serializer.data)
 
 class CommentControlAPIView(APIView): # Post에 작성된 comment를 get하거나 comment를 생성하는 것
     def post(self,request,post_id):
@@ -127,10 +127,8 @@ class UnfollowRequestAPIView(APIView):
         return Response({"status": "success"}, status=status.HTTP_200_OK)
 
 
-class FollowCheckAPIView(APIView):
+class FollowCheckAPIView(APIView): #frontend에서 follow <-> unfollow 버튼 전환을 위해 사용
     def get(self, request):
-        # 디버깅을 위해 쿼리 파라미터 출력
-        print("Query parameters:", request.GET)
 
         follower_id = request.GET.get('follower_id')
         following_id = request.GET.get('user_id')

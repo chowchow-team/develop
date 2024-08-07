@@ -17,6 +17,8 @@ function FriendListForm() {
     const API_BASE_URL = URLManagement('http');
     const WS_BASE_URL = URLManagement('ws');
 
+    const [activeTab, setActiveTab] = useState('follower');
+
     const navigate = useNavigate();
 
     const initiateDM = (friendUsername, friendID) => {
@@ -114,31 +116,39 @@ function FriendListForm() {
     return (
         <div className="friendListForm-container">
             <p className='back-btn'><BackButton /></p>
+            <div className='ctrl-box'>
+                <button 
+                    className={`follower-btn ${activeTab === 'follower' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('follower')}
+                    role="tab"
+                    aria-selected={activeTab === 'follower'}
+                >
+                    팔로워
+                </button>
+                <button 
+                    className={`following-btn ${activeTab === 'following' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('following')}
+                    role="tab"
+                    aria-selected={activeTab === 'following'}
+                >
+                    팔로잉
+                </button>
+            </div>
             {friends.length > 0 ? (
                 <ul className="friendList">
                     {friends.map((friend, index) => (
                         <li key={index} className="friendItem">
                             <img src={`${API_BASE_URL}${friend.profile_pic}`} alt="Profile" className="friendProfilePic" />
                             <div className="friendInfo">
-                                <span className="friendNickname">{friend.nickname}
-                                    {friend.unread_count > 0 && <span className="unreadDot">{friend.unread_count}</span>}
-                                </span>
-                                <span className="friendSchool">{friend.school}</span>
+                                <span className="friendNickname">{friend.nickname}</span>
+                                <span className="friendUsername">{friend.username}</span>
                                 <span className="friendBio">{friend.bio}</span>
-                                {friend.recent_message && (
-                                    <div className='last-message'>
-                                    {friend.recent_message.length > 15 ? `${friend.recent_message.substring(0, 15)}...` : friend.recent_message}
-                                    </div>
-                                )}
                             </div>
-                            <div className='friendManage'>
-                                <img src={chatIcon} className='icon chatIcon' onClick={()=>{initiateDM(friend.username, friend.id); deleteNotification(friend.username);}} alt="DM"></img>
-                                <img src={deleteIcon} className='icon deleteIcon' onClick={() => deleteFriend(friend.username, friend.nickname)} alt="Delete"></img>
-                            </div>
-                            <div className='friendManage-fold'>
-                                <img src={chatIcon} className='icon chatIcon' onClick={()=>{initiateDM(friend.username, friend.id); deleteNotification(friend.username);}} alt="DM"></img>
-                                <img src={deleteIcon} className='icon deleteIcon' onClick={() => deleteFriend(friend.username, friend.nickname)} alt="Delete"></img>
-                            </div>
+                            {/* follow/unfollow button */}
+                            <button className='follow-btn'>
+                                팔로우
+                            </button>
+
                         </li> 
                     ))}
                 </ul>

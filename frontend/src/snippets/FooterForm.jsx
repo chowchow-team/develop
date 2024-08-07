@@ -5,7 +5,7 @@ import { URLManagement, useWindowSize } from '../snippets';
 
 function FooterForm() {
   const location = useLocation();
-  const hideNavOnPaths = ['/chat', '/friend', '/profile', '/login', '/test', '/signup']; // /e1i5를 제거했습니다.
+  const hideNavOnPaths = ['/friend', '/profile', '/login', '/signup'];
   const dmPath = [/^\/dm\/[^\/]+$/];
   const { width } = useWindowSize();
   const isMobile = width < 768;
@@ -16,12 +16,9 @@ function FooterForm() {
   if (shouldHideFooter) return null;
   return (
     <footer className="footer-container">
-      <p className='main-footer'>Copyright 2024. 몽글몽글. All rights reserved.</p>
-      <p className='email'>Contact: dev.mongle@gmail.com | 
-      <Link to="/policy"><span> 개인정보처리방침</span></Link>
-      </p>
-      <p className='copyright'>Copyright Information: The image "Voxel Planet of the Little Prince / MagicaVoxel" used on this landing page is based on the work by moyicat,</p>
-      <p className='copyright'>available under a Creative Commons Attribution (CC BY) license. For more details, please visit https://sketchfab.com/3d-models/voxel-planet-of-the-little-prince-magicavoxel-8a7cf90ac42c4ef693342404826c06ae.</p>
+      <p className='main-footer'>Copyright 2024. 챠우챠우. All rights reserved. | 
+        제 11회 SW 개발보안 경진대회 출품작 (곽병혁, 김재윤)</p>
+      <p className='email'>Contact: chow3mail@gmail.com</p>
     </footer>
   );
 }

@@ -5,7 +5,7 @@ import { SignupForm, LoginForm, LogoutForm, FindIDForm, FindPWForm, ResetPWForm,
 import { ProfileForm } from './profile';
 import { ChatForm, DMForm, TestForm } from './chat';
 import { FriendListForm } from './friend';
-import { NotFoundForm, FooterForm, PrepareForm, Policy } from './snippets';
+import { NotFoundForm, FooterForm, PrepareForm} from './snippets';
 import { CMainForm, CCreateForm, CDetailForm } from './community';
 import { E1I5Stream } from './e1i5';
 
@@ -36,7 +36,6 @@ function App() {
                     {/*<Route path="/community" element={<PrepareForm />} />*/}
                     <Route path="/community/create" element={<CCreateForm />} />
                     <Route path="/community/posts/:pk" element={<CDetailForm />} />
-                    <Route path="/policy" element={<Policy />} />
                     {/*<Route path="/test" element={<TestForm />} />*/}
                     <Route path="/admin" element={<MainForm />} />
                     {/*<Route path="/e1i5" element={<E1I5Stream />} />*/}
