@@ -54,3 +54,10 @@ EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')   # 이메일 비밀번호
 EMAIL_USE_TLS = True
 
 ANIMAL_API_KEY = env('ANIMAL_API_KEY')
+
+CRONJOBS=[
+    ('*/1 * * * *', 'accountapp.cron.my_scheduled_job')
+]
+
+from django.conf import settings
+CRONTAB_COMMAND_PREFIX = f'cd {settings.BASE_DIR} && '

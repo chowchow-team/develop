@@ -1,0 +1,11 @@
+Model Information:
+* title:	Voxel Planet of the Little Prince / MagicaVoxel
+* source:	https://sketchfab.com/3d-models/voxel-planet-of-the-little-prince-magicavoxel-8a7cf90ac42c4ef693342404826c06ae
+* author:	moyicat (https://sketchfab.com/moyicat)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Voxel Planet of the Little Prince / MagicaVoxel" (https://sketchfab.com/3d-models/voxel-planet-of-the-little-prince-magicavoxel-8a7cf90ac42c4ef693342404826c06ae) by moyicat (https://sketchfab.com/moyicat) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

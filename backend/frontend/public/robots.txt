@@ -1,0 +1,12 @@
+User-agent: *
+Disallow: /
+
+# Search
+User-agent: Googlebot
+Allow : / 
+
+# NAVER
+User-agent: Yeti
+Allow: /
+
+Sitemap: https://mongles.com/sitemap.xml

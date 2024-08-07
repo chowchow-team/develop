@@ -1,0 +1,24 @@
+### SERVER ###
+venv/
+.idea/
+__pycache__/
+backend/media/
+db.sqlite3
+migrations/
+
+#staticfiles/
+
+# SET
+.env
+
+### REACT ###
+.DS_*
+*.log
+
+logs
+**/*.backup.*
+**/*.back.*
+
+node_modules
+bower_components
+build

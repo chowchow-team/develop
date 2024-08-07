@@ -1,0 +1,152 @@
+.dm-container {
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+}
+@font-face {
+    font-family: 'Dovemayo_gothic';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.1/Dovemayo_gothic.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+.dm-container .message-text {
+    font-family: Dovemayo_gothic;
+    font-weight: 500;
+}
+
+.dm-messages {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column-reverse;
+    height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    background: #fafafa;
+}
+
+.chat-input {
+    padding: 10px;
+    background: #f9f9f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-input input {
+    flex-grow: 1;
+    margin-right: 5px;
+    margin-left: 5px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    display: flex;
+    justify-content: center;
+}
+
+.chat-input button {
+    padding: 10px 10px;
+    background-color: #F07489;
+    border: none;
+    border-radius: 3px;
+    color: white;
+    cursor: pointer;
+    margin: 0 .1rem 0 .1rem;
+}
+
+
+
+/* 메시지 말풍선 스타일 */
+.message-bubble {
+    display: block;
+    padding: 8px 15px;
+    border-radius: 20px;
+    margin-bottom: 1.5rem;
+    display: inline-block;
+    max-width: 80%;
+}
+.my-message {
+    background-color: none!important;
+}
+
+/* 내 메시지 스타일 */
+.my-message > .message-content > .message-bubble{
+    background-color: #dcf8c6;
+    margin-left: auto;
+    border-bottom-right-radius: 0;
+}
+
+/* 상대방 메시지 스타일 */
+.their-message > .message-content > .message-bubble{
+    background-color: #ffffff;
+    margin-right: auto;
+    border-bottom-left-radius: 0;
+}
+
+/* 기존 스타일 유지... */
+
+.start-chat-button {
+    padding: 10px 20px;
+    width: 100%; /* 버튼을 전체 너비로 확장 */
+    background-color: #F07489;
+    border: none;
+    border-radius: 3px;
+    color: white;
+    cursor: pointer;
+}
+
+.start-chat-button:hover {
+    background-color: pink;
+}
+
+/* DM.css */
+.chat-container.dm {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+.message-container {
+    display: flex;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.my-message .message-content, .their-message .message-content {
+    max-width: 80%;
+}
+
+.my-message {
+    justify-content: flex-end;
+}
+
+.their-message {
+    justify-content: flex-start;
+}
+
+.message-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.message-timestamp {
+    align-self: flex-end; /* 오른쪽 정렬을 위해 */
+    font-size: .8rem;
+    margin-top: -1rem; /* 메시지와의 간격 조정 */
+}
+
+.their-message .message-timestamp {
+    align-self: flex-start; /* 왼쪽 메시지의 타임스탬프를 위해 */
+}
+
+@media (max-width: 768px) {
+    .dm-container {
+        height: calc(var(--vh, 1vh) * 100);
+    }
+    .dm-messages {
+        flex-direction: column-reverse;
+    }
+    .chat-input button:hover {
+        background-color: #F07489;
+    }
+}
