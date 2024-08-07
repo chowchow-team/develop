@@ -1,10 +1,10 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
-from .models import User, Profile
+from .models import User, Profile, AnimalProfile
 
 class UserAdmin(BaseUserAdmin):
-    list_display = ('username', 'email', 'is_admin', 'is_superuser', 'is_staff', 'is_active')
+    list_display = ('username', 'email', 'is_admin', 'is_superuser', 'is_staff', 'is_active','id', 'is_animal')
     list_filter = ('is_admin', 'is_superuser', 'is_staff', 'is_active')
     fieldsets = (
         (None, {'fields': ('username', 'email', 'password')}),
@@ -22,5 +22,6 @@ class UserAdmin(BaseUserAdmin):
 
 admin.site.register(User, UserAdmin)
 admin.site.register(Profile)
+admin.site.register(AnimalProfile)
 
 admin.site.unregister(Group)

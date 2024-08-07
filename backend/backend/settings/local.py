@@ -52,3 +52,5 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'chow3mail@gmail.com'  # 이메일 계정
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')   # 이메일 비밀번호
 EMAIL_USE_TLS = True
+
+ANIMAL_API_KEY = env('ANIMAL_API_KEY')

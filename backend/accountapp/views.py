@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from django.contrib.auth import get_user_model
-from accountapp.token import account_activation_token
+from accountapp.activation_token import account_activation_token
 from accountapp.models import User, Profile
 from accountapp.serializers import AccountCreateSerializer, ProfileSerializer
 from django.conf import settings

@@ -17,12 +17,14 @@ import os
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
-    def create_user(self, username, email=None, password=None):
+    def create_user(self, username, email=None, password=None, is_animal=False):
         if not username:
             raise ValueError('must have username')
         user = self.model(
             username=username,
-            email=self.normalize_email(email),
+            # 사람일때만 이메일필드 사용하게할거야
+            email=self.normalize_email(email) if not is_animal else None,
+            is_animal=is_animal,
         )
         user.set_password(password)
         user.save()
@@ -45,7 +47,7 @@ class User(AbstractBaseUser):
     username_pattern = RegexValidator(r'^[0-9a-zA-Z_]{5,20}$', '5-20글자 사이의 숫자,영문,언더바만 가능합니다!')
     objects = UserManager()
 
-    email = models.EmailField(max_length=255, unique=True)
+    email = models.EmailField(max_length=255, unique=True, null=True, blank=True)
     username = models.CharField(max_length=20, null=False,
                                 unique=True, validators=[username_pattern])
     is_active = models.BooleanField(default=False)
@@ -56,7 +58,11 @@ class User(AbstractBaseUser):
     date_joined = models.DateTimeField(auto_now_add=True)
 
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email']
+    def get_required_fields(self):
+        if self.is_animal:
+            return []
+        else:
+            return ['email']
 
     def has_perm(self, perm, obj=None):
         return self.is_admin
@@ -84,7 +90,7 @@ class User(AbstractBaseUser):
 
 class AnimalUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    animal_num = models.IntegerField(default=0, unique=True)
+    animal_num = models.IntegerField(default=0)
     center = models.CharField(max_length=13, blank=True, default='익명의 챠우')
     species = models.CharField(max_length=100, blank=True)
     breed = models.CharField(max_length=100, blank=True)
@@ -158,7 +164,7 @@ class AnimalProfile(BaseProfile):
     weight = models.FloatField(null=True, blank=True)
     enter= models.DateTimeField(default=timezone.now)
     youtube=models.CharField(max_length=100, blank=True)
-    profile_pic = models.ImageField(upload_to='animal_profile_pics/', blank=True, null=True, default='default_animal.png')
+    profile_pic = models.ImageField(upload_to='animal_profile_pics/', blank=True, null=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.species}"
