@@ -28,7 +28,6 @@ INSTALLED_APPS = [
     'communityapp',
     'e1i5',
     'mainapp',
-    'django_crontab',
     
     'django.contrib.admin',
     'django.contrib.auth',

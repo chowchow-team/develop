@@ -50,10 +50,3 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'chow3mail@gmail.com'  # 이메일 계정
 EMAIL_HOST_PASSWORD = read_secret('EMAIL_HOST_PASSWORD')   # 이메일 비밀번호
 EMAIL_USE_TLS = True
-
-CRONJOBS=[
-    ('0 6 * * *', 'accountapp.cron.my_scheduled_job')
-]
-
-from django.conf import settings
-CRONTAB_COMMAND_PREFIX = f'cd {settings.BASE_DIR} && '
