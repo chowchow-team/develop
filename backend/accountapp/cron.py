@@ -1,29 +1,32 @@
-import requests
 import os
 import django
 import random
 from django.utils import timezone
-import sys
 import re
-import secrets
-import string
 from datetime import datetime
 from PIL import Image
 from io import BytesIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
-
-current_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.abspath(os.path.join(current_dir, '..'))
-sys.path.append(project_root)
+import secrets
+import string
+import requests
+import logging
+from accountapp.models import User, AnimalUser, AnimalProfile
+from django.conf import settings
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings.local')
 django.setup()
 
-from accountapp.models import User, AnimalUser, AnimalProfile
-from django.conf import settings
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler(os.path.join(settings.BASE_DIR, 'cron.log'))
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 def call_api():
-    key = settings.ANIMAL_API_KEY # 푸시 전에 엔브에 숨겨야 함
+    key = settings.ANIMAL_API_KEY
     url = f"http://openapi.seoul.go.kr:8088/{key}/json/TbAdpWaitAnimalView/1/70/"
     
     response = requests.get(url)
@@ -34,7 +37,7 @@ def call_api():
             animals = data["TbAdpWaitAnimalView"]["row"]
             return animals
     else:
-        print("Failed to retrieve data:", response.status_code)
+        logger.error(f"Failed to retrieve data: {response.status_code}")
         return []
 
 def extract_name_and_center(nm):
@@ -135,10 +138,17 @@ def create_animal_account(animal):
         animal_profile.bio = animal.get('INTRCN_CN', '')
         animal_profile.save()
 
-if __name__ == "__main__":
+def my_scheduled_job():
+    logger.info("Scheduled job started.")
     animals = call_api()
     for animal in animals:
         try:
             create_animal_account(animal)
+            logger.info(f"Created account for animal: {animal.get('NM')}")
         except Exception as e:
-            print(f"Failed to create account for animal {animal.get('NM')}: {e}")
+            logger.error(f"Failed to create account for animal {animal.get('NM')}: {e}")
+
+    logger.info("Scheduled job completed.")
+
+if __name__ == "__main__":
+    my_scheduled_job()
