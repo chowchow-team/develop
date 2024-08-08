@@ -73,7 +73,7 @@ class FollowRecommandAPIView(APIView): # 동작함 -> 본인이 추천되는 것
         serializer = AccountCreateSerializer(users,many=True)
         return Response(serializer.data)
 
-class FollowerListAPIView(APIView):
+class FollowerListAPIView(APIView): # 유저를 팔로우 하는 객체 리스트
     def get(self, request):
         user_id = request.GET.get('user_id')
         try:
@@ -81,19 +81,21 @@ class FollowerListAPIView(APIView):
         except User.DoesNotExist:
             return Response({"status": "error", "message": "User not found"}, status=status.HTTP_400_BAD_REQUEST)
 
-        followers = FollowService.get_followers(user)
+        follower_ids = FollowService.get_follower(user)
+        followers = User.objects.filter(id__in=follower_ids)
         serializer = AccountCreateSerializer(followers, many=True)
-        return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+        return Response({"status": "success", "data": serializer.data}, status=200)
 
-class FollowingListAPIView(APIView):
+class FollowingListAPIView(APIView): # 유저가 팔로우 하는 객체 리스트 -> 구현 완료
     def get(self,request):
         user_id = request.GET.get('user_id')
         try:
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
             return Response({"status": "error", "message": "User not found"}, status=status.HTTP_400_BAD_REQUEST)
-        followings = FollowService.get_following(user)
-        serialzier = AccountCreateSerializer(followings,many=True)
+        following_ids = FollowService.get_following(user)
+        followings = User.objects.filter(id__in=following_ids)
+        serializer = AccountCreateSerializer(followings, many=True)
         return Response({"status": "success", "data": serializer.data}, status=200)
 
 class FollowRequestAPIView(APIView):

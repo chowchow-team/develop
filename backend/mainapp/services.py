@@ -16,9 +16,9 @@ class FollowService:
         return FollowList.objects.filter(follower=follower,following=following).exists()
     
     @staticmethod
-    def get_followers(user: User):
-        return FollowList.objects.filter(following=User)
+    def get_follower(user: User):
+        return FollowList.objects.filter(following=user).values_list('follower', flat=True)
     
     @staticmethod
     def get_following(user: User):
-        return FollowList.objects.filter(followers=User)
+        return FollowList.objects.filter(follower=user).values_list('following', flat=True)
