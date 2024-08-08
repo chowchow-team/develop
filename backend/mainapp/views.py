@@ -7,69 +7,90 @@ from .serializers import PostSerializer,CommentSerializer,FollowListSerializer
 from django.contrib.auth import get_user_model
 from accountapp.serializers import AccountCreateSerializer
 from .services import FollowService
+import random
 
 User = get_user_model()
 class PostRecentAPIView(APIView): # 가장 최근에 포스트된 게시물 5개를 받아오는 역할 -> 잘 동작함
     def get(self,request):
-        posts = Post.objects.all().order_by('-timestamp')[:5]
+        page = int(request.GET.get('page'))
+        #if page in self.uploaded_pages:
+        #    return Response([])
+        all_posts = Post.objects.all().order_by('-timestamp')
+        total_posts = all_posts.count()
+        start_index = (page-1)*5
+        end_index = start_index + 5
+        if start_index >= total_posts:
+            return Response([])
+        posts = all_posts[start_index:end_index]
         serializer = PostSerializer(posts,many=True)
+        self.uploaded_pages.add(page)
         return Response(serializer.data)
 
-class PostFollowAPIView(APIView): # 팔로우하는 객체의 포스팅 5개를 받아오는 역할
+class PostFollowAPIView(APIView): # 팔로우하는 객체의 포스팅 5개를 받아오는 역할 -> 잘 동작함
     def get(self,request):
-        id = request.GET.get('id','')
-        if id:
-            follow_objects = FollowList.objects.filter(id=id).order_by('?')[:5]
-            follow_names = [follow.following for follow in follow_objects]
-            recent_posts = []
-            for follow_name in follow_names:
-                recent_post = Post.objects.filter(follow_name = follow_name).order_by('-timestmap').first()
-                if recent_post:
-                    recent_posts.append(recent_post)
-            serializer = PostSerializer(recent_posts,many=True)
-            return Response(serializer.data)
-        return Response()
-
+        user_id = 3 #request.GET.get('user_id') -> 'user_id'는 frontend에서 전달
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({"status": "error", "message": "User not found"}, status=status.HTTP_400_BAD_REQUEST)
+        following_ids = FollowService.get_following(user)
+        followings = User.objects.filter(id__in=following_ids)
+        if not followings:
+            return Respose([])
+        selected_followings = random.sample(list(followings),min(len(followings),5))
+        posts = []
+        for following in selected_followings:
+            post = Post.objects.filter(user=following).order_by('-timestamp').first()
+            if post:
+                posts.append(post)
+        serializer = PostSerializer(posts,many=True)
+        return Response({"status": "success", "posts": serializer.data}, status=status.HTTP_200_OK)
             
-class PostControlAPIView(APIView): # 페이지 생성, 불러오기
+class PostControlAPIView(APIView): # 페이지 생성, 불러오기 -> 잘 작동함
     def post(self,request):
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(user_name=request.user)
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
     def get(self,request):
-        title = request.GET.get('title','')
-        timestamp = request.GET.get('timestamp','')
-        filters = {}
-        if title:
-            filters['title'] = title
-        if timestamp:
-            filters['timestamp'] = timestamp
-        
-        post = Post.objects.filter(**filters)
+        post_id = 3 #request.GET.get('post_id') -> 'post_id'는 frontend에서 전달
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExsit:
+            return Response({"status": "error", "message": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
         serializer = PostSerializer(post)
         return Response(serializer.data)
-
+    
 class CommentControlAPIView(APIView): # Post에 작성된 comment를 get하거나 comment를 생성하는 것
-    def post(self,request,post_id):
+    def post(self,request):
+        post_id = request.data.get('post_id')
+        if not post_id:
+            return Response({"error": "post_id is required"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
         serializer = CommentSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(user_name=request.user, post_id=post_id)
+            serializer.save(user=request.user,post=post)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self,request,id):
-        post = Post.objects.filter(id=id)
-        serializer = PostSerializer(post)
+    def get(self,request):
+        post_id = 11 #request.GET.get('post_id') -> 프론트엔드에서 전송함
+        post = Post.objects.get(id=post_id)
+        comment = Comment.objects.get(post=post)
+        serializer = CommentSerializer(comment)
         return Response(serializer.data)
 
 
 class FollowRecommandAPIView(APIView): # 동작함 -> 본인이 추천되는 것만 빼자
     def get(self,request):
-        users = User.objects.all().order_by('?')[:5]
+        user_id = 3 #request.GET.get('user_id') -> 프론트엔드에서 전송함
+        users = User.objects.exclude(id=user_id).order_by('?')[:5]
         serializer = AccountCreateSerializer(users,many=True)
         return Response(serializer.data)
 
