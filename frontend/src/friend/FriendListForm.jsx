@@ -18,11 +18,12 @@ function FriendListForm() {
     const navigate = useNavigate();
 
     
-
     const fetchFriends = async () => {
         try {
-            const response = await axios.get(`${API_BASE_URL}/api/main/follower/list/`, {
-                withCredentials: true
+            const response = await axios.get(`${API_BASE_URL}/api/main/follower/list/`, {params:{
+                user_id : 1,
+                withCredentials: true,
+            }
             });
             setFriends(response.data);
         } catch (error) {
@@ -68,7 +69,7 @@ function FriendListForm() {
                         <li key={index} className="friendItem">
                             <img src={`${API_BASE_URL}${friend.profile_pic}`} alt="Profile" className="friendProfilePic" />
                             <div className="friendInfo">
-                                <span className="friendNickname">{friend.nickname}</span>
+                                <span className="friendNickname">{friend.username}</span>
                                 <span className="friendUsername">{friend.username}</span>
                                 <span className="friendBio">{friend.bio}</span>
                             </div>

@@ -13,7 +13,7 @@ class Comment(models.Model):
     user = models.ForeignKey(User,related_name='comment_writer',on_delete=models.CASCADE)
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
 
 
 class FollowList(models.Model):
