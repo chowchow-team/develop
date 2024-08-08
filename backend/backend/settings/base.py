@@ -26,7 +26,6 @@ INSTALLED_APPS = [
     'friendapp',
     'notificationapp',
     'communityapp',
-    'e1i5',
     'mainapp',
     
     'django.contrib.admin',
