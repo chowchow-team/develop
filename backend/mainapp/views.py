@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Post,Comment,FollowList
-from .serializers import PostSerializer,CommentSerializer,FollowListSerializer
+from .serializers import PostSerializer,CommentSerializer,FollowListSerializer, FollowingListSerializer
 from django.contrib.auth import get_user_model
 from accountapp.serializers import AccountCreateSerializer
 from .services import FollowService
@@ -36,7 +36,7 @@ class PostFollowAPIView(APIView): # 팔로우하는 객체의 포스팅 5개를 
         following_ids = FollowService.get_following(user)
         followings = User.objects.filter(id__in=following_ids)
         if not followings:
-            return Respose([])
+            return Response([])
         selected_followings = random.sample(list(followings),min(len(followings),5))
         posts = []
         for following in selected_followings:
@@ -103,22 +103,22 @@ class FollowerListAPIView(APIView): # 유저를 팔로우 하는 객체 리스�
             return Response({"status": "error", "message": "User not found"}, status=status.HTTP_400_BAD_REQUEST)
 
         follower_ids = FollowService.get_follower(user)
-        followers = User.objects.filter(id__in=follower_ids)
-        serializer = AccountCreateSerializer(followers, many=True)
+        followers = User.objects.filter(id__in=follower_ids).select_related('profile', 'animalprofile')
+        serializer = FollowingListSerializer(followers, many=True)
         return Response({"status": "success", "data": serializer.data}, status=200)
 
-class FollowingListAPIView(APIView): # 유저가 팔로우 하는 객체 리스트 -> 구현 완료
-    def get(self,request):
+class FollowingListAPIView(APIView): # 유저가 팔로우하는 객체리스트 곽 수정
+    def get(self, request):
         user_id = request.GET.get('user_id')
         try:
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
             return Response({"status": "error", "message": "User not found"}, status=status.HTTP_400_BAD_REQUEST)
         following_ids = FollowService.get_following(user)
-        followings = User.objects.filter(id__in=following_ids)
-        serializer = AccountCreateSerializer(followings, many=True)
+        followings = User.objects.filter(id__in=following_ids).select_related('profile', 'animalprofile')
+        serializer = FollowingListSerializer(followings, many=True)
         return Response({"status": "success", "data": serializer.data}, status=200)
-
+    
 class FollowRequestAPIView(APIView):
     def post(self, request):
         following_id = request.data.get('following_id')

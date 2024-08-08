@@ -19,7 +19,6 @@ class AccountCreateSerializer(serializers.ModelSerializer):
 
     
     def create(self, validated_data):
-        # 사용자 생성 로직
         user = User.objects.create_user(**validated_data)
         user.is_active = False  # 사용자를 비활성화 상태로 설정
         user.save()
