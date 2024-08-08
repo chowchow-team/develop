@@ -31,6 +31,7 @@ class UserManager(BaseUserManager):
         return user
     
     def create_superuser(self, username, password, email=None):
+        email=username+'gmail.com'
         superuser = self.create_user(
             username=username,
             email=email,
