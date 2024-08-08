@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'notificationapp',
     'communityapp',
     'mainapp',
+    'django_crontab',
     
     'django.contrib.admin',
     'django.contrib.auth',
