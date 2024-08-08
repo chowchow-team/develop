@@ -37,4 +37,11 @@ python convert_hf_to_gguf.py ../KONI-8b
 3. 서버실행
 daphne -p 8000 backend.asgi:application
 
+4. 크론탭 동작 설명
+배포환경에서는 06시마다, 로컬에선 1분주기 accountapp/cron.py 작동시킴
+python manage.py crontab add # 작동시작
+python manage.py crontab show # 동작중인 크론탭현황
+python manage.py crontab remove # 크론탭제거
+# cron.log 로 로깅중임
+
 ```
