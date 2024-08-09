@@ -7,6 +7,29 @@ import comment from '../static/img/comment.png';
 import { UserContext } from '../UserContext';
 import { SEOMetaTag } from '../snippets';
 
+const TruncateText = ({ text, maxLength = 100 }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+  
+    const toggleExpand = (e) => {
+        e.preventDefault();  // 링크 이벤트 중지
+        e.stopPropagation(); // 이벤트 버블링 방지
+      setIsExpanded(!isExpanded);
+    };
+  
+    return (
+      <div className="truncate-text">
+        <p>
+          {isExpanded ? text : `${text.slice(0, maxLength)}${text.length > maxLength ? '...' : ''}`}
+        </p>
+        {text.length > maxLength && (
+          <button onClick={toggleExpand} className="truncate-text__button">
+            {isExpanded ? '접기' : '더보기'}
+          </button>
+        )}
+      </div>
+    );
+};
+
 function MainForm() {
     const [posts, setPosts] = useState([]);
     const { user } = useContext(UserContext);
@@ -126,8 +149,9 @@ function MainForm() {
                         {posts.map((post) => (
                             <li key={post.id} className="main-container__post-list-item">
                                 <Link to={`/community/posts/${post.id}`} className="main-container__post-link">
-                                    <h3 className='main-container__post-list-item-title'>{conditionalTruncate(post.title)}</h3>
-                                    <p className='main-container__post-list-item-content'>{conditionalTruncate(post.content)}</p>
+                                    <p className='main-container__post-list-item-content'>
+                                        <TruncateText text={post.content} maxLength={100} />
+                                    </p>
                                     {post.images && post.images.length > 0 && (
                                         <div className={`main-container__post-list-item-images images-count-${post.images.length}`}>
                                             {post.images.slice(0, 4).map((image, index) => (

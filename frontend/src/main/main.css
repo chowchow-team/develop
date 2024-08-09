@@ -303,6 +303,26 @@
 .main-container__post-list-item-content {
     margin-right: auto;
     font-size: 1rem;
+    width: 100%;
+}
+.truncate-text {
+    width: 100%;
+}
+
+.truncate-text p {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  margin-bottom: 5px;
+}
+
+.truncate-text__button {
+  border: none;
+  background: none;
+  color: #98A1B1;
+  cursor: pointer;
+  padding: 0;
+  font-size: 1rem;
+  margin-bottom: .5rem;
 }
 .main-container__post-list-item-i {
     display: flex;
