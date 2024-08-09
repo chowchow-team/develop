@@ -129,11 +129,17 @@ function MainForm() {
                                     <h3 className='main-container__post-list-item-title'>{conditionalTruncate(post.title)}</h3>
                                     <p className='main-container__post-list-item-content'>{conditionalTruncate(post.content)}</p>
                                     {post.images && post.images.length > 0 && (
-                                        <img 
-                                            src={post.images[0].image} 
-                                            alt="Post image" 
-                                            className="main-container__post-list-item-image"
-                                        />
+                                        <div className={`main-container__post-list-item-images images-count-${post.images.length}`}>
+                                            {post.images.slice(0, 4).map((image, index) => (
+                                                <div key={index} className="image-wrapper">
+                                                    <img 
+                                                        src={image.image} 
+                                                        alt={`Post image ${index + 1}`} 
+                                                        className="main-container__post-list-item-image"
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
                                     )}
                                 </Link>
                                 <div className='main-container__post-list-item-i'>
