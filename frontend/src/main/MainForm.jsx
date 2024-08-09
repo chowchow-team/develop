@@ -142,7 +142,7 @@ function MainForm() {
                 description='동물들과 대화해보세요'
                 keywords='유기동물, 유기견, sns, 동물sns, 챠우챠우'
             />
-            <Link to="/post/create" className="main-container__create-link">
+            <Link to="/feed/posts/create" className="main-container__create-link">
                 <img src={pencil} alt="Pencil" />
             </Link>
             

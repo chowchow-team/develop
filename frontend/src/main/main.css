@@ -357,7 +357,7 @@
 .main-container__post-list-item {
     border-bottom: 1px solid #e2e2e2;
     width: 100%;
-    padding: 15px 0;
+    padding: 15px 40px;
 }
 .main-container__post-list-item:hover {
     background-color: #f9f9f9;
@@ -786,3 +786,158 @@
         font-size: 0.65rem!important;
     }
 }
+
+
+/* CreateFOrm */
+/* CreateFOrm */
+/* CreateFOrm */
+/* CreateFOrm */
+/* CreateFOrm */
+/* CreateFOrm */
+/* CreateFOrm */
+/* CreateFOrm */
+/* CreateFOrm */
+/* CreateFOrm */
+
+
+.create-container__form {
+    max-width: 800px;
+    width: 100%;
+    margin: 20px auto;
+    margin-top: 90px;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.create-container__form__total {
+    border: 1px solid #ccc;
+}
+.create-container__title {
+    text-align: center;
+}
+.create-container__form-group {
+    border-bottom: 1px solid #ccc;
+}
+
+.create-container__form-input,
+.create-container__form-textarea,
+.create-container__form-select {
+    width: 100%;
+    padding: 1rem;
+    box-sizing: border-box;
+    border: none;
+}
+
+.create-container__form-textarea {
+    height: 300px;
+    margin: 0;
+}
+.submit-and-image {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+}
+.create-container__form-submit {
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ccc;
+}
+.create-container__form-submit img {
+    height: 30px;
+    align-items: center;
+    justify-content: center;
+    
+    /*div내 이미지 중앙정렬*/
+
+}
+
+.create-container__form-submit:hover {
+    background-color: pink;
+}
+
+.create-container__form-group.content {
+    white-space: pre-wrap;
+}
+.create-container__form-group.images {
+    margin-top: .5rem;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 10px; 
+    /*가로 스크롤바 */
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-bottom: 0;
+}
+.create-container__form-group.images img {
+    height: 100px;
+    border-radius: 1rem;
+    margin-right: 1rem;
+    cursor: pointer;
+    object-fit: cover;
+}
+
+/* 이미지 프리뷰 삭제 */
+.image-preview-container {
+    position: relative;
+    flex: 0 0 auto;
+    margin-right: 10px;
+}
+.remove-image-icon > img {
+    height: 30px!important;
+}
+
+.remove-image-icon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: white;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    display: none;
+}
+
+.image-preview-container:hover .remove-image-icon {
+    display: block;
+}
+.hidden-btn {
+    display: none;
+}
+.image-input {
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.image-input img {
+    height: 30px;
+    margin-left: 5px;
+}
+
+
+@media (max-width: 768px) {
+    .create-container__form__total{
+        width: 90%;
+    }
+    .create-container__title {
+        display: none;
+    }
+    .create-container__form-group.images {
+        width: 90%;
+    }
+}
+@media (max-width: 400px) {
+    .create-container__form {
+        margin-left: -5px;
+        margin-top: 51px;
+    }
+    .commu-container .online-user {
+        margin-right: 3.5rem;
+    }
+}
+
