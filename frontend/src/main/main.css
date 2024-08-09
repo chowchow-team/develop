@@ -1,5 +1,16 @@
 /* NavForm */
 
+.nav-container{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: white;
+}
+.nav-placeholder {
+    height: 1px;
+}
+
 .nav-wrapper > .nav-logo > img {
     height: 50px; /* 로고 이미지 높이 */
     margin-right: 20px; /* 로고와 텍스트 사이의 마진 */
@@ -216,10 +227,14 @@
 
 
 .main-container {
-    max-width: 800px; /* 최대 너비 설정 */
-    width: 100%; /* 너비를 100%로 설정하여 부모 컨테이너에 맞춤 */
-    margin: 0 auto; /* 중앙 정렬 */
-    padding: 20px; /* 내부 여백 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 5rem auto;
+    padding: 10px;
+    border-radius: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 70%;
 }
 
 .main-container__board-title {
@@ -234,12 +249,14 @@
     bottom: 30px;
     left: 0;
     right: 0;
-    width: 130px; /* 버튼의 너비 */
-    margin: 0 auto; /* 중앙 정렬 */
+    width: 60px; /* 버튼의 너비 */
+    height: 40px;
+    margin-left: auto; /* 중앙 정렬 */
+    margin-right: 1.5rem;
     padding: 10px 0;
-    background-color: #e2e2e2;
+    background-color: pink;
     color: black;
-    border-radius: 25px;
+    border-radius: 2rem;
     text-align: center;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     z-index: 1000; /* 다른 요소 위에 표시되도록 z-index 설정 */
@@ -248,6 +265,7 @@
 .main-container__create-link > img {
     height: 25px;
     vertical-align: middle;
+    margin-top: 7px;
 }
 
 /* 버튼 호버 효과 */
@@ -361,7 +379,23 @@
     font-size: 0.8rem;
     margin: 2px;
 }
-
+.main-container__post-list-item-image{
+    padding: .5rem;
+    border-radius: 2rem;
+}
+@media (max-width: 1080px){
+    .main-container {
+        width: 90%;
+    }
+    .main-container__post-list-item-image{
+        width: 100%;
+    }
+}
+@media (max-width: 810px){
+    .main-container {
+        width: 100%;
+    }
+}
 @media (max-width: 768px) {
     .main-container__board-title {
         font-size: 1rem;   

@@ -118,7 +118,6 @@ function MainForm() {
             />
             <Link to="/post/create" className="main-container__create-link">
                 <img src={pencil} alt="Pencil" />
-                <span> 글쓰기</span>
             </Link>
             
             <div className='total'>

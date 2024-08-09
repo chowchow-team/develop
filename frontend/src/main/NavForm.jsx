@@ -73,7 +73,7 @@ function NavForm() {
     if (shouldHideNav) return null; // 네브바 숨기기
 
     return (
-        <nav>
+        <nav className='nav-container'>
             <div className="nav-wrapper">
                 <div className={`overlay ${isMenuOpen ? 'show' : ''}`}></div>
                 <Link to="/" className="nav-logo">
@@ -134,7 +134,7 @@ function NavForm() {
                       }
                   </ul>
             </div>
-
+            <div className="nav-placeholder"></div>
        </nav>
     );
 }
