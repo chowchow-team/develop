@@ -37,6 +37,24 @@
     padding: 0;
     width: 100%;
 }
+.friendList .show-more{
+    color: #98A1B1;
+    /* 버튼 색깔 제거*/
+    background-color: transparent;
+    padding: 0;
+}
+.friendList .follow-btn{
+    width: 5rem;
+    flex-shrink: 0;
+    margin-left: 2rem;
+    background-color: #313C4D;
+    border-radius: 2rem;
+}
+
+.friendUsername{
+    font-size: 1rem;
+    color: #98A1B1;
+}
 
 .friendList > li {
     margin-bottom: 1rem;
@@ -66,7 +84,7 @@
 }
 
 .friendInfo {
-    margin-left: 15px;
+    margin-left: 2rem;
     font-family: Dovemayo_gothic;
 }
 
@@ -103,9 +121,9 @@
 
 .friendProfilePic {
     object-fit: cover;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%; /* Makes the profile picture circular */
+    width: 4rem;
+    height: 4rem;
+    border-radius: 1rem; /* Makes the profile picture circular */
 }
 
 .friendManage-fold {

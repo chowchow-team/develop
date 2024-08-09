@@ -6,47 +6,60 @@ import { BackButton } from '../snippets';
 import './friend.css';
 import { URLManagement, getCookie } from '../snippets';
 
+function TruncatedBio({ bio, maxLength = 100 }) {
+    const [isExpanded, setIsExpanded] = useState(false);
+    
+    if (bio.length <= maxLength) return <span>{bio}</span>;
+    
+    return (
+        <span>
+            {isExpanded ? bio : `${bio.substring(0, maxLength)}...`}
+            <button className='show-more' onClick={() => setIsExpanded(!isExpanded)}>
+                {isExpanded ? '접기' : '더 보기'}
+            </button>
+        </span>
+    );
+}
+
 function FriendListForm() {
     const [friends, setFriends] = useState([]);
-    const { user } = useContext(UserContext);
-    const { setFriendUsername} = useContext(UserContext);
-    const { setFriendID } = useContext(UserContext);
+    const { user, setFriendUsername, setFriendID } = useContext(UserContext);
+    const [activeTab, setActiveTab] = useState('follower');
+    const [error, setError] = useState(null);
+    const navigate = useNavigate();
     const API_BASE_URL = URLManagement('http');
 
-    const [activeTab, setActiveTab] = useState('follower');
-
-    const navigate = useNavigate();
-
-    
     const fetchFriends = async () => {
         try {
-            const response = await axios.get(`${API_BASE_URL}/api/main/follower/list/`, {params:{
-                user_id : 1,
+            const response = await axios.get(`${API_BASE_URL}/api/main/${activeTab}/list/`, {
+                params: { user_id: 1 },
                 withCredentials: true,
-            }
             });
-            setFriends(response.data);
+            setFriends(response.data.data || []);
         } catch (error) {
+            setError("친구 목록을 불러오는 데 실패했습니다.");
             console.error("친구 목록을 불러오는 데 실패했습니다.", error);
         }
     };
 
     useEffect(() => {
-        // 로그인되지 않은 경우 로그인 페이지로 리디렉트
         if (!user) {
             navigate('/login');
             return;
         }
         fetchFriends();
-    }, [user, navigate]);
-    console.log(friends);
+    }, [user, navigate, activeTab]);
 
+    const handleFollowClick = (friendId) => {
+        // 팔로우 버튼 클릭 시 동작을 정의합니다.
+        console.log(`Follow button clicked for friend with ID: ${friendId}`);
+    };
 
     return (
         <div className="friendListForm-container">
             <p className='back-btn'><BackButton /></p>
             <div className='ctrl-box'>
-                <button 
+                <button
                     className={`follower-btn ${activeTab === 'follower' ? 'active' : ''}`}
                     onClick={() => setActiveTab('follower')}
                     role="tab"
@@ -54,7 +67,7 @@ function FriendListForm() {
                 >
                     팔로워
                 </button>
-                <button 
+                <button
                     className={`following-btn ${activeTab === 'following' ? 'active' : ''}`}
                     onClick={() => setActiveTab('following')}
                     role="tab"
@@ -63,21 +76,31 @@ function FriendListForm() {
                     팔로잉
                 </button>
             </div>
+            {error && (
+                <div className="error-message">
+                    <p>{error}</p>
+                </div>
+            )}
             {friends.length > 0 ? (
                 <ul className="friendList">
                     {friends.map((friend, index) => (
                         <li key={index} className="friendItem">
                             <img src={`${API_BASE_URL}${friend.profile_pic}`} alt="Profile" className="friendProfilePic" />
                             <div className="friendInfo">
-                                <span className="friendNickname">{friend.username}</span>
-                                <span className="friendUsername">{friend.username}</span>
-                                <span className="friendBio">{friend.bio}</span>
+                                <span className="friendNickname">{friend.nickname}</span>
+                                <span className="friendUsername">@{friend.username}</span>
+                                <div>
+                                    {friend.bio && <TruncatedBio bio={friend.bio} />}
+                                </div>
+                                
                             </div>
-                            {/* 팔로우여부 확인필요. 팔로잉탭에선 그냥 다 팔로우로 함됨 */}
-                            <button className='follow-btn'>
+                            <button
+                                className='follow-btn'
+                                onClick={() => handleFollowClick(friend.id)}
+                            >
                                 팔로우
                             </button>
-                        </li> 
+                        </li>
                     ))}
                 </ul>
             ) : (
@@ -86,7 +109,7 @@ function FriendListForm() {
                 </div>
             )}
         </div>
-    );    
+    );
 }
 
 export default FriendListForm;
