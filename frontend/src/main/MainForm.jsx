@@ -168,25 +168,25 @@ function MainForm() {
                 {posts.length > 0 ? (
                     <ul className="main-container__post-list">
                         {posts.map((post) => (
+                            <Link to={`/feed/posts/${post.id}`} className="main-container__post-link">
                             <li key={post.id} className="main-container__post-list-item">
-                                <Link to={`/community/posts/${post.id}`} className="main-container__post-link">
-                                    <p className='main-container__post-list-item-content'>
-                                        <TruncateText text={post.content} maxLength={200} />
-                                    </p>
-                                    {post.images && post.images.length > 0 && (
-                                        <div className={`main-container__post-list-item-images images-count-${post.images.length}`}>
-                                            {post.images.slice(0, 4).map((image, index) => (
-                                                <div key={index} className="image-wrapper">
-                                                    <img 
-                                                        src={image.image} 
-                                                        alt={`Post image ${index + 1}`} 
-                                                        className="main-container__post-list-item-image"
-                                                    />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </Link>
+                                <p className='main-container__post-list-item-content'>
+                                    <TruncateText text={post.content} maxLength={200} />
+                                </p>
+                                {post.images && post.images.length > 0 && (
+                                    <div className={`main-container__post-list-item-images images-count-${post.images.length}`}>
+                                        {post.images.slice(0, 4).map((image, index) => (
+                                            <div key={index} className="image-wrapper">
+                                                <img 
+                                                    src={image.image} 
+                                                    alt={`Post image ${index + 1}`} 
+                                                    className="main-container__post-list-item-image"
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                                
                                 <div className='main-container__post-list-item-i'>
                                     <div className='main-container__post-list-item-i-comment'>
                                         <img src={comment} alt="comment" />
@@ -197,6 +197,7 @@ function MainForm() {
                                     <p className='main-container__post-list-item-date'>{formatDate(post.timestamp)}</p>
                                 </div>  
                             </li>
+                            </Link>
                         ))}
                     </ul>
                 ) : (

@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import {MainForm, NavForm} from './main';
+import {MainForm, NavForm, DetailForm} from './main';
 import { SignupForm, LoginForm, LogoutForm, FindIDForm, FindPWForm, ResetPWForm, SettingForm, SignupRedirect } from './account';
 import { ProfileForm } from './profile';
 import { ChatForm, DMForm, TestForm } from './chat';
@@ -36,6 +36,7 @@ function App() {
                     {/*<Route path="/community" element={<PrepareForm />} />*/}
                     <Route path="/community/create" element={<CCreateForm />} />
                     <Route path="/community/posts/:pk" element={<CDetailForm />} />
+                    <Route path="/feed/posts/:pk" element={<DetailForm />} />
                     {/*<Route path="/test" element={<TestForm />} />*/}
                     <Route path="/admin" element={<MainForm />} />
                     {/*<Route path="/e1i5" element={<E1I5Stream />} />*/}

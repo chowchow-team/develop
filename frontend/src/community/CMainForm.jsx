@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import './community.css';
+//import './community.css';
 import pencil from '../static/img/pen.png';
 import view from '../static/img/view.png';
 import comment from '../static/img/comment.png';

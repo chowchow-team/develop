@@ -595,3 +595,194 @@
         margin-top: 51px;
     }
 }
+
+
+
+/* DETAIL FORM */
+/* DETAIL FORM */
+/* DETAIL FORM */
+/* DETAIL FORM */
+/* DETAIL FORM */
+/* DETAIL FORM */
+/* DETAIL FORM */
+
+
+
+.post-detail-container {
+    max-width: 800px;
+    width: 100%;
+    margin: auto;
+    margin-top: 90px;
+    padding: 20px;
+}
+.post-detail-container__copylink {
+    color: #666;
+    font-size: 0.75rem;
+    /*오른쪽 정렬*/
+    text-align: right;
+    text-decoration: underline;
+    cursor: pointer;
+}
+.post-detail-container__copylink:hover {
+    color: #F07489;
+}
+.post-detail-container__title {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+.post-detail-container__image {
+    width: 100%;
+}
+.post-detail-container__image img {
+    width: 89%;
+    margin-bottom: 1rem;
+}
+.post-detail-container__content {
+    margin-top: 1.5rem;
+}
+.post-detail-container__content > p {
+    width: 100%;
+    white-space: pre-wrap;
+}
+.post-detail-container__i {
+    display: flex;
+    border-bottom: 1px solid #e2e2e2;
+    padding-bottom: 1.5rem;
+    font-size: 0.9rem;
+    margin-top: .5rem;
+}
+.post-detail-container__i-view {
+    display: flex;
+    margin-right: 2rem;
+}
+.post-detail-container__i-comment {
+    display: flex;
+}
+.post-detail-container__i img{
+    height: 20px;
+    vertical-align: middle;
+    margin-right: .5rem;
+}
+.post-detail-container__writer {
+    display: flex;
+    margin-top: .5rem;
+}
+.post-detail-container__writer-school{
+    color: #37ACC9;
+    margin-right: 5px;
+    font-size: 0.9rem;
+}
+.post-detail-container__writer-username {
+    font-size: 0.9rem;
+    color: #666;
+}
+.post-detail-container__writer-username-checkiswriter {
+    font-size: 0.8rem;
+    color: #F07489;
+    margin-left: 1rem;
+}
+.post-detail-container__comment-time {
+    font-size: 0.75rem;
+    color: #94969B;
+}
+
+/* 게시글 본문 */
+.post-detail-container p {
+  line-height: 1.6;
+}
+
+/* 사용자 정보 - 학교 이름, 사용자 이름 */
+.commu-container__post-list-item-school,
+.commu-container__post-list-item-writer {
+  margin-top: 5px;
+  font-weight: bold;
+}
+
+/* 댓글 섹션 */
+.comments-section {
+  margin-top: 30px;
+  border-top: 1px solid #ddd;
+  padding-top: 15px;
+}
+
+.comment-item {
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+.comment-item > p {
+    white-space: pre-wrap;
+}
+
+/* 댓글 입력 폼 */
+.comment-form {
+  margin-top: 20px;
+}
+
+.comment-textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  height: 100px;
+  resize: none;
+}
+
+.comment-submit-btn {
+  background-color: #F07489;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.comment-submit-btn:disabled {
+  background-color: #ccc;
+}
+.alert-comment {
+    color: #666;
+    font-size: 0.85rem;
+}
+.alert-comment > a {
+    color: #F07489;
+}
+
+@media (max-width: 768px) {
+    .post-detail-container__title {
+        width: 90%;
+    }
+    .post-detail-container__i {
+        width: 90%;
+    }
+    .comment-textarea {
+        width: 90%;
+    }
+    .comments-section {
+        width: 90%;
+    }
+    .post-detail-container__title {
+        font-size: 1.25rem;
+    }
+    .post-detail-container__content > p {
+        width: 90%;
+    }
+    .post-detail-container__writer-school {
+        font-size: 0.75rem;
+    }
+    .post-detail-container__writer-username {
+        font-size: 0.75rem;
+    }
+    .post-detail-container__content {
+        font-size: 0.95rem;
+    }
+    .comment-item > p {
+        font-size: 0.875rem;
+    }
+    .post-detail-container__copylink {
+        padding-right: 3rem;
+    }
+    .post-detail-container__comment-time {
+        font-size: 0.65rem!important;
+    }
+}
