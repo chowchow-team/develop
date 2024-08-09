@@ -1,15 +1,33 @@
 from rest_framework import serializers
-from .models import Post,Comment,FollowList
+from .models import Post,Comment,FollowList,PostImage
 from accountapp.models import User, Profile
 from django.conf import settings
 #from bs4 import BeautifulSoup
 import re
 
+class PostImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostImage
+        fields = ['image']
+
 class PostSerializer(serializers.ModelSerializer):
+    images = PostImageSerializer(many=True, read_only=True)
+    comments_count = serializers.SerializerMethodField()
+
+    def get_comments_count(self, obj):
+        return Comment.objects.filter(post=obj).count()
+
     class Meta:
         model = Post
-        fields = ['id','user','content','timestamp','title']
+        fields = ['id','user','content','timestamp','images','comments_count']
 
+    def create(self, validated_data):
+        images_data = self.context.get('images', [])
+        post = Post.objects.create(**validated_data)
+        for image_data in images_data:
+            PostImage.objects.create(post=post, image=image_data)
+        return post
+    
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment

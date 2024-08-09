@@ -214,128 +214,195 @@
 /* MainForm */
 /* MainForm */
 
+
 .main-container {
-    display: flex; /* flex 컨테이너로 만들기 */
-    flex-direction: column; /* 아이템들을 세로로 정렬 */
-    align-items: center; /* 가로축을 중심으로 중앙 정렬 */
-    justify-content: flex-start; /* 세로축을 중심으로 중앙 정렬 */
-    height: 100%; /* 컨테이너 높이를 브라우저 창 높이와 동일하게 설정 */
+    max-width: 800px; /* 최대 너비 설정 */
+    width: 100%; /* 너비를 100%로 설정하여 부모 컨테이너에 맞춤 */
+    margin: 0 auto; /* 중앙 정렬 */
+    padding: 20px; /* 내부 여백 */
 }
 
-.img-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 50vh;
-    overflow: hidden;
-    position: relative;
+.main-container__board-title {
+    /*하단 밑줄*/
+    border-bottom: 1px solid #333;
+    padding-bottom: 5px;
+    width: 100%;
 }
-
-.img-container > img {
-    max-height: 100%;
-    width: auto;
-    object-fit: cover;
-}
-
-.carousel-buttons {
-    position: absolute; /* 이미지 컨테이너 내부에 절대 위치 */
-    bottom: 10px; /* 하단에서 10px 위에 위치 */
-    left: 50%; /* 중앙 정렬 */
-    transform: translateX(-50%); /* X축으로 -50% 만큼 이동하여 중앙 정렬 */
-    display: flex;
-}
-
-.carousel-buttons button {
-    width: 20px; /* 버튼 너비 조정 */
-    height: 10px; /* 버튼 높이 조정 */
-    margin: 0 5px;
-    background-color: white; /* 기본 버튼 색상 */
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.carousel-buttons button.active {
-    background-color: pink; /* 활성화된 버튼 색상 */
-}
-
-.catchp {
-    margin-top: 2rem;
-    font-size: 1.2em;
-    text-align: center; /* 텍스트 중앙 정렬 */
-    font-family: 'TTHakgyoansimMonggeulmonggeulR' !important;
-}
-.catchp p {
-    margin: .5rem 0;
-    font-family: 'TTHakgyoansimMonggeulmonggeulR';
-}
-
-.bubbleIcon {
-    width: 50px;
-    height: 50px;
-    margin: 0 10px;
-    color: #F07489;
-    background-color: white;
-}
-
-/* main2 */
-.rendered-name{
-    position: absolute;
-    top : 35%;
-    left: 50%;
-    transform: translateX(-50%);
-    color: white;
-    font-size: 9rem;
-    font-family: Dovemayo_gothic;
+/* 글 쓰기 버튼 고정 및 중앙 정렬 */
+.main-container__create-link {
+    position: fixed;
+    bottom: 30px;
+    left: 0;
+    right: 0;
+    width: 130px; /* 버튼의 너비 */
+    margin: 0 auto; /* 중앙 정렬 */
+    padding: 10px 0;
+    background-color: #e2e2e2;
+    color: black;
+    border-radius: 25px;
     text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 1000; /* 다른 요소 위에 표시되도록 z-index 설정 */
+    text-decoration: none;
+}
+.main-container__create-link > img {
+    height: 25px;
+    vertical-align: middle;
 }
 
-.rendered-name .para {
-    margin-top: 3rem;
-    font-size: 2rem;
-    text-align: center;
-}
-
-/*.start {
-    display: none;
-}*/
-
-.start {
-    display: inline-block;
+/* 버튼 호버 효과 */
+.main-container__create-link:hover {
     background-color: #F07489;
-    border-radius: 15px;
-    padding: .5rem;
-    font-size: 2rem;
+    /*천천히 색상 변화*/
+    transition: background-color 0.5s;
     color: white;
-    text-align: center;
 }
 
-.chatbot{
-    position: absolute;
-    top : 86%;
-    left: 90%;
-    transform: translateX(-50%);
-    color: white;
+.main-container__board-title {
+    font-size: 24px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+/* 게시물 리스트 */
+.main-container__post-list {
+    list-style: none;
+    padding: 0;
+}
+.main-container__post-list-item-title {
+    margin-right: auto!important;
+    font-weight: bold;
+    margin-bottom: .5rem;
     font-size: 1rem;
-    font-family: Dovemayo_gothic;
-    text-align: center;
 }
-.chatbot img {
-    height: 45px;
+.main-container__post-list-item-type {
+    margin-right: auto;
     background-color: white;
-    border-radius: .7rem;
+    padding: 0;
+    color: #94969B;
+    font-size: 1rem;
 }
+.main-container__post-list-item-content {
+    margin-right: auto;
+    font-size: 1rem;
+}
+.main-container__post-list-item-i {
+    display: flex;
+    margin-top: .5rem;
+}
+.main-container__post-list-item-i-view {
+    display: flex;
+    margin-right: 2rem;
+}
+.main-container__post-list-item-i-view > img{
+    height: 16px;
+    margin-right: .5rem;
+}
+.main-container__post-list-item-i-comment {
+    display: flex;
+}
+.main-container__post-list-item-i-comment > img{
+    height: 16px;
+    margin-right: .5rem;
+}
+.main-container__post-list-item-date {
+    font-size: 1rem;
+    color: #94969B;
+    margin-right: 5px;
+}
+
+.main-container__post-list-item {
+    border-bottom: 1px solid #e2e2e2;
+    width: 100%;
+    padding: 15px 0;
+}
+.main-container__post-list-item:hover {
+    background-color: #f9f9f9;
+    transition: background-color 0.5s;
+}
+
+.main-container__post-link {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: #333;
+    align-items: center;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-decoration: none;
+}
+.type-select {
+    width: 100%;
+    height: 46px;
+    padding-left: 15px;
+    border: 1px solid #d4d4d4;
+    background-color: #fff;
+    font-size: 1.2rem;
+    font-family: 'dovemayo_gothic';
+    border-radius: 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url('../static/img/down-arrow.png');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 20px;
+    padding-right: 30px;
+}
+.date-school {
+    display: flex;
+    margin-top: 1rem;
+    color: #94969B;
+}
+.main-container__post-list-item-date-school {
+    color: #F07489;
+    font-size: 0.8rem;
+    margin: 2px;
+}
+
+@media (max-width: 768px) {
+    .main-container__board-title {
+        font-size: 1rem;   
+        width: 90%;
+    }
+    .main-container__post-list-item {
+        font-size: .8rem;
+        width: 90%;
+    }
+    .main-container__post-list-item-type {
+        margin-right: auto;
+        background-color: white;
+        padding: 0;
+        color: #94969B;
+        font-size: 0.9rem;
+    }
+    .main-container__post-list-item-title {
+        margin-right: auto;
+        font-size: .9rem;
+    }
+    .main-container__post-list-item-content {
+        font-size: 0.875rem;
+    }
+    .main-container__post-list-item-date {
+        font-size: 0.85rem;
+    }
+    .main-container__post-link {
+        flex-direction: column;
+    }
+    .main-container__create-link {
+        font-size: 1rem;
+    }
+    .type-select {
+        width: 90%;
+        font-size: 1rem;
+    }
+
+}
+
 
 @media screen and (max-width: 768px){
-    .rendered-name{
-        font-size: 6rem;
-    }
-    .rendered-name .para {
-        font-size: 1.1rem;
-        font-weight: bold;
-        margin-left: 1rem;
-        margin-top: 2rem;
-    }
     .start {
         display: inline-block;
         background-color: #F07489;
@@ -348,19 +415,6 @@
 }
 
 @media screen and (max-width: 400px){
-    .rendered-name{
-        position: absolute;
-        top : 30%;
-    }
-    .rendered-name .para {
-        font-size: .9rem;
-        font-weight: bold;
-        margin-left: 0rem;
-        margin-top: 1rem;
-    }
-    .rendered-name{
-        font-size: 4.5rem;
-    }
     .start {
         font-size: 1.5rem;
         color: white;

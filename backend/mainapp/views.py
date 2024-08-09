@@ -10,6 +10,8 @@ from .services import FollowService
 import random
 
 User = get_user_model()
+
+'''
 class PostRecentAPIView(APIView): # 가장 최근에 포스트된 게시물 5개를 받아오는 역할 -> 잘 동작함
     def get(self,request):
         page = int(request.GET.get('page'))
@@ -25,6 +27,19 @@ class PostRecentAPIView(APIView): # 가장 최근에 포스트된 게시물 5개
         serializer = PostSerializer(posts,many=True)
         self.uploaded_pages.add(page)
         return Response(serializer.data)
+'''
+class PostRecentAPIView(APIView):
+    def get(self, request):
+        limit = int(request.GET.get('limit', 10))
+        offset = int(request.GET.get('offset', 0))
+        posts = Post.objects.all().order_by('-timestamp')[offset:offset+limit+1]
+        has_next = len(posts) > limit
+        posts = posts[:limit]
+        serializer = PostSerializer(posts, many=True)
+        return Response({
+            "results": serializer.data,
+            "next": has_next
+        })
 
 class PostFollowAPIView(APIView): # 팔로우하는 객체의 포스팅 5개를 받아오는 역할 -> 잘 동작함
     def get(self,request):
@@ -54,12 +69,11 @@ class PostControlAPIView(APIView): # 페이지 생성, 불러오기 -> 잘 작�
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
     def get(self,request):
-        post_id = 3 #request.GET.get('post_id') -> 'post_id'는 frontend에서 전달
+        post_id = request.GET.get('post_id') #-> 'post_id'는 frontend에서 전달
         try:
             post = Post.objects.get(id=post_id)
-        except Post.DoesNotExsit:
+        except Post.DoesNotExist:
             return Response({"status": "error", "message": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
         serializer = PostSerializer(post)
         return Response(serializer.data)
