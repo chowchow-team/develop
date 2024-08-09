@@ -87,14 +87,13 @@ function LoginForm() {
             <SEOMetaTag 
                 title='챠우챠우: 로그인'
                 description='대학생 커뮤니티 몽글몽글에서 다른 학교의 친구들을 만나보세요'
-                keywords='몽글몽글, mongle, 랜덤채팅, 커뮤니티, 로그인'
-                image='https://mongles.com/og_image.png'
-                url='https://mongles.com/login/'
+                keywords='챠우챠우, 유기견, 유기동물, sns, 동물sns'
+                //image='https://미정/og_image.png'
+                //url='https://미정/login/'
             />
             <div className='logo-img'>
                 <img src={logo} alt="Logo" />
-                <div className='logo-span'>
-                    <span className='logo-s'>대학생 랜덤채팅</span>
+                <div className='logo-span'>                
                     <span className='logo-l'>
                         챠우챠우
                     </span>

@@ -7,6 +7,7 @@ import comment from '../static/img/comment.png';
 import { UserContext } from '../UserContext';
 import { SEOMetaTag } from '../snippets';
 
+
 const TruncateText = ({ text, maxLength = 100 }) => {
     const [isExpanded, setIsExpanded] = useState(false);
   
@@ -38,6 +39,7 @@ function MainForm() {
     const [hasMore, setHasMore] = useState(true);
     const limit = 10;
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const [activeTab, setActiveTab] = useState('recommend');
 
     useEffect(() => {
         const handleResize = () => setWindowWidth(window.innerWidth);
@@ -75,7 +77,7 @@ function MainForm() {
         setOffset(0);
         setHasMore(true);
         fetchInitialPosts();
-    }, []);
+    }, [activeTab]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -95,7 +97,8 @@ function MainForm() {
     const fetchInitialPosts = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get(`/api/main/?limit=${limit}&offset=0`);
+            const addr = activeTab === 'recommend' ? '/api/main/' : '/api/main/post/follow/';
+            const response = await axios.get(`${addr}?limit=${limit}&offset=0`);
             setPosts(response.data.results);
             setOffset(response.data.results.length);
             setHasMore(!!response.data.next);
@@ -144,13 +147,31 @@ function MainForm() {
             </Link>
             
             <div className='total'>
+                <div className='ctrl-box'>
+                    <button
+                        className={`recommend-btn ${activeTab === 'recommend' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('recommend')}
+                        role="tab"
+                        aria-selected={activeTab === 'recommend'}
+                    >
+                        추천
+                    </button>
+                    <button
+                        className={`follow-btn ${activeTab === 'follow' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('follow')}
+                        role="tab"
+                        aria-selected={activeTab === 'follow'}
+                    >
+                        팔로우 중
+                    </button>
+                </div>
                 {posts.length > 0 ? (
                     <ul className="main-container__post-list">
                         {posts.map((post) => (
                             <li key={post.id} className="main-container__post-list-item">
                                 <Link to={`/community/posts/${post.id}`} className="main-container__post-link">
                                     <p className='main-container__post-list-item-content'>
-                                        <TruncateText text={post.content} maxLength={100} />
+                                        <TruncateText text={post.content} maxLength={200} />
                                     </p>
                                     {post.images && post.images.length > 0 && (
                                         <div className={`main-container__post-list-item-images images-count-${post.images.length}`}>

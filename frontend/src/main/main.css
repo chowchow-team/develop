@@ -231,10 +231,15 @@
     flex-direction: column;
     align-items: center;
     margin: 5rem auto;
+    margin-top: 90px;
     padding: 10px;
     border-radius: 1rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 70%;
+}
+
+.main-container .total{
+    width: 90%;
 }
 
 .main-container__board-title {
@@ -486,6 +491,28 @@
 .images-count-4 .image-wrapper:last-child {
     border-bottom-right-radius: 15px;
 }
+
+
+.main-container .ctrl-box{
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+.main-container .ctrl-box button {
+    background-color: transparent;
+    border: none;
+    font-size: 1.2rem;
+    color: #2c3e50;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    width: 7rem;
+}
+.main-container .ctrl-box .active{
+    /* 밑줄만들기 */
+    border-bottom: 2px solid #F07489;
+}
+
 @media (max-width: 1080px){
     .main-container {
         width: 90%;
@@ -563,5 +590,8 @@
     .nav-wrapper {
         padding-top: 3px;
         padding-bottom: 3px;
+    }
+    .main-container {
+        margin-top: 51px;
     }
 }

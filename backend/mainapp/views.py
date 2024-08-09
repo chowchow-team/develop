@@ -41,6 +41,7 @@ class PostRecentAPIView(APIView):
             "next": has_next
         })
 
+'''
 class PostFollowAPIView(APIView): # 팔로우하는 객체의 포스팅 5개를 받아오는 역할 -> 잘 동작함
     def get(self,request):
         user_id = 3 #request.GET.get('user_id') -> 'user_id'는 frontend에서 전달
@@ -60,7 +61,31 @@ class PostFollowAPIView(APIView): # 팔로우하는 객체의 포스팅 5개를 
                 posts.append(post)
         serializer = PostSerializer(posts,many=True)
         return Response({"status": "success", "posts": serializer.data}, status=status.HTTP_200_OK)
-            
+'''
+
+class PostFollowAPIView(APIView):
+    def get(self, request):
+        user = request.user
+        if not user.is_authenticated:
+            return Response({"status": "error", "message": "Authentication required"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        limit = int(request.GET.get('limit', 10))
+        offset = int(request.GET.get('offset', 0))
+
+        following_ids = FollowService.get_following(user)
+        
+        posts = Post.objects.filter(user_id__in=following_ids).order_by('-timestamp')[offset:offset+limit+1]
+        
+        has_next = len(posts) > limit
+        posts = posts[:limit]
+        
+        serializer = PostSerializer(posts, many=True)
+        
+        return Response({
+            "results": serializer.data,
+            "next": has_next
+        })
+
 class PostControlAPIView(APIView): # 페이지 생성, 불러오기 -> 잘 작동함
     def post(self,request):
         serializer = PostSerializer(data=request.data)
