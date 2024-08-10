@@ -13,7 +13,7 @@ const TruncateText = ({ text, maxLength = 100 }) => {
   
     const toggleExpand = (e) => {
         e.preventDefault();  // 링크 이벤트 중지
-        e.stopPropagation(); // 이벤트 버블링 방지
+        e.stopPropagation(); // 이벤트 버블링 방지용 (더보기떄문에 추가함)
       setIsExpanded(!isExpanded);
     };
   

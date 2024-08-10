@@ -718,6 +718,26 @@
     color: #94969B;
 }
 
+
+
+.post-detail-container-profile{
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.post-detail-container-profile img{
+    width: 50px;
+    height: 50px;
+    border-radius: 15px;
+    margin-right: 1rem;
+}
+.post-detail-container-profile-name > .username {
+    font-size: 1rem;
+    color: #9DA6B5;
+}
+
+
+
 /* 게시글 본문 */
 .post-detail-container p {
   line-height: 1.6;
@@ -816,6 +836,19 @@
     }
     .post-detail-container__comment-time {
         font-size: 0.65rem!important;
+    }
+
+    .post-detail-container-profile img{
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        margin-right: 1rem;
+    }
+    .post-detail-container-profile-name{
+        font-size: 1rem;
+    }
+    .post-detail-container-profile-name > .username {
+        font-size: 0.9rem;
     }
 }
 

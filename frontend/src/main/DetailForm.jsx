@@ -178,72 +178,79 @@ function DetailForm() {
 
   return (
     <div className='post-detail-container'>
-      <SEOMetaTag 
-        title={post.content.slice(0, 20)}
-        description={post.content}
-        keywords='동물, 유기동물, sns, 챠우챠우'
-        image={post.images && post.images.length > 0 ? post.images[0].image : 'https://chowchow.com/og_image.png'}
-        url={`https://chowchow.com/posts/${pk}`}
-      />
-      <BackButton />
-      {user?.id === post.user.id ? 
-        <p className='post-detail-container__copylink' onClick={deletePost}>삭제</p>
-        :
-        <p className='post-detail-container__copylink' onClick={handleCopyLink}>링크복사</p>
-      }
-      <div className='post-detail-container__content'>
-        <p>{post.content}</p>
-      </div>
-      <div className='post-detail-container__image'>
-        {post.images && post.images.map((image, index) => (
-          <img key={index} src={image.image} alt={`Post Image ${index}`} />
-        ))}
-      </div>
-      <div className='post-detail-container__i'>
-        <div className='post-detail-container__i-comment'>
-          <img src={comment} alt="comment" />
-          <p>{post.comments_count}</p>
+        <SEOMetaTag 
+          title={post.content.slice(0, 20)}
+          description={post.content}
+          keywords='동물, 유기동물, sns, 챠우챠우'
+          image={post.images && post.images.length > 0 ? post.images[0].image : 'https://chowchow.com/og_image.png'}
+          url={`https://chowchow.com/posts/${pk}`}
+        />
+        <BackButton />
+        {user?.id === post.user.id ? 
+          <p className='post-detail-container__copylink' onClick={deletePost}>삭제</p>
+          :
+          <p className='post-detail-container__copylink' onClick={handleCopyLink}>링크복사</p>
+        }
+        <div className='post-detail-container-profile'>
+            <img src={post.user.profile_pic} alt="" />
+            <div className='post-detail-container-profile-name'>
+                <p className='nickname'>{post.user.nickname}</p>
+                <p className='username'>@{post.user.username}</p>
+            </div>
         </div>
-      </div>
-      <div className='date-school'>
-        <p className='post-detail-container__date'>{formatDate(post.timestamp)}</p>
-      </div>
-      {user && user.id !== post.user.id && (
-        <button onClick={handleFollow}>
-          {isFollowing ? '언팔로우' : '팔로우'}
-        </button>
-      )}
-      
-      {user ? (
-        <form onSubmit={addComment} className="comment-form">
-          <textarea
-            className="comment-textarea"
-            value={commentContent}
-            onChange={(e) => setCommentContent(e.target.value)}
-            placeholder="댓글을 입력하세요"
-          ></textarea>
-          <button
-            type="submit"
-            className="comment-submit-btn"
-            disabled={commentContent.length <= 1}
-          >
-            댓글 추가
-          </button>
-        </form>
-      ) : (
-        <p className='alert-comment'>* 댓글을 작성하려면 <Link to="/login">로그인</Link>해주세요.</p>
-      )}
-      <div className="comments-section">
-        {comments.map((comment, index) => (
-          <div key={`${comment.id}-${index}`} className="comment-item">
-            <p>{comment.content}</p>
-            <p className='post-detail-container__comment-time'>{formatDate(comment.created_at)}</p>
+        <div className='post-detail-container__content'>
+          <p>{post.content}</p>
+        </div>
+        <div className='post-detail-container__image'>
+          {post.images && post.images.map((image, index) => (
+            <img key={index} src={image.image} alt={`Post Image ${index}`} />
+          ))}
+        </div>
+        <div className='post-detail-container__i'>
+          <div className='post-detail-container__i-comment'>
+            <img src={comment} alt="comment" />
+            <p>{post.comments_count}</p>
           </div>
-        ))}
+        </div>
+        <div className='date-school'>
+          <p className='post-detail-container__date'>{formatDate(post.timestamp)}</p>
+        </div>
+        {user && user.id !== post.user.id && (
+          <button onClick={handleFollow}>
+            {isFollowing ? '언팔로우' : '팔로우'}
+          </button>
+        )}
+        
+        {user ? (
+          <form onSubmit={addComment} className="comment-form">
+            <textarea
+              className="comment-textarea"
+              value={commentContent}
+              onChange={(e) => setCommentContent(e.target.value)}
+              placeholder="댓글을 입력하세요"
+            ></textarea>
+            <button
+              type="submit"
+              className="comment-submit-btn"
+              disabled={commentContent.length <= 1}
+            >
+              댓글 추가
+            </button>
+          </form>
+        ) : (
+          <p className='alert-comment'>* 댓글을 작성하려면 <Link to="/login">로그인</Link>해주세요.</p>
+        )}
+        <div className="comments-section">
+          {comments.map((comment, index) => (
+            <div key={`${comment.id}-${index}`} className="comment-item">
+              <p>{comment.content}</p>
+              <p className='post-detail-container__comment-time'>{formatDate(comment.created_at)}</p>
+            </div>
+          ))}
+        </div>
+        {isLoading && <p>댓글 로딩 중...</p>}
       </div>
-      {isLoading && <p>댓글 로딩 중...</p>}
-    </div>
-  );
+    );
 }
 
 export default DetailForm;
