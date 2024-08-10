@@ -133,6 +133,7 @@ class FollowRecommandAPIView(APIView): # 동작함 -> 본인이 추천되는 것
         serializer = AccountCreateSerializer(users,many=True)
         return Response(serializer.data)
 
+'''
 class FollowerListAPIView(APIView): # 유저를 팔로우 하는 객체 리스트
     def get(self, request):
         user_id = request.GET.get('user_id')
@@ -145,18 +146,49 @@ class FollowerListAPIView(APIView): # 유저를 팔로우 하는 객체 리스�
         followers = User.objects.filter(id__in=follower_ids).select_related('profile', 'animalprofile')
         serializer = FollowingListSerializer(followers, many=True)
         return Response({"status": "success", "data": serializer.data}, status=200)
-
-class FollowingListAPIView(APIView): # 유저가 팔로우하는 객체리스트 곽 수정
+'''
+class FollowerListAPIView(APIView): # 아이디, 유저네임 둘다 가능하게바꿨음.
     def get(self, request):
         user_id = request.GET.get('user_id')
+        username = request.GET.get('username')
+
+        if not user_id and not username:
+            return Response({"status": "error", "message": "Either user_id or username is required"}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
-            user = User.objects.get(id=user_id)
+            if user_id:
+                user = User.objects.get(id=user_id)
+            else:
+                user = User.objects.get(username=username)
         except User.DoesNotExist:
-            return Response({"status": "error", "message": "User not found"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"status": "error", "message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        follower_ids = FollowService.get_follower(user)
+        followers = User.objects.filter(id__in=follower_ids).select_related('profile', 'animalprofile')
+        serializer = FollowingListSerializer(followers, many=True)
+        return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+
+
+class FollowingListAPIView(APIView):
+    def get(self, request):
+        user_id = request.GET.get('user_id')
+        username = request.GET.get('username')
+
+        if not user_id and not username:
+            return Response({"status": "error", "message": "Either user_id or username is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            if user_id:
+                user = User.objects.get(id=user_id)
+            else:
+                user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({"status": "error", "message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
         following_ids = FollowService.get_following(user)
         followings = User.objects.filter(id__in=following_ids).select_related('profile', 'animalprofile')
         serializer = FollowingListSerializer(followings, many=True)
-        return Response({"status": "success", "data": serializer.data}, status=200)
+        return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
     
 class FollowRequestAPIView(APIView):
     def post(self, request):

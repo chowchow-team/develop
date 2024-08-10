@@ -204,8 +204,13 @@ function ManProfileForm() {
                     </div>
                 </div>
                 <div className='my-space-container__profile-follow'>
-                    <p className='follower'>팔로워 <span>{profile.followers_count}</span></p>
-                    <p className='following'>팔로잉 <span>{profile.following_count}</span></p>
+                    {/* profile.nickname을 props로 넘기기 */}
+                    <Link to={`/profile/followlist/${username}/follower`} state={{ nickname: profile.nickname }}>
+                        <p className='follower'>팔로워 <span>{profile.followers_count}</span></p>
+                    </Link>
+                    <Link to={`/profile/followlist/${username}/following`} state={{ nickname: profile.nickname }}>
+                        <p className='following'>팔로잉 <span>{profile.following_count}</span></p>
+                    </Link>
                 </div>
             </div>
             <div className='ctrl-box'>
