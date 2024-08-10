@@ -13,6 +13,7 @@ import requests
 import logging
 from accountapp.models import User, AnimalUser, AnimalProfile
 from django.conf import settings
+import sys
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings.local')
 django.setup()
@@ -48,13 +49,29 @@ def extract_name_and_center(nm):
     else:
         return nm, "Default Center"
 
-def get_youtube_thumbnail_url(youtube_url):
-    match = re.search(r"v=([^&]+)", youtube_url)
-    if match:
-        video_id = match.group(1)
+def get_youtube_video_id(youtube_url):
+    patterns = [
+        r'(?:v=|\/)([0-9A-Za-z_-]{11}).*',  # 일반적인 YouTube URL
+        r'(?:embed\/|v\/|youtu.be\/)([0-9A-Za-z_-]{11})',  # 임베드 또는 짧은 URL
+        r'(?:watch\?feature=player_embedded&v=)([0-9A-Za-z_-]{11})',  # 플레이어 임베드 URL
+        r'^([0-9A-Za-z_-]{11})$'  # 비디오 ID만 있는 경우
+    ]
+    
+    for pattern in patterns:
+        match = re.search(pattern, youtube_url)
+        if match:
+            return match.group(1)
+    
+    return None
+
+def get_youtube_thumbnail_url(youtube_url, default_url=None):
+    video_id = get_youtube_video_id(youtube_url)
+    
+    if video_id:
         thumbnail_url = f"https://img.youtube.com/vi/{video_id}/sddefault.jpg"
         return thumbnail_url
-    return None
+    
+    return default_url
 
 def download_image(url):
     response = requests.get(url)
@@ -97,12 +114,8 @@ def create_animal_account(animal):
 
     youtube_url = animal.get('INTRCN_MVP_URL', '')
     profile_pic_url = get_youtube_thumbnail_url(youtube_url)
-    profile_pic = None
-    if profile_pic_url:
-        profile_pic = download_image(profile_pic_url)
-    if not profile_pic:
-        default_image_path = os.path.join('media', 'default_animal.png')
-        profile_pic = InMemoryUploadedFile(open(default_image_path, 'rb'), 'ImageField', 'default_animal.png', 'image/png', os.path.getsize(default_image_path), None)
+    if not profile_pic_url:
+        profile_pic_url = f"{settings.MEDIA_URL}default_animal.png"
 
     enter_date_str = animal.get('ENTRNC_DATE', timezone.now().strftime('%Y-%m-%d'))
     enter_date = datetime.strptime(enter_date_str, '%Y-%m-%d').replace(tzinfo=timezone.utc)
@@ -118,7 +131,7 @@ def create_animal_account(animal):
             'weight': float(animal.get('BDWGH', 10.0)),
             'enter': enter_date,
             'youtube': youtube_url,
-            'profile_pic': profile_pic,
+            'profile_pic_url': profile_pic_url,  # URL을 새로운 필드에 저장
             'nickname': name,
             'bio': animal.get('INTRCN_CN', '')
         }
@@ -133,10 +146,12 @@ def create_animal_account(animal):
         animal_profile.weight = float(animal.get('BDWGH', 10.0))
         animal_profile.enter = enter_date
         animal_profile.youtube = youtube_url
-        animal_profile.profile_pic = profile_pic
+        animal_profile.profile_pic_url = profile_pic_url  # URL 업데이트
         animal_profile.nickname = name
         animal_profile.bio = animal.get('INTRCN_CN', '')
         animal_profile.save()
+
+    return user, animal_profile
 
 def my_scheduled_job():
     logger.info("Scheduled job started.")

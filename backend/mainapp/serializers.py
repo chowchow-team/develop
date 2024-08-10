@@ -21,8 +21,8 @@ class UserInfoSerializer(serializers.ModelSerializer):
 
     def get_profile_pic(self, obj):
         if obj.is_animal:
-            if obj.animalprofile.profile_pic:
-                return f"{settings.MEDIA_URL}{obj.animalprofile.profile_pic}"
+            if obj.animalprofile.profile_pic_url:
+                return f"{obj.animalprofile.profile_pic_url}"
         else:
             if obj.profile.profile_pic:
                 return f"{settings.MEDIA_URL}{obj.profile.profile_pic}"
@@ -97,7 +97,7 @@ class FollowingListSerializer(serializers.ModelSerializer):
     def get_profile_pic(self, obj):
         if obj.is_animal:
             if obj.animalprofile.profile_pic:
-                return f"{settings.MEDIA_URL}{obj.animalprofile.profile_pic}"
+                return f"{obj.animalprofile.profile_pic_url}"
         else:
             if obj.profile.profile_pic:
                 return f"{settings.MEDIA_URL}{obj.profile.profile_pic}"

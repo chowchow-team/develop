@@ -85,7 +85,7 @@ function FriendListForm() {
                 <ul className="friendList">
                     {friends.map((friend, index) => (
                         <li key={index} className="friendItem">
-                            <img src={`${API_BASE_URL}${friend.profile_pic}`} alt="Profile" className="friendProfilePic" />
+                            <img src={`${friend.profile_pic}`} alt="Profile" className="friendProfilePic" />
                             <div className="friendInfo">
                                 <span className="friendNickname">{friend.nickname}</span>
                                 <span className="friendUsername">@{friend.username}</span>
