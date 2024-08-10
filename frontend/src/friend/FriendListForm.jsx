@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { UserContext } from '../UserContext';
 import { useNavigate } from 'react-router-dom';
 import { BackButton } from '../snippets';
+import {UserContext} from "../UserContext";
 import './friend.css';
 import { URLManagement, getCookie } from '../snippets';
 
@@ -31,11 +31,13 @@ function FriendListForm() {
 
     const fetchFriends = async () => {
         try {
+            console.log(setFriendID);
             const response = await axios.get(`${API_BASE_URL}/api/main/${activeTab}/list/`, {
                 params: { user_id: 1 },
                 withCredentials: true,
             });
-            setFriends(response.data.data || []);
+            setFriends(response.data.data)
+            // 각 친구의 팔로우 상태를 확인하여 추가
         } catch (error) {
             setError("친구 목록을 불러오는 데 실패했습니다.");
             console.error("친구 목록을 불러오는 데 실패했습니다.", error);
@@ -50,9 +52,43 @@ function FriendListForm() {
         fetchFriends();
     }, [user, navigate, activeTab]);
 
-    const handleFollowClick = (friendId) => {
-        // 팔로우 버튼 클릭 시 동작을 정의합니다.
-        console.log(`Follow button clicked for friend with ID: ${friendId}`);
+    const handleFollowClick = async (following_id) => {
+        try {
+            const user_id = 2; // 현재 사용자의 사용자 id로 대체
+            const response = await axios.post('http://localhost:8000/api/main/follow/request/', {
+                following_id: following_id,
+                follower_id: user_id
+            });
+
+            setFriends(prevFriends =>
+                prevFriends.map(friend =>
+                    friend.id === following_id ? { ...friend, isFollowing: true } : friend
+                )
+            );
+        } catch (err) {
+            if (err.response) {
+                setError(err.response.data.error);
+            }
+        }
+    };
+
+    const handleUnfollowClick = async (following_id) => {
+        try {
+            const user_id = 2;
+            const response = await axios.post('http://localhost:8000/api/main/unfollow/request/',{
+                following_id : following_id,
+                follower_id : user_id
+            });
+            setFriends(prevFriends =>
+                prevFriends.map(friend =>
+                    friend.id === following_id ? { ...friend, isFollowing: false } : friend
+                )
+            );
+        } catch (err) {
+            if (err.response) {
+                setError(err.response.data.error)
+            }
+        }
     };
 
     return (
@@ -96,9 +132,9 @@ function FriendListForm() {
                             </div>
                             <button
                                 className='follow-btn'
-                                onClick={() => handleFollowClick(friend.id)}
+                                onClick={() => friend.isFollowing ? handleUnfollowClick(friend.id) : handleFollowClick(friend.id)}
                             >
-                                팔로우
+                                {friend.isFollowing ? '언팔로우' : '팔로우'}
                             </button>
                         </li>
                     ))}
