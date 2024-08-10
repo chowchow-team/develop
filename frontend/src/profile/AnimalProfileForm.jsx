@@ -9,7 +9,7 @@ import PostForm from '../main/PostForm';
 
 import './profile.css';
 
-function ManProfileForm() {
+function AnimalProfileForm() {
     const [profile, setProfile] = useState({
         nickname: '',
         bio: '',
@@ -72,7 +72,6 @@ function ManProfileForm() {
                 withCredentials: true
             });
             setProfile(response.data);
-            console.log(response.data);
         } catch (error) {
             console.error('프로필 정보를 불러오는데 실패했습니다', error);
         }
@@ -183,13 +182,10 @@ function ManProfileForm() {
         <div className='my-space-container'>
             <div className='my-space-container__profile'>
                 <div className='my-space-container__profile-main'>
-                    <img src={profile.is_animal ? profile.profile.profile_pic_url : profile.profile_pic || defaultImg} 
-                    alt="프로필 이미지" 
-                    className='my-space-container__profile-img'
-                    />
+                    <img src={profile.profile_pic || defaultImg} alt="프로필 이미지" className='my-space-container__profile-img'/>
                     <div className='my-space-container__profile-main-info'>
                         <div className='nickname-and-btn'>
-                            {profile && <p className='nickname'>{profile.profile?.nickname || profile.nickname}</p>}
+                            <p className='nickname'>{profile.nickname}</p>
                             {isOwnProfile ? (
                                 <Link to="/profile/edit" className="edit-profile-btn">수정</Link>
                             ) : (
@@ -203,7 +199,7 @@ function ManProfileForm() {
                         </div>
                         
                         <p className='username'>@{username}</p>
-                        <p className='bio'>{profile.is_animal? '':profile.profile?.bio || profile.bio}</p>
+                        <p className='bio'>{profile.bio}</p>
                         
                     </div>
                 </div>
@@ -226,17 +222,6 @@ function ManProfileForm() {
                 >
                     게시물
                 </button>
-                {profile.is_animal ? 
-                
-                <button
-                    className={`like-btn ${activeTab === 'animal-detail' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('animal-detail')}
-                    role="tab"
-                    aria-selected={activeTab === 'animal-detail'}
-                >
-                    상세정보
-                </button>
-                :
                 <button
                     className={`like-btn ${activeTab === 'like' ? 'active' : ''}`}
                     onClick={() => setActiveTab('like')}
@@ -244,9 +229,8 @@ function ManProfileForm() {
                     aria-selected={activeTab === 'like'}
                 >
                     좋아요
-                </button>}
+                </button>
             </div>
-            {activeTab !== 'animal-detail' &&
             <div className='my-space-container__posts'>
                 {posts.length > 0 ? (
                     <ul className="main-container__post-list">
@@ -258,16 +242,9 @@ function ManProfileForm() {
                     <p>등록된 게시물이 없습니다</p>
                 )}
                 {isLoading && <p>로딩 중...</p>}
-            </div>}
-            {activeTab === 'animal-detail' && 
-            <div className='my-space-container__posts'>
-                <p>품종: {profile?.profile.breed}</p>
-                <p>나이: {profile?.profile.age}</p>
-                <p>성별: {profile?.profile.sex}</p>
             </div>
-            }
         </div>
     );
 }
 
-export default ManProfileForm;
+export default AnimalProfileForm;

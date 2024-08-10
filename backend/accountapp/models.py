@@ -165,7 +165,6 @@ class AnimalProfile(BaseProfile):
     weight = models.FloatField(null=True, blank=True)
     enter= models.DateTimeField(default=timezone.now)
     youtube=models.CharField(max_length=100, blank=True)
-    profile_pic = models.ImageField(upload_to='animal_profile_pics/', blank=True, null=True)
     profile_pic_url = models.URLField(max_length=255, blank=True, null=True)
 
     def __str__(self):

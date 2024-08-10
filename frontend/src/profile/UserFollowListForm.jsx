@@ -111,7 +111,6 @@ function UserFollowListForm() {
             }
         }
     };
-
     return (
         <div className="friendListForm-container">
             <p className='back-btn'><BackButton /></p>

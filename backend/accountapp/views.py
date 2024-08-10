@@ -107,6 +107,7 @@ class LogoutAPI(APIView):
         logout(request) 
         return Response({"message": "로그아웃 되었습니다."}, status=status.HTTP_200_OK)
 
+'''
 class UserProfileDetailAPI(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -114,6 +115,15 @@ class UserProfileDetailAPI(APIView):
         user = get_object_or_404(User, username=slug)
         profile = get_object_or_404(Profile, user=user)
         serializer = ProfileSerializer(profile)
+        return Response(serializer.data)
+'''
+
+class UserProfileDetailAPI(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, slug, format=None):
+        user = get_object_or_404(User, username=slug)
+        serializer = ProfileSerializer(user)
         return Response(serializer.data)
 
 class UserProfileUpdateAPI(APIView):
