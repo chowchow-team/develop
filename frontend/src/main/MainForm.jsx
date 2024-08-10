@@ -170,6 +170,14 @@ function MainForm() {
                         {posts.map((post) => (
                             <Link to={`/feed/posts/${post.id}`} className="main-container__post-link">
                             <li key={post.id} className="main-container__post-list-item">
+                                <div className='main-container__post-list-item-profile'>
+                                    <img src={post.user.profile_pic} alt="" />
+                                    <div className='main-container__post-list-item-profile-name'>
+                                        <p className='nickname'>{post.user.nickname}</p>
+                                        <p className='username'>@{post.user.username}</p>
+                                    </div>
+                                </div>
+                                <div className='main-container__post-list-item-inner'>
                                 <p className='main-container__post-list-item-content'>
                                     <TruncateText text={post.content} maxLength={200} />
                                 </p>
@@ -196,7 +204,8 @@ function MainForm() {
                                 </div>
                                 <div className='date-school'>
                                     <p className='main-container__post-list-item-date'>{formatDate(post.timestamp)}</p>
-                                </div>  
+                                </div>
+                                </div>
                             </li>
                             </Link>
                         ))}

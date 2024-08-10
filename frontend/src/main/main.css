@@ -399,6 +399,29 @@
     margin-top: 1rem;
     color: #94969B;
 }
+
+.main-container__post-list-item-profile{
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.main-container__post-list-item-profile img{
+    width: 50px;
+    height: 50px;
+    border-radius: 15px;
+    margin-right: 1rem;
+}
+.main-container__post-list-item-profile-name > .username {
+    font-size: 1rem;
+    color: #9DA6B5;
+}
+.main-container__post-list-item-inner{
+    margin-left: 65px;
+}
+
+
+
+
 .main-container__post-list-item-date-school {
     color: #F07489;
     font-size: 0.8rem;
@@ -575,6 +598,15 @@
         font-size: 2rem;
         color: white;
         text-align: center;
+    }
+    .main-container__post-list-item-profile img{
+        width: 35px;
+        height: 35px;
+        border-radius: 12px;
+        margin-right: 1rem;
+    }
+    .main-container__post-list-item-inner{
+        margin-left: 50px;
     }
 }
 
