@@ -31,13 +31,42 @@ function FriendListForm() {
 
     const fetchFriends = async () => {
         try {
-            console.log(setFriendID);
             const response = await axios.get(`${API_BASE_URL}/api/main/${activeTab}/list/`, {
                 params: { user_id: 1 },
                 withCredentials: true,
             });
-            setFriends(response.data.data)
-            // 각 친구의 팔로우 상태를 확인하여 추가
+            const fetchedFriends = response.data.data;
+    
+            if (activeTab === 'following') {
+                setFriends(fetchedFriends.map(friend => ({
+                    ...friend,
+                    isFollowing: true
+                })));
+            } else {
+                const user_id = 1;
+                const updatedFriends = [];
+    
+                for (const friend of fetchedFriends) {  // prevFriends 대신 fetch된 친구 목록을 사용
+                    try {
+                        const response = await axios.get('http://localhost:8000/api/main/following/check/', {
+                            params:{
+                                user_id : friend.id,
+                                follower_id: 1
+                            }
+                        });
+                        updatedFriends.push({
+                            ...friend,
+                            isFollowing: response.data.isFollowing
+                        });
+                    } catch (err) {
+                        console.error(`Following update failed for friend with ID ${friend.id}`, err);
+                        setError("팔로우 상태를 업데이트하는 데 실패했습니다.");
+                    }
+                }
+    
+                setFriends(updatedFriends);  // 모든 친구의 상태를 업데이트 한 번에 처리
+            }
+    
         } catch (error) {
             setError("친구 목록을 불러오는 데 실패했습니다.");
             console.error("친구 목록을 불러오는 데 실패했습니다.", error);
@@ -54,12 +83,12 @@ function FriendListForm() {
 
     const handleFollowClick = async (following_id) => {
         try {
-            const user_id = 2; // 현재 사용자의 사용자 id로 대체
+            const user_id = 1; // 현재 사용자의 사용자 id로 대체
             const response = await axios.post('http://localhost:8000/api/main/follow/request/', {
-                following_id: following_id,
-                follower_id: user_id
-            });
-
+                    following_id: following_id,
+                    follower_id: user_id
+                }
+            );
             setFriends(prevFriends =>
                 prevFriends.map(friend =>
                     friend.id === following_id ? { ...friend, isFollowing: true } : friend
@@ -74,7 +103,7 @@ function FriendListForm() {
 
     const handleUnfollowClick = async (following_id) => {
         try {
-            const user_id = 2;
+            const user_id = 1;
             const response = await axios.post('http://localhost:8000/api/main/unfollow/request/',{
                 following_id : following_id,
                 follower_id : user_id
@@ -101,7 +130,7 @@ function FriendListForm() {
                     role="tab"
                     aria-selected={activeTab === 'follower'}
                 >
-                    팔로워
+                    팔로우
                 </button>
                 <button
                     className={`following-btn ${activeTab === 'following' ? 'active' : ''}`}
