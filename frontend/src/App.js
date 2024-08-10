@@ -22,8 +22,8 @@ function App() {
                     <Route path="/login" element={<LoginForm />} />
                     <Route path="/logout" element={<LogoutForm />} />
                     <Route path="/chat" element={<ChatForm />} />
-                    <Route path="/profile" element={<ProfileForm />} />
-                    <Route path="/profile/m/:id" element={<ManProfileForm />} />
+                    <Route path="/profile/edit" element={<ProfileForm />} />
+                    <Route path="/profile/m/:username" element={<ManProfileForm />} />
                     <Route path="/friend" element={<FriendListForm />} />
                     <Route path="/dm/:id" element={<DMForm />} />
                     <Route path="/find-id" element={<FindIDForm />} />

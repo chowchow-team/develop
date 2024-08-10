@@ -36,7 +36,6 @@ function NavForm() {
             }
         }
     };
-
     useEffect(() => {
         if (user) {
             checkNotifications();
@@ -94,7 +93,7 @@ function NavForm() {
                     </button>
                     <div className='nav-menu'>
                         <Link to="/"><span>홈</span></Link>
-                        <Link to="/profile"><span>프로필</span></Link>
+                        <Link to={`/profile/m/${user.username}`}><span>프로필</span></Link>
                         <Link to="/setting"><span>계정관리</span></Link>
                         <li><Link to="/community"><span>메세지</span></Link></li>
                         <Link to="/friend">
@@ -119,7 +118,7 @@ function NavForm() {
                   </Link>
                   <ul>
                       <li><Link to="/"><span>홈</span></Link></li>
-                      <li><Link to="/profile"><span>프로필</span></Link></li>
+                      <li><Link to={`/profile/m/${user.username}`}><span>프로필</span></Link></li>
                       <li><Link to="/setting"><span>계정관리</span></Link></li>
                       <li><Link to="/community"><span>메세지</span></Link></li>
                       <li>

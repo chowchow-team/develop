@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -210,3 +210,25 @@ class FollowCheckAPIView(APIView): #frontend에서 follow <-> unfollow 버튼 �
 
         is_following = FollowService.is_following(follower, following)
         return Response({"isFollowing": is_following}, status=status.HTTP_200_OK)
+
+class UserPostListView(APIView):
+    def get(self, request, username):
+        user = get_object_or_404(User, username=username)
+        posts = Post.objects.filter(user=user).order_by('-timestamp')
+        
+        # Pagination
+        page = int(request.GET.get('page', 1))
+        limit = int(request.GET.get('limit', 10))
+        start = (page - 1) * limit
+        end = start + limit
+
+        posts_page = posts[start:end + 1]
+        has_next = len(posts_page) > limit
+        posts_page = posts_page[:limit]
+
+        serializer = PostSerializer(posts_page, many=True)
+        
+        return Response({
+            "results": serializer.data,
+            "has_next": has_next
+        }, status=status.HTTP_200_OK)

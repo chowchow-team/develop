@@ -14,12 +14,15 @@ function ManProfileForm() {
         nickname: '',
         bio: '',
         profilePic: '',
-        profilePicPreview: ''
+        profilePicPreview: '',
+        followers_count: 0,
+        following_count: 0,
+        is_following: false
     });
 
     const { user } = useContext(UserContext);
     const navigate = useNavigate();
-    const { slug } = useParams();
+    const { username } = useParams();
     const API_BASE_URL = URLManagement('http');
 
     const [activeTab, setActiveTab] = useState('mypost');
@@ -29,22 +32,24 @@ function ManProfileForm() {
     const [hasMore, setHasMore] = useState(true);
     const limit = 10;
 
-    const isOwnProfile = user && user.username === profile.username;
+    const isOwnProfile = user && user.username === username;
 
     useEffect(() => {
+        /*
         if (!user) {
             navigate('/login');
         } else {
             fetchProfile();
-        }
-    }, [user, navigate, slug]);
+        }*/
+       fetchProfile();
+    }, [user, navigate, username]);
 
     useEffect(() => {
         setPosts([]);
         setOffset(0);
         setHasMore(true);
         fetchInitialPosts();
-    }, [activeTab, slug]);
+    }, [activeTab, username]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -63,7 +68,7 @@ function ManProfileForm() {
 
     const fetchProfile = async () => {
         try {
-            const response = await axios.get(`${API_BASE_URL}/api/profile/${slug}/`, {
+            const response = await axios.get(`${API_BASE_URL}/api/profile/${username}/`, {
                 withCredentials: true
             });
             setProfile(response.data);
@@ -75,13 +80,13 @@ function ManProfileForm() {
     const fetchInitialPosts = async () => {
         setIsLoading(true);
         try {
-            const addr = activeTab === 'mypost' ? `/api/profile/${id}/posts/` : `/api/profile/${id}/likes/`;
+            const addr = activeTab === 'mypost' ? `/api/main/post/${username}/` : `/api/profile/${username}/likes/`;
             const response = await axios.get(`${API_BASE_URL}${addr}?limit=${limit}&offset=0`, {
                 withCredentials: true
             });
             setPosts(response.data.results);
             setOffset(response.data.results.length);
-            setHasMore(!!response.data.next);
+            setHasMore(response.data.next);
             setIsLoading(false);
         } catch (error) {
             console.error('게시물을 불러오는데 실패했습니다', error);
@@ -92,17 +97,29 @@ function ManProfileForm() {
     const fetchMorePosts = async () => {
         setIsLoading(true);
         try {
-            const addr = activeTab === 'mypost' ? `/api/profile/${id}/posts/` : `/api/profile/${id}/likes/`;
+            const addr = activeTab === 'mypost' ? `/api/main/post/${username}/` : `/api/profile/${username}/likes/`;
             const response = await axios.get(`${API_BASE_URL}${addr}?limit=${limit}&offset=${offset}`, {
                 withCredentials: true
             });
             setPosts(prev => [...prev, ...response.data.results]);
             setOffset(prevOffset => prevOffset + response.data.results.length);
-            setHasMore(!!response.data.next);
+            setHasMore(response.data.next);
             setIsLoading(false);
         } catch (error) {
             console.error('추가 게시물을 불러오는데 실패했습니다', error);
             setIsLoading(false);
+        }
+    };
+
+    const handleFollow = async () => {
+        try {
+            const method = profile.is_following ? 'delete' : 'post';
+            await axios[method](`${API_BASE_URL}/api/follow/${username}/`, {}, {
+                withCredentials: true
+            });
+            fetchProfile();
+        } catch (error) {
+            console.error('팔로우/언팔로우 작업에 실패했습니다', error);
         }
     };
 
@@ -138,16 +155,20 @@ function ManProfileForm() {
                     <img src={profile.profilePic || defaultImg} alt="프로필 이미지" className='my-space-container__profile-img'/>
                     <div className='my-space-container__profile-main-info'>
                         <p className='nickname'>{profile.nickname}</p>
-                        <p className='username'>@{id}</p>
+                        <p className='username'>@{username}</p>
                         <p className='bio'>{profile.bio}</p>
-                        {isOwnProfile && (
+                        {isOwnProfile ? (
                             <Link to="/profile/edit" className="edit-profile-btn">수정</Link>
+                        ) : (
+                            <button onClick={handleFollow} className="follow-btn">
+                                {profile.is_following ? '언팔로우' : '팔로우'}
+                            </button>
                         )}
                     </div>
                 </div>
                 <div className='my-space-container__profile-follow'>
-                    <p className='follower'>팔로워 <span>{profile.followers_count || 0}</span></p>
-                    <p className='following'>팔로잉 <span>{profile.following_count || 0}</span></p>
+                    <p className='follower'>팔로워 <span>{profile.followers_count}</span></p>
+                    <p className='following'>팔로잉 <span>{profile.following_count}</span></p>
                 </div>
             </div>
             <div className='ctrl-box'>
