@@ -45,3 +45,5 @@ python manage.py crontab remove # 크론탭제거
 # cron.log 로 로깅중임
 
 ```
+
+test
