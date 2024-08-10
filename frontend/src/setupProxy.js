@@ -3,14 +3,13 @@ const { createProxyMiddleware } = require("http-proxy-middleware");
 
 module.exports = (app) => {
   app.use(
-    createProxyMiddleware("/signup", {
+    createProxyMiddleware("/api", {
       target: "http://localhost:8000",
       changeOrigin: true,
     }),
   );
-
   app.use(
-    createProxyMiddleware("/friend/list", {
+    createProxyMiddleware("/media", {
       target: "http://localhost:8000",
       changeOrigin: true,
     }),
