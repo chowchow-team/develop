@@ -117,3 +117,124 @@ textarea {
         font-size: .9rem;
     }
 }
+
+/* ManProfileForm */
+/* ManProfileForm */
+/* ManProfileForm */
+/* ManProfileForm */
+/* ManProfileForm */
+/* ManProfileForm */
+/* ManProfileForm */
+
+.my-space-container {
+    max-width: 600px;
+    min-width: 600px;
+    margin: 1rem auto;
+    margin-top: 90px;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+.my-space-container .ctrl-box{
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+    margin-bottom: 1rem;
+    margin-top: 4rem;
+}
+.my-space-container .ctrl-box button {
+    background-color: transparent;
+    border: none;
+    font-size: 1.2rem;
+    color: #2c3e50;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    width: 7rem;
+}
+.my-space-container .ctrl-box .active{
+    /* 밑줄만들기 */
+    border-bottom: 2px solid #F07489;
+}
+
+.my-space-container__profile {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    max-width: 400px;
+    margin: 0 auto;
+    margin-top: 2rem;
+}
+
+.my-space-container__profile-main {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.my-space-container__profile-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 20px;
+}
+.my-space-container__profile-main-info {
+    flex: 1;
+}
+
+.my-space-container__profile .nickname {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0 0 5px 0;
+}
+.my-space-container__profile .username {
+    font-size: 16px;
+    color: #666;
+    margin: 0 0 10px 0;
+}
+.my-space-container .bio {
+    font-size: 14px;
+    line-height: 1.4;
+    margin: 0 0 15px 0;
+}
+
+.my-space-container .edit-profile-btn, .follow-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.my-space-container__profile-follow {
+    display: flex;
+    justify-content: space-around;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.my-space-container .follower, .following {
+    font-size: 14px;
+    text-align: center;
+}
+
+.my-space-container .follower span, .following span {
+    display: block;
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+
+
+
+@media screen and (max-width: 768px) {
+    .my-space-container {
+        min-width: 100%;
+    }
+}

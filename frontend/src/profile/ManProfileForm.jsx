@@ -152,7 +152,7 @@ function ManProfileForm() {
         <div className='my-space-container'>
             <div className='my-space-container__profile'>
                 <div className='my-space-container__profile-main'>
-                    <img src={profile.profilePic || defaultImg} alt="프로필 이미지" className='my-space-container__profile-img'/>
+                    <img src={profile.profile_pic || defaultImg} alt="프로필 이미지" className='my-space-container__profile-img'/>
                     <div className='my-space-container__profile-main-info'>
                         <p className='nickname'>{profile.nickname}</p>
                         <p className='username'>@{username}</p>
@@ -186,7 +186,7 @@ function ManProfileForm() {
                     role="tab"
                     aria-selected={activeTab === 'like'}
                 >
-                    마음에 들어요
+                    좋아요
                 </button>
             </div>
             <div className='my-space-container__posts'>
