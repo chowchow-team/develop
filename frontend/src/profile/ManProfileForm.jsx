@@ -17,7 +17,6 @@ function ManProfileForm() {
         profilePicPreview: '',
         followers_count: 0,
         following_count: 0,
-        is_following: false
     });
 
     const { user } = useContext(UserContext);
@@ -31,6 +30,7 @@ function ManProfileForm() {
     const [isLoading, setIsLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const limit = 10;
+    const [isFollowing, setFollowing ] = useState(null);
 
     const isOwnProfile = user && user.username === username;
 
@@ -42,7 +42,7 @@ function ManProfileForm() {
             fetchProfile();
         }*/
        fetchProfile();
-    }, [user, navigate, username]);
+    }, [user, navigate, username,isFollowing]);
 
     useEffect(() => {
         setPosts([]);
@@ -111,16 +111,46 @@ function ManProfileForm() {
         }
     };
 
-    const handleFollow = async () => {
+    const handleFollowClick = async (following_id) => {
         try {
-            const method = profile.is_following ? 'delete' : 'post';
-            await axios[method](`${API_BASE_URL}/api/follow/${username}/`, {}, {
-                withCredentials: true
-            });
-            fetchProfile();
-        } catch (error) {
-            console.error('팔로우/언팔로우 작업에 실패했습니다', error);
+            const user_id = 1; // 현재 사용자의 사용자 id로 대체
+            const response = await axios.post('http://localhost:8000/api/main/follow/request/', {
+                    following_id: following_id,
+                    follower_id: user_id
+                }
+            );
+            setFollowing(true);
+        } catch (err) {
+            console.assert("following_id not found");
         }
+    };
+
+    const checkFollow = async (mans_id) =>{
+        try {
+            const response = await axios.get('http://localhost:8000/api/main/following/check/', {
+                params:{
+                    user_id : mans_id, // 팔로우 하려는 상대
+                    follower_id: 1 //나
+                }
+            });
+            setFollowing(response.data.isFollowing);
+        } catch (err) {
+            console.error(`Following update failed for friend }`, err);
+        }
+    }
+    const handleUnfollowClick = async (following_id) => {
+        try {
+            const user_id = 1;
+            const response = await axios.post('http://localhost:8000/api/main/unfollow/request/',{
+                following_id : following_id,
+                follower_id : user_id
+            });
+        } catch (err) {
+            if (err.response) {
+                console.log('follow_id not found');
+            }
+        }
+        setFollowing(false);
     };
 
     const formatDate = (dateStr) => {
@@ -147,7 +177,7 @@ function ManProfileForm() {
             return `${diffYears}년 전`;
         }
     };
-
+    checkFollow(50);
     return (
         <div className='my-space-container'>
             <div className='my-space-container__profile'>
@@ -159,8 +189,11 @@ function ManProfileForm() {
                             {isOwnProfile ? (
                                 <Link to="/profile/edit" className="edit-profile-btn">수정</Link>
                             ) : (
-                                <button onClick={handleFollow} className="follow-btn">
-                                    {profile.is_following ? '언팔로우' : '팔로우'}
+                                <button 
+                                    className='follow-btn'
+                                    onClick={() => isFollowing ? handleUnfollowClick(50) : handleFollowClick(50)}
+                                >
+                                    {isFollowing ? '언팔로우' : '팔로우'}
                                 </button>
                             )}
                         </div>
