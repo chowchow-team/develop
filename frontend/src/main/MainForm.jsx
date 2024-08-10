@@ -3,33 +3,9 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import './main.css';
 import pencil from '../static/img/pen.png';
-import comment from '../static/img/comment.png';
 import { UserContext } from '../UserContext';
 import { SEOMetaTag } from '../snippets';
-
-
-const TruncateText = ({ text, maxLength = 100 }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
-  
-    const toggleExpand = (e) => {
-        e.preventDefault();  // 링크 이벤트 중지
-        e.stopPropagation(); // 이벤트 버블링 방지용 (더보기떄문에 추가함)
-      setIsExpanded(!isExpanded);
-    };
-  
-    return (
-      <div className="truncate-text">
-        <p>
-          {isExpanded ? text : `${text.slice(0, maxLength)}${text.length > maxLength ? '...' : ''}`}
-        </p>
-        {text.length > maxLength && (
-          <button onClick={toggleExpand} className="truncate-text__button">
-            {isExpanded ? '접기' : '더보기'}
-          </button>
-        )}
-      </div>
-    );
-};
+import PostForm from './PostForm';
 
 function MainForm() {
     const [posts, setPosts] = useState([]);
@@ -123,18 +99,6 @@ function MainForm() {
         }
     };
 
-    const truncate = (str, n) => {
-        return str?.length > n ? str.substr(0, n - 1) + "..." : str;
-    };
-
-    const conditionalTruncate = (str) => {
-        if (windowWidth <= 400) return truncate(str, 25);
-        if (windowWidth <= 530) return truncate(str, 35);
-        if (windowWidth <= 650) return truncate(str, 45);
-        if (windowWidth <= 768) return truncate(str, 55);
-        return truncate(str, 65);
-    };
-
     return (
         <div className='main-container'>
             <SEOMetaTag 
@@ -168,46 +132,7 @@ function MainForm() {
                 {posts.length > 0 ? (
                     <ul className="main-container__post-list">
                         {posts.map((post) => (
-                            <Link to={`/feed/posts/${post.id}`} className="main-container__post-link">
-                            <li key={post.id} className="main-container__post-list-item">
-                                <div className='main-container__post-list-item-profile'>
-                                    <img src={post.user.profile_pic} alt="" />
-                                    <div className='main-container__post-list-item-profile-name'>
-                                        <p className='nickname'>{post.user.nickname}</p>
-                                        <p className='username'>@{post.user.username}</p>
-                                    </div>
-                                </div>
-                                <div className='main-container__post-list-item-inner'>
-                                <p className='main-container__post-list-item-content'>
-                                    <TruncateText text={post.content} maxLength={200} />
-                                </p>
-                                <p>{post.user.nickname}</p>
-                                {post.images && post.images.length > 0 && (
-                                    <div className={`main-container__post-list-item-images images-count-${post.images.length}`}>
-                                        {post.images.slice(0, 4).map((image, index) => (
-                                            <div key={index} className="image-wrapper">
-                                                <img 
-                                                    src={image.image} 
-                                                    alt={`Post image ${index + 1}`} 
-                                                    className="main-container__post-list-item-image"
-                                                />
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                                
-                                <div className='main-container__post-list-item-i'>
-                                    <div className='main-container__post-list-item-i-comment'>
-                                        <img src={comment} alt="comment" />
-                                        <p>{post.comments_count}</p>
-                                    </div>
-                                </div>
-                                <div className='date-school'>
-                                    <p className='main-container__post-list-item-date'>{formatDate(post.timestamp)}</p>
-                                </div>
-                                </div>
-                            </li>
-                            </Link>
+                            <PostForm key={post.id} post={post} formatDate={formatDate} />
                         ))}
                     </ul>
                 ) : (

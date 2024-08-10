@@ -47,10 +47,18 @@ def save_image_as_png(image, user):
     
 class ProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username')
+    followers_count = serializers.SerializerMethodField()
+    following_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
-        fields = ['nickname', 'profile_pic', 'bio', 'username']
+        fields = ['nickname', 'profile_pic', 'bio', 'username', 'followers_count', 'following_count']
+
+    def get_followers_count(self, obj):
+        return obj.user.followers.count()
+
+    def get_following_count(self, obj):
+        return obj.user.following.count()
 
     def update(self, instance, validated_data):
         instance.nickname = validated_data.get('nickname', instance.nickname)

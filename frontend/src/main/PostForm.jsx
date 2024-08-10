@@ -1,67 +1,50 @@
-// PostForm.js
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
+import TruncateText from './TruncateText';
+import comment from '../static/img/comment.png';
 
-function PostForm({ post }) {
-    const [isLiked, setIsLiked] = useState(false);
-    const [comments, setComments] = useState(post.comments || []);
-
-    const handleLike = () => {
-        setIsLiked(!isLiked);
-        //좋아요api넣어야됨
-    };
-
-    const handleComment = (e) => {
-        e.preventDefault();
-        // 댓글api 넣어야됨
-        const newComment = {
-            id: Date.now(),
-            user: '현재 사용자',
-            content: e.target.comment.value,
-            timestamp: new Date().toISOString()
-        };
-        setComments([...comments, newComment]);
-        e.target.comment.value = '';
-    };
-
-    return (
-        <div className="post">
-            <div className="post-header">
-                <Link to={`/profile/${post.userId}`} className="user-avatar">
-                    <img src={post.userAvatar} alt={post.userName} />
-                </Link>
-                <div className="post-info">
-                    <Link to={`/profile/${post.userId}`} className="user-name">{post.userName}</Link>
-                    <span className="post-time">{new Date(post.timestamp).toLocaleString()}</span>
-                </div>
-            </div>
-            <div className="post-content">{post.content}</div>
-            {post.image && <img src={post.image} alt="Post content" className="post-image" />}
-            <div className="post-actions">
-                <button onClick={handleLike} className={`like-button ${isLiked ? 'liked' : ''}`}>
-                    {isLiked ? '좋아요 취소' : '좋아요'}
-                </button>
-                <button className="comment-button">댓글</button>
-                <button className="share-button">공유</button>
-            </div>
-            <div className="post-stats">
-                <span>{post.likes + (isLiked ? 1 : 0)} 좋아요</span>
-                <span>{comments.length} 댓글</span>
-            </div>
-            <div className="comments-section">
-                {comments.map(comment => (
-                    <div key={comment.id} className="comment">
-                        <Link to={`/profile/${comment.userId}`} className="comment-user">{comment.user}</Link>
-                        <span className="comment-content">{comment.content}</span>
-                    </div>
-                ))}
-            </div>
-            <form onSubmit={handleComment} className="comment-form">
-                <input type="text" name="comment" placeholder="댓글을 입력하세요..." />
-                <button type="submit">게시</button>
-            </form>
+const PostForm = ({ post, formatDate }) => {
+  return (
+    <Link to={`/feed/posts/${post.id}`} className="main-container__post-link">
+      <li key={post.id} className="main-container__post-list-item">
+        <div className='main-container__post-list-item-profile'>
+          <img src={post.user.profile_pic} alt="" />
+          <div className='main-container__post-list-item-profile-name'>
+            <p className='nickname'>{post.user.nickname}</p>
+            <p className='username'>@{post.user.username}</p>
+          </div>
         </div>
-    );
-}
+        <div className='main-container__post-list-item-inner'>
+          <p className='main-container__post-list-item-content'>
+            <TruncateText text={post.content} maxLength={200} />
+          </p>
+          {post.images && post.images.length > 0 && (
+            <div className={`main-container__post-list-item-images images-count-${post.images.length}`}>
+              {post.images.slice(0, 4).map((image, index) => (
+                <div key={index} className="image-wrapper">
+                  <img 
+                    src={image.image} 
+                    alt={`Post image ${index + 1}`} 
+                    className="main-container__post-list-item-image"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+          
+          <div className='main-container__post-list-item-i'>
+            <div className='main-container__post-list-item-i-comment'>
+              <img src={comment} alt="comment" />
+              <p>{post.comments_count}</p>
+            </div>
+          </div>
+          <div className='date-school'>
+            <p className='main-container__post-list-item-date'>{formatDate(post.timestamp)}</p>
+          </div>
+        </div>
+      </li>
+    </Link>
+  );
+};
 
 export default PostForm;
