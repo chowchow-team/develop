@@ -154,16 +154,20 @@ function ManProfileForm() {
                 <div className='my-space-container__profile-main'>
                     <img src={profile.profile_pic || defaultImg} alt="프로필 이미지" className='my-space-container__profile-img'/>
                     <div className='my-space-container__profile-main-info'>
-                        <p className='nickname'>{profile.nickname}</p>
+                        <div className='nickname-and-btn'>
+                            <p className='nickname'>{profile.nickname}</p>
+                            {isOwnProfile ? (
+                                <Link to="/profile/edit" className="edit-profile-btn">수정</Link>
+                            ) : (
+                                <button onClick={handleFollow} className="follow-btn">
+                                    {profile.is_following ? '언팔로우' : '팔로우'}
+                                </button>
+                            )}
+                        </div>
+                        
                         <p className='username'>@{username}</p>
                         <p className='bio'>{profile.bio}</p>
-                        {isOwnProfile ? (
-                            <Link to="/profile/edit" className="edit-profile-btn">수정</Link>
-                        ) : (
-                            <button onClick={handleFollow} className="follow-btn">
-                                {profile.is_following ? '언팔로우' : '팔로우'}
-                            </button>
-                        )}
+                        
                     </div>
                 </div>
                 <div className='my-space-container__profile-follow'>

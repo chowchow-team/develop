@@ -199,13 +199,19 @@ textarea {
     line-height: 1.4;
     margin: 0 0 15px 0;
 }
+.my-space-container .nickname-and-btn{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 10px;
+}
 
 .my-space-container .edit-profile-btn, .follow-btn {
-    background-color: #007bff;
+    background-color: #323C4D;
     color: white;
     border: none;
     padding: 8px 16px;
-    border-radius: 4px;
+    border-radius: 2rem;
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.3s;
