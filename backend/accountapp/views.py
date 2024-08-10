@@ -11,6 +11,7 @@ from django.contrib.auth import get_user_model
 from accountapp.activation_token import account_activation_token
 from accountapp.models import User, Profile
 from accountapp.serializers import AccountCreateSerializer, ProfileSerializer
+from mainapp.serializers import UserInfoSerializer
 from django.conf import settings
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt # 배포시 해결할것
@@ -86,19 +87,19 @@ class ActivateAccountAPI(APIView):
         
 # 로그인
 class LoginAPI(APIView):
-    #@csrf_exempt # 배포시 해결할것
     def post(self, request, format=None):
         username = request.data.get("username")
         password = request.data.get("password")
         user = authenticate(username=username, password=password)
         if user:
             login(request, user)
-            #token, created = Token.objects.get_or_create(user=user)
-            return Response({"message": "로그인 성공"}, status=status.HTTP_200_OK)
-            #return Response({"token": token.key}, status=status.HTTP_200_OK)
+            serializer = UserInfoSerializer(user)
+            return Response({
+                "message": "로그인 성공",
+                "user": serializer.data
+            }, status=status.HTTP_200_OK)
         else:
             return Response({"error": "아이디/패스워드를 확인하세요."}, status=status.HTTP_400_BAD_REQUEST)
-        
 
 class LogoutAPI(APIView):
     permission_classes = [permissions.IsAuthenticated] 

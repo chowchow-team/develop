@@ -206,7 +206,7 @@ textarea {
     padding-right: 10px;
 }
 
-.my-space-container .edit-profile-btn, .follow-btn {
+.my-space-container .edit-profile-btn, .my-space-container .follow-btn {
     background-color: #323C4D;
     color: white;
     border: none;

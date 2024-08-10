@@ -23,16 +23,17 @@ function TruncatedBio({ bio, maxLength = 100 }) {
 
 function FriendListForm() {
     const [friends, setFriends] = useState([]);
-    const { user, setFriendUsername, setFriendID } = useContext(UserContext);
+    const { user, getUserId, setFriendUsername, setFriendID } = useContext(UserContext);
     const [activeTab, setActiveTab] = useState('follower');
     const [error, setError] = useState(null);
     const navigate = useNavigate();
     const API_BASE_URL = URLManagement('http');
+    const userid = getUserId();
 
     const fetchFriends = async () => {
         try {
             const response = await axios.get(`${API_BASE_URL}/api/main/${activeTab}/list/`, {
-                params: { user_id: 1 },
+                params: { user_id: userid },
                 withCredentials: true,
             });
             const fetchedFriends = response.data.data;
@@ -43,7 +44,7 @@ function FriendListForm() {
                     isFollowing: true
                 })));
             } else {
-                const user_id = 1;
+                const user_id = userid;
                 const updatedFriends = [];
     
                 for (const friend of fetchedFriends) {  // prevFriends 대신 fetch된 친구 목록을 사용

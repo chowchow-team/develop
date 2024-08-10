@@ -2,16 +2,15 @@ import { useEffect, useContext, useCallback } from 'react';
 import axios from 'axios';
 import { UserContext } from '../UserContext';
 import { useNavigate } from 'react-router-dom';
-import { URLManagement } from '../snippets';
-import { getCookie } from '../snippets';
+import { URLManagement, getCookie } from '../snippets';
 
 function LogoutForm() {
-    const { setUser } = useContext(UserContext);
+    const { clearUser } = useContext(UserContext);
     const navigate = useNavigate();
     const API_BASE_URL = URLManagement('http');
 
     const handleLogout = useCallback(async () => {
-        const csrfToken=getCookie('csrftoken');
+        const csrfToken = getCookie('csrftoken');
         try {
             await axios.post(`${API_BASE_URL}/api/logout/`, {}, {
                 headers: {
@@ -19,17 +18,13 @@ function LogoutForm() {
                 },
                 withCredentials: true
             });
-            localStorage.removeItem('user');
-            setUser(null);
-            navigate('/');
-            window.location.reload();
         } catch (error) {
-            localStorage.removeItem('user');
-            setUser(null);
-            navigate('/');
-            window.location.reload();
+            console.error('Logout API call failed:', error);
+        } finally {
+            clearUser();
+            navigate('/', { replace: true });
         }
-    }, [setUser, navigate]);
+    }, [clearUser, navigate, API_BASE_URL]);
 
     useEffect(() => {
         handleLogout();
