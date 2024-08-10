@@ -5,7 +5,7 @@ __pycache__/
 backend/media/
 db.sqlite3
 migrations/
-backend/llmapp/llm/
+#backend/llmapp/llm/
 
 #staticfiles/
 
