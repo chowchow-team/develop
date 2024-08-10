@@ -72,7 +72,7 @@ function ManProfileForm() {
                 withCredentials: true
             });
             setProfile(response.data);
-            console.log(response.data);
+            console.log(profile);
         } catch (error) {
             console.error('프로필 정보를 불러오는데 실패했습니다', error);
         }
@@ -183,7 +183,7 @@ function ManProfileForm() {
         <div className='my-space-container'>
             <div className='my-space-container__profile'>
                 <div className='my-space-container__profile-main'>
-                    <img src={profile.is_animal ? profile.profile.profile_pic_url : profile.profile_pic || defaultImg} 
+                    <img src={profile.is_animal ? profile.profile?.profile_pic_url : profile.profile?.profile_pic || defaultImg} 
                     alt="프로필 이미지" 
                     className='my-space-container__profile-img'
                     />
@@ -209,10 +209,10 @@ function ManProfileForm() {
                 </div>
                 <div className='my-space-container__profile-follow'>
                     {/* profile.nickname을 props로 넘기기 */}
-                    <Link to={`/profile/followlist/${username}/follower`} state={{ nickname: profile.nickname }}>
+                    <Link to={`/profile/followlist/${username}/follower`} state={{ nickname: profile.profile?.nickname }}>
                         <p className='follower'>팔로워 <span>{profile.followers_count}</span></p>
                     </Link>
-                    <Link to={`/profile/followlist/${username}/following`} state={{ nickname: profile.nickname }}>
+                    <Link to={`/profile/followlist/${username}/following`} state={{ nickname: profile.profile?.nickname }}>
                         <p className='following'>팔로잉 <span>{profile.following_count}</span></p>
                     </Link>
                 </div>
