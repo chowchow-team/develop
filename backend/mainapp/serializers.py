@@ -5,6 +5,30 @@ from django.conf import settings
 #from bs4 import BeautifulSoup
 import re
 
+
+class UserInfoSerializer(serializers.ModelSerializer):
+    nickname = serializers.SerializerMethodField()
+    profile_pic = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'nickname', 'profile_pic']
+
+    def get_nickname(self, obj):
+        if obj.is_animal:
+            return obj.animalprofile.nickname if obj.animalprofile.nickname else obj.username
+        return obj.profile.nickname if obj.profile.nickname else obj.username
+
+    def get_profile_pic(self, obj):
+        if obj.is_animal:
+            if obj.animalprofile.profile_pic:
+                return f"{settings.MEDIA_URL}{obj.animalprofile.profile_pic}"
+        else:
+            if obj.profile.profile_pic:
+                return f"{settings.MEDIA_URL}{obj.profile.profile_pic}"
+        return f"{settings.MEDIA_URL}default.png"
+
+
 class PostImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostImage
@@ -13,6 +37,7 @@ class PostImageSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     images = PostImageSerializer(many=True, read_only=True)
     comments_count = serializers.SerializerMethodField()
+    user = UserInfoSerializer(read_only=True)
 
     def get_comments_count(self, obj):
         return Comment.objects.filter(post=obj).count()

@@ -173,6 +173,7 @@ function MainForm() {
                                 <p className='main-container__post-list-item-content'>
                                     <TruncateText text={post.content} maxLength={200} />
                                 </p>
+                                <p>{post.user.nickname}</p>
                                 {post.images && post.images.length > 0 && (
                                     <div className={`main-container__post-list-item-images images-count-${post.images.length}`}>
                                         {post.images.slice(0, 4).map((image, index) => (
