@@ -875,6 +875,98 @@
 }
 
 
+
+/* DetailForm 이미지 병합 : 개수따라서 */
+.post-detail-container__image {
+    display: grid;
+    gap: 4px;
+    overflow: hidden;
+    border-radius: 15px;
+    aspect-ratio: 14 / 9;
+    margin-top: 2rem;
+  }
+  
+  .image-wrapper {
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  
+  /* 이미지가 1개일 때 */
+  .images-count-1 {
+    grid-template-columns: 1fr;
+  }
+  
+  .images-count-1 .image-wrapper {
+    border-radius: 15px;
+  }
+  
+  /* 이미지가 2개일 때 */
+  .images-count-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .images-count-2 .image-wrapper:first-child {
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+  }
+  
+  .images-count-2 .image-wrapper:last-child {
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+  }
+  
+  /* 이미지가 3개일 때 */
+  .images-count-3 {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+  
+  .images-count-3 .image-wrapper:first-child {
+    grid-column: 1 / -1;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+  }
+  
+  .images-count-3 .image-wrapper:nth-child(2) {
+    border-bottom-left-radius: 15px;
+  }
+  
+  .images-count-3 .image-wrapper:last-child {
+    border-bottom-right-radius: 15px;
+  }
+  
+  /* 이미지가 4개일 때 */
+  .images-count-4 {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+  
+  .images-count-4 .image-wrapper:first-child {
+    border-top-left-radius: 15px;
+  }
+  
+  .images-count-4 .image-wrapper:nth-child(2) {
+    border-top-right-radius: 15px;
+  }
+  
+  .images-count-4 .image-wrapper:nth-child(3) {
+    border-bottom-left-radius: 15px;
+  }
+  
+  .images-count-4 .image-wrapper:last-child {
+    border-bottom-right-radius: 15px;
+  }
+
+
 /* CreateFOrm */
 /* CreateFOrm */
 /* CreateFOrm */
