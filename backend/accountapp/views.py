@@ -9,8 +9,8 @@ from rest_framework.views import APIView
 from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from django.contrib.auth import get_user_model
 from accountapp.activation_token import account_activation_token
-from accountapp.models import User, Profile
-from accountapp.serializers import AccountCreateSerializer, ProfileSerializer
+from accountapp.models import User, Profile, AnimalProfile
+from accountapp.serializers import AccountCreateSerializer, ProfileSerializer, AnimalProfileSerializer, HumanProfileSerializer
 from mainapp.serializers import UserInfoSerializer
 from django.conf import settings
 from django.urls import reverse
@@ -130,15 +130,29 @@ class UserProfileUpdateAPI(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, slug, format=None):
-        user = get_object_or_404(User, username=slug)  # username을 slug로 사용
+        # slug로 User 객체를 찾습니다.
+        user = get_object_or_404(User, username=slug)
+        
+        # 현재 로그인한 사용자와 프로필 소유자가 일치하는지 확인
         if request.user != user:
             return Response({'error': '권한이 없습니다.'}, status=status.HTTP_403_FORBIDDEN)
-        profile, created = Profile.objects.get_or_create(user=user)
-        serializer = ProfileSerializer(profile, data=request.data)
+        
+        profile_data = request.data.copy()
+        profile_data.pop('username', None)  # username을 제외
+
+        if user.is_animal:
+            profile, created = AnimalProfile.objects.get_or_create(user=user)
+            serializer = AnimalProfileSerializer(profile, data=profile_data, partial=True)
+        else:
+            profile, created = Profile.objects.get_or_create(user=user)
+            serializer = HumanProfileSerializer(profile, data=profile_data, partial=True)
+        
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            updated_user = ProfileSerializer(user).data
+            return Response({'message': '프로필이 업데이트되었습니다.', 'profile': updated_user})
+        return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class UsernameRecoveryAPI(APIView):
     def post(self, request):

@@ -71,7 +71,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 # 동물인지 사람인지 따라 시리얼라이저 다르게 줘야됨.
 class BaseProfileSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source='user.username')
+    username = serializers.CharField(source='user.username', read_only=True)
     followers_count = serializers.SerializerMethodField()
     following_count = serializers.SerializerMethodField()
 

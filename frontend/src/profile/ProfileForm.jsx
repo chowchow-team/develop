@@ -1,29 +1,27 @@
 import React, { useState, useEffect, useContext } from 'react';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { UserContext } from '../UserContext';
 import { BackButton } from '../snippets';
-import defaultImg from '../static/img/logo.png';
-import {URLManagement, getCookie} from '../snippets';
-
+import { URLManagement, getCookie } from '../snippets';
 import './profile.css';
 
 function ProfileForm() {
     const [profile, setProfile] = useState({
         nickname: '',
         bio: '',
-        profilePic: '',
+        profilePic: null,
         profilePicPreview: ''
     });
     const [error, setError] = useState('');
-    const [tempMessage, setTempMessage] = useState('');
+    const [message, setMessage] = useState('');
 
     const { user } = useContext(UserContext);
     const navigate = useNavigate();
     const API_BASE_URL = URLManagement('http');
 
     useEffect(() => {
-        if (!user){
+        if (!user) {
             navigate('/login');
         } else if (user.username) {
             fetchProfile();
@@ -35,90 +33,84 @@ function ProfileForm() {
             const response = await axios.get(`${API_BASE_URL}/api/profile/${user.username}/`, {
                 withCredentials: true
             });
-            setProfile(response.data);
+            const profileData = response.data.profile || {};
+            setProfile(prevProfile => ({
+                ...prevProfile,
+                nickname: profileData.nickname || '',
+                bio: profileData.bio || '',
+                profilePicPreview: profileData.profile_pic ? `${API_BASE_URL}${profileData.profile_pic}` : ''
+            }));
         } catch (error) {
-            setError(error.response.data.message);
+            setError('프로필 정보를 불러오는데 실패했습니다');
             console.error('프로필 정보를 불러오는데 실패했습니다', error);
         }
     };
+
     const handleFileChange = (e) => {
         if (e.target.files[0]) {
-            setProfile({ ...profile, profilePic: e.target.files[0] });
+            const file = e.target.files[0];
+            setProfile(prevProfile => ({ ...prevProfile, profilePic: file }));
 
-            // 파일 미리보기를 위한 FileReader 사용
             const reader = new FileReader();
-            reader.onload = () => {
-                setProfile(prevProfile => ({ ...prevProfile, profilePicPreview: reader.result }));
+            reader.onload = (e) => {
+                setProfile(prevProfile => ({ ...prevProfile, profilePicPreview: e.target.result }));
             };
-            reader.readAsDataURL(e.target.files[0]);
+            reader.readAsDataURL(file);
         }
     };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setProfile({
-            ...profile,
+        setProfile(prevProfile => ({
+            ...prevProfile,
             [name]: value
-        });
+        }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const formData = new FormData();
-            const csrfToken=getCookie('csrftoken');
             formData.append('nickname', profile.nickname);
             formData.append('bio', profile.bio);
-            formData.append('username', user.username);
-            // 파일이 있는 경우에만 추가
             if (profile.profilePic) {
                 formData.append('profile_pic', profile.profilePic);
             }
+
+            const csrfToken = getCookie('csrftoken');
             await axios.post(`${API_BASE_URL}/api/profile/${user.username}/update/`, formData, {
                 headers: {
-                    'X-CSRFToken': csrfToken
+                    'X-CSRFToken': csrfToken,
+                    'Content-Type': 'multipart/form-data'
                 },
                 withCredentials: true
             });
-            const successMessage = '프로필이 업데이트되었습니다.';
-            setError(successMessage);
-            setTempMessage(successMessage);
-            setTimeout(() => setTempMessage(''), 5000);
 
+            setMessage('프로필이 업데이트되었습니다.');
+            setTimeout(() => setMessage(''), 5000);
         } catch (error) {
-            let firstErrorMessage = "";
-            const firstKey = Object.keys(error.response.data)[0];
-            if (firstKey && error.response.data[firstKey].length > 0) {
-                firstErrorMessage = error.response.data[firstKey][0];
+            let errorMessage = '프로필 업데이트에 실패했습니다.';
+            if (error.response && error.response.data) {
+                const errorData = error.response.data;
+                if (typeof errorData === 'string') {
+                    errorMessage = errorData;
+                } else if (typeof errorData === 'object') {
+                    errorMessage = Object.values(errorData).flat().join(', ');
+                }
             }
-
-            setError(firstErrorMessage); // 오류 메시지 상태 설정
-            // showTempMessage 함수 호출 대신 직접 tempMessage 상태를 설정하여 오류 메시지 표시
-            setTempMessage(firstErrorMessage);
-            setTimeout(() => setTempMessage(''), 5000);
+            setError(errorMessage);
+            setTimeout(() => setError(''), 5000);
         }
     };
-
-    const showTempMessage = (error) => {
-        setTempMessage(error); // 메시지 설정
-        setTimeout(() => {
-            setTempMessage(''); // 2초 후 메시지 제거
-        }, 2000);
-    };
-
-    useEffect(() => {
-        if (error) {
-            showTempMessage(error);
-        }
-    }, [error]);
 
     return (
         <div className='profile-page-container'>
             <BackButton />
-            {tempMessage && <div className='error'>{tempMessage}</div>}
+            {message && <div className='error'>{message}</div>}
+            {error && <div className='error'>{error}</div>}
             <form onSubmit={handleSubmit}>
                 <div className='profile-header'>
-                    <img src={profile.profilePicPreview||`${API_BASE_URL}${profile.profile_pic}`} alt="프로필 사진" />
+                    <img src={profile.profilePicPreview || `${API_BASE_URL}${profile?.profile_pic}`} alt="프로필 사진" />
                     <input
                         type="text"
                         name="nickname"
