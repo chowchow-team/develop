@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import PostRecentAPIView, PostFollowAPIView, PostControlAPIView, CommentControlAPIView, FollowRecommandAPIView,FollowRequestAPIView,FollowerListAPIView,FollowingListAPIView,UnfollowRequestAPIView,FollowCheckAPIView,UserPostListView
+from .views import PostRecentAPIView, PostFollowAPIView, PostControlAPIView, CommentControlAPIView, FollowRecommandAPIView,FollowRequestAPIView,FollowerListAPIView,FollowingListAPIView,UnfollowRequestAPIView,FollowCheckAPIView,UserPostListView,LikePostAPIView,UserLikedPostsAPIView
 
 app_name = 'main'
 
@@ -15,4 +15,7 @@ urlpatterns = [
     path('post/',PostControlAPIView.as_view(),name='post'),
     path('following/check/',FollowCheckAPIView.as_view(),name='follow_check'),
     path('post/<str:username>/', UserPostListView.as_view(), name='user-post-list'),
+    path('like/', LikePostAPIView.as_view(), name='like-post'),
+    path('liked-posts/', UserLikedPostsAPIView.as_view(), name='user-liked-posts'),
+
 ]

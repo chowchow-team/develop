@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Post,Comment,FollowList,PostImage
+from .models import Post,Comment,FollowList,PostImage,Like
 from accountapp.models import User, Profile
 from django.conf import settings
 #from bs4 import BeautifulSoup
@@ -39,13 +39,24 @@ class PostSerializer(serializers.ModelSerializer):
     comments_count = serializers.SerializerMethodField()
     user = UserInfoSerializer(read_only=True)
     user_id = serializers.IntegerField(write_only=True)
+    like_count = serializers.SerializerMethodField()
+    is_liked = serializers.SerializerMethodField()
 
     def get_comments_count(self, obj):
         return Comment.objects.filter(post=obj).count()
+    
+    def get_like_count(self, obj):
+        return obj.like_count()
+
+    def get_is_liked(self, obj):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user') and request.user.is_authenticated:
+            return Like.objects.filter(user=request.user, post=obj).exists()
+        return False
 
     class Meta:
         model = Post
-        fields = ['id', 'user', 'user_id', 'content', 'timestamp', 'images', 'comments_count', 'view_count']
+        fields = ['id', 'user', 'user_id', 'content', 'timestamp', 'images', 'comments_count', 'view_count', 'like_count', 'is_liked']
 
     def create(self, validated_data):
         images_data = self.context.get('images', [])
@@ -65,6 +76,12 @@ class PostSerializer(serializers.ModelSerializer):
             PostImage.objects.create(post=post, image=image_data)
         
         return post
+    
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
+        fields = ['id', 'user', 'post', 'created_at']
+
     
 class CommentSerializer(serializers.ModelSerializer):
     user = UserInfoSerializer(read_only=True)
@@ -112,8 +129,7 @@ class FollowingListSerializer(serializers.ModelSerializer):
 
     def get_profile_pic(self, obj):
         if obj.is_animal:
-            if obj.animalprofile.profile_pic:
-                return f"{obj.animalprofile.profile_pic_url}"
+            return obj.animalprofile.profile_pic_url
         else:
             if obj.profile.profile_pic:
                 return f"{settings.MEDIA_URL}{obj.profile.profile_pic}"

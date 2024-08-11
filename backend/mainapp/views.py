@@ -2,12 +2,13 @@ from django.shortcuts import render, get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Post,Comment,FollowList
+from .models import Post,Comment,FollowList,PostImage,Like
 from .serializers import PostSerializer,CommentSerializer,FollowListSerializer, FollowingListSerializer
 from django.contrib.auth import get_user_model
 from accountapp.serializers import AccountCreateSerializer
 from .services import FollowService
 import random
+from django.db import transaction
 
 User = get_user_model()
 
@@ -35,7 +36,7 @@ class PostRecentAPIView(APIView):
         posts = Post.objects.all().order_by('-timestamp')[offset:offset+limit+1]
         has_next = len(posts) > limit
         posts = posts[:limit]
-        serializer = PostSerializer(posts, many=True)
+        serializer = PostSerializer(posts, many=True, context={'request': request})
         return Response({
             "results": serializer.data,
             "next": has_next
@@ -79,17 +80,18 @@ class PostFollowAPIView(APIView):
         has_next = len(posts) > limit
         posts = posts[:limit]
         
-        serializer = PostSerializer(posts, many=True)
+        serializer = PostSerializer(posts, many=True, context={'request': request})
         
         return Response({
             "results": serializer.data,
             "next": has_next
         })
 
+'''
 class PostControlAPIView(APIView):
     def post(self, request):
         images = request.FILES.getlist('images')
-        serializer = PostSerializer(data=request.data, context={'images': images})
+        serializer = PostSerializer(data=request.data, context={'images': images, 'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -121,7 +123,38 @@ class PostControlAPIView(APIView):
                 return Response(PostSerializer(post).data)
         except Post.DoesNotExist:
             return Response({"status": "error", "message": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
-    
+ '''
+class PostControlAPIView(APIView):
+    def get(self, request):
+        post_id = request.GET.get('post_id')
+        if not post_id:
+            return Response({"status": "error", "message": "Post ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            post = Post.objects.get(id=post_id)
+            viewed_posts = request.COOKIES.get('viewed_posts', '')
+
+            if viewed_posts:
+                viewed_posts_list = viewed_posts.split(',')
+            else:
+                viewed_posts_list = []
+
+            if str(post_id) not in viewed_posts_list:
+                post.increment_view_count()
+                viewed_posts_list.append(str(post_id))
+                new_viewed_posts = ','.join(viewed_posts_list)
+                
+                serializer = PostSerializer(post, context={'request': request})
+                response = Response(serializer.data)
+                response.set_cookie('viewed_posts', new_viewed_posts, max_age=60*24*60*60)
+                return response
+            else:
+                serializer = PostSerializer(post, context={'request': request})
+                return Response(serializer.data)
+        except Post.DoesNotExist:
+            return Response({"status": "error", "message": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
+
+   
 class CommentControlAPIView(APIView):
     def post(self, request):
         post_id = request.data.get('post_id')
@@ -295,9 +328,40 @@ class UserPostListView(APIView):
         has_next = len(posts_page) > limit
         posts_page = posts_page[:limit]
 
-        serializer = PostSerializer(posts_page, many=True)
+        serializer = PostSerializer(posts_page, many=True, context={'request': request})
         
         return Response({
             "results": serializer.data,
             "has_next": has_next
         }, status=status.HTTP_200_OK)
+    
+
+
+class LikePostAPIView(APIView):
+    @transaction.atomic
+    def post(self, request):
+        post_id = request.data.get('post_id')
+        user = request.user
+
+        post = get_object_or_404(Post, id=post_id)
+        
+        like, created = Like.objects.get_or_create(user=user, post=post)
+        
+        if not created:
+            # 이미 좋아요를 눌렀다면 좋아요 취소
+            like.delete()
+            post.likes.remove(user)
+            status_msg = "unliked"
+        else:
+            post.likes.add(user)
+            status_msg = "liked"
+        
+        like_count = post.like_count()
+        return Response({"status": status_msg, "like_count": like_count}, status=status.HTTP_200_OK)
+    
+class UserLikedPostsAPIView(APIView):
+    def get(self, request):
+        user = request.user
+        liked_posts = Post.objects.filter(likes=user)
+        serializer = PostSerializer(liked_posts, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)

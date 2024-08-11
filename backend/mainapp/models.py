@@ -10,6 +10,7 @@ class Post(models.Model):
     #title = models.CharField(max_length=100)
     timestamp = models.DateTimeField(auto_now_add=True)
     view_count = models.IntegerField(default=0)
+    likes = models.ManyToManyField(User, related_name='liked_posts', blank=True)
 
     def __str__(self):
         return self.content[:30]
@@ -17,6 +18,18 @@ class Post(models.Model):
     def increment_view_count(self):
         self.view_count += 1
         self.save()
+    
+    def like_count(self):
+        return self.likes.count()
+
+class Like(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'post')
+
 
 class Comment(models.Model):
     user = models.ForeignKey(User,related_name='comment_writer',on_delete=models.CASCADE)
