@@ -16,6 +16,7 @@ function MainForm() {
     const limit = 10;
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const [activeTab, setActiveTab] = useState('recommend');
+    
 
     useEffect(() => {
         const handleResize = () => setWindowWidth(window.innerWidth);

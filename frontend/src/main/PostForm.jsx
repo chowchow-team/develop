@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import TruncateText from './TruncateText';
 import comment from '../static/img/comment.png';
-import view from '../static/img/view.png';
+import view from '../static/img/statistic.png';
 
 const PostForm = ({ post, formatDate }) => {
   return (

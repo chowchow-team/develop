@@ -5,6 +5,7 @@ import { getCookie } from '../snippets';
 import { UserContext } from '../UserContext';
 import { BackButton } from '../snippets';
 import comment from '../static/img/comment.png';
+import view from '../static/img/statistic.png';
 import { SEOMetaTag } from '../snippets';
 import './main.css'
 
@@ -229,6 +230,10 @@ function DetailForm() {
           <div className='post-detail-container__i-comment'>
             <img src={comment} alt="comment" />
             <p>{post.comments_count}</p>
+          </div>
+          <div className='post-detail-container__i-view'>
+            <img src={view} alt="view" />
+            <p>{post.view_count}</p>
           </div>
         </div>
         <div className='date-school'>

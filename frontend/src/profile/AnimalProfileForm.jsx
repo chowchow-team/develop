@@ -228,7 +228,7 @@ function AnimalProfileForm() {
                     role="tab"
                     aria-selected={activeTab === 'like'}
                 >
-                    좋아요
+                    상세정보
                 </button>
             </div>
             <div className='my-space-container__posts'>
