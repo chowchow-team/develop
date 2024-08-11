@@ -87,8 +87,9 @@ class PostFollowAPIView(APIView):
         })
 
 class PostControlAPIView(APIView): # 페이지 생성, 불러오기 -> 잘 작동함
-    def post(self,request):
-        serializer = PostSerializer(data=request.data)
+    def post(self, request):
+        images = request.FILES.getlist('images')
+        serializer = PostSerializer(data=request.data, context={'images': images})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

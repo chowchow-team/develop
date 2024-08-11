@@ -10,13 +10,15 @@ import camera from '../static/img/camera.png';
 function CreateForm() {
     const [content, setContent] = useState('');
     const API_BASE_URL = URLManagement('http');
-    const { user } = useContext(UserContext);
+    const { user, getUserId } = useContext(UserContext);
     const navigate = useNavigate();
 
     const [images, setImages] = useState([]);
     const [previewImages, setPreviewImages] = useState([]);
 
     const fileInputRef = useRef();
+
+    const userid= getUserId();
 
     const handleButtonClick = () => {
         if (images.length < 4) {
@@ -56,6 +58,7 @@ function CreateForm() {
         const csrfToken = getCookie('csrftoken');
         const formData = new FormData();
         formData.append('content', content);
+        formData.append('user_id', userid);
         images.forEach((image, index) => {
             formData.append('images', image, image.name);
         });

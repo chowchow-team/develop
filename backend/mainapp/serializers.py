@@ -38,19 +38,32 @@ class PostSerializer(serializers.ModelSerializer):
     images = PostImageSerializer(many=True, read_only=True)
     comments_count = serializers.SerializerMethodField()
     user = UserInfoSerializer(read_only=True)
+    user_id = serializers.IntegerField(write_only=True)
 
     def get_comments_count(self, obj):
         return Comment.objects.filter(post=obj).count()
 
     class Meta:
         model = Post
-        fields = ['id','user','content','timestamp','images','comments_count']
+        fields = ['id', 'user', 'user_id', 'content', 'timestamp', 'images', 'comments_count']
 
     def create(self, validated_data):
         images_data = self.context.get('images', [])
-        post = Post.objects.create(**validated_data)
+        user_id = validated_data.pop('user_id', None)
+        
+        if user_id is None:
+            raise serializers.ValidationError("User ID is required to create a post.")
+        
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("User with provided ID does not exist.")
+
+        post = Post.objects.create(user=user, **validated_data)
+        
         for image_data in images_data:
             PostImage.objects.create(post=post, image=image_data)
+        
         return post
     
 class CommentSerializer(serializers.ModelSerializer):
@@ -60,7 +73,7 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ['id','post','user','content','timestamp']
         read_only_fields = ['post']
-        
+
 class FollowListSerializer(serializers.ModelSerializer):
     class Meta:
         model = FollowList
