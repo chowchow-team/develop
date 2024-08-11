@@ -86,7 +86,7 @@ class PostFollowAPIView(APIView):
             "next": has_next
         })
 
-class PostControlAPIView(APIView): # 페이지 생성, 불러오기 -> 잘 작동함
+class PostControlAPIView(APIView):
     def post(self, request):
         images = request.FILES.getlist('images')
         serializer = PostSerializer(data=request.data, context={'images': images})
@@ -95,14 +95,32 @@ class PostControlAPIView(APIView): # 페이지 생성, 불러오기 -> 잘 작�
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self,request):
-        post_id = request.GET.get('post_id') #-> 'post_id'는 frontend에서 전달
+    def get(self, request):
+        post_id = request.GET.get('post_id')
+        if not post_id:
+            return Response({"status": "error", "message": "Post ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
             post = Post.objects.get(id=post_id)
+            viewed_posts = request.COOKIES.get('viewed_posts', '')
+
+            if viewed_posts:
+                viewed_posts_list = viewed_posts.split(',')
+            else:
+                viewed_posts_list = []
+
+            if str(post_id) not in viewed_posts_list:
+                post.increment_view_count()
+                viewed_posts_list.append(str(post_id))
+                new_viewed_posts = ','.join(viewed_posts_list)
+                
+                response = Response(PostSerializer(post).data)
+                response.set_cookie('viewed_posts', new_viewed_posts, max_age=60*24*60*60)
+                return response
+            else:
+                return Response(PostSerializer(post).data)
         except Post.DoesNotExist:
             return Response({"status": "error", "message": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
-        serializer = PostSerializer(post)
-        return Response(serializer.data)
     
 class CommentControlAPIView(APIView):
     def post(self, request):

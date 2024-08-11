@@ -212,17 +212,19 @@ function DetailForm() {
         <div className='post-detail-container__content'>
           <p>{post.content}</p>
         </div>
-        <div className={`post-detail-container__image images-count-${post.images.length}`}>
-          {post.images && post.images.map((image, index) => (
-            <div key={index} className="image-wrapper">
-            <img 
-                src={image.image} 
-                alt={`Post image ${index + 1}`} 
-                className="main-container__post-list-item-image"
-              />
-            </div>
-          ))}
-        </div>
+        {post.images && post.images.length > 0 && (
+          <div className={`post-detail-container__image images-count-${post.images.length}`}>
+            {post.images.map((image, index) => (
+              <div key={index} className="image-wrapper">
+                <img 
+                  src={image.image} 
+                  alt={`Post image ${index + 1}`} 
+                  className="main-container__post-list-item-image"
+                />
+              </div>
+            ))}
+          </div>
+        )}
         <div className='post-detail-container__i'>
           <div className='post-detail-container__i-comment'>
             <img src={comment} alt="comment" />

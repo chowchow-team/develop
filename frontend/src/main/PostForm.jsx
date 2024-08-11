@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import TruncateText from './TruncateText';
 import comment from '../static/img/comment.png';
+import view from '../static/img/view.png';
 
 const PostForm = ({ post, formatDate }) => {
   return (
@@ -36,6 +37,10 @@ const PostForm = ({ post, formatDate }) => {
             <div className='main-container__post-list-item-i-comment'>
               <img src={comment} alt="comment" />
               <p>{post.comments_count}</p>
+            </div>
+            <div className='main-container__post-list-item-i-view'>
+              <img src={view} alt="view" />
+              <p>{post.view_count}</p>
             </div>
           </div>
           <div className='date-school'>

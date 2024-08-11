@@ -13,6 +13,10 @@ class Post(models.Model):
 
     def __str__(self):
         return self.content[:30]
+    
+    def increment_view_count(self):
+        self.view_count += 1
+        self.save()
 
 class Comment(models.Model):
     user = models.ForeignKey(User,related_name='comment_writer',on_delete=models.CASCADE)
