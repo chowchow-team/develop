@@ -103,8 +103,8 @@ class PostControlAPIView(APIView): # 페이지 생성, 불러오기 -> 잘 작�
         serializer = PostSerializer(post)
         return Response(serializer.data)
     
-class CommentControlAPIView(APIView): # Post에 작성된 comment를 get하거나 comment를 생성하는 것
-    def post(self,request):
+class CommentControlAPIView(APIView):
+    def post(self, request):
         post_id = request.data.get('post_id')
         if not post_id:
             return Response({"error": "post_id is required"}, status=status.HTTP_400_BAD_REQUEST)
@@ -114,16 +114,34 @@ class CommentControlAPIView(APIView): # Post에 작성된 comment를 get하거�
             return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
         serializer = CommentSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(user=request.user,post=post)
+            serializer.save(user=request.user, post=post)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self,request):
-        post_id = 11 #request.GET.get('post_id') -> 프론트엔드에서 전송함
-        post = Post.objects.get(id=post_id)
-        comment = Comment.objects.get(post=post)
-        serializer = CommentSerializer(comment)
-        return Response(serializer.data)
+    def get(self, request):
+        post_id = request.GET.get('post_id')
+        if not post_id:
+            return Response({"error": "post_id is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        limit = int(request.GET.get('limit', 10))
+        offset = int(request.GET.get('offset', 0))
+        
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        comments = Comment.objects.filter(post=post).order_by('-timestamp')[offset:offset+limit+1]
+        
+        has_next = len(comments) > limit
+        comments = comments[:limit]
+        
+        serializer = CommentSerializer(comments, many=True)
+        
+        return Response({
+            "results": serializer.data,
+            "next": has_next
+        })
 
 
 class FollowRecommandAPIView(APIView): # 동작함 -> 본인이 추천되는 것만 빼자

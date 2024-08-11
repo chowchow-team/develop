@@ -54,10 +54,13 @@ class PostSerializer(serializers.ModelSerializer):
         return post
     
 class CommentSerializer(serializers.ModelSerializer):
+    user = UserInfoSerializer(read_only=True)
+
     class Meta:
         model = Comment
         fields = ['id','post','user','content','timestamp']
         read_only_fields = ['post']
+        
 class FollowListSerializer(serializers.ModelSerializer):
     class Meta:
         model = FollowList

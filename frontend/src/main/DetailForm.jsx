@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { getCookie } from '../snippets';
@@ -13,13 +13,17 @@ function DetailForm() {
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
   const [commentContent, setCommentContent] = useState('');
-  const { user } = useContext(UserContext);
+  const { user, getUserId } = useContext(UserContext);
   const navigate = useNavigate();
   const [offset, setOffset] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
+
+  const [allCommentsLoaded, setAllCommentsLoaded] = useState(false);
+
   const limit = 10;
+  const userid = getUserId();
 
   const formatDate = (dateStr) => {
     const postDate = new Date(dateStr);
@@ -91,23 +95,10 @@ function DetailForm() {
     }
   }, [user, post]);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (
-        window.innerHeight + document.documentElement.scrollTop + 1 >=
-        document.documentElement.scrollHeight &&
-        !isLoading &&
-        hasMore
-      ) {
-        fetchAdditionalComments();
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [isLoading, hasMore, offset]);
+  
 
-  const fetchAdditionalComments = async () => {
-    if (isLoading || !hasMore) return;
+  const fetchAdditionalComments = useCallback(async () => {
+    if (isLoading || !hasMore || allCommentsLoaded) return;
     setIsLoading(true);
     try {
       const response = await axios.get(`/api/main/comment/?post_id=${pk}&limit=${limit}&offset=${offset}`);
@@ -118,13 +109,30 @@ function DetailForm() {
         setHasMore(response.data.next);
       } else {
         setHasMore(false);
+        setAllCommentsLoaded(true);
       }
     } catch (error) {
       console.error("Error fetching additional comments: ", error);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isLoading, hasMore, allCommentsLoaded, pk, limit, offset]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + document.documentElement.scrollTop + 1 >=
+        document.documentElement.scrollHeight &&
+        !isLoading &&
+        hasMore &&
+        !allCommentsLoaded
+      ) {
+        fetchAdditionalComments();
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isLoading, hasMore, allCommentsLoaded, fetchAdditionalComments]);
 
   const addComment = async (e) => {
     e.preventDefault();
@@ -132,7 +140,8 @@ function DetailForm() {
     try {
       const response = await axios.post(`/api/main/comment/`, { 
         content: commentContent,
-        post_id: pk
+        post_id: pk,
+        user: userid
       }, {
         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
         withCredentials: true
@@ -192,8 +201,7 @@ function DetailForm() {
           <p className='post-detail-container__copylink' onClick={handleCopyLink}>링크복사</p>
         }
         <Link to={`/profile/${post.user.username}`}>
-        <div className='post-detail-container-profile'>
-          
+        <div className='post-detail-container-profile'> 
             <img src={post.user.profile_pic} alt="" />
             <div className='post-detail-container-profile-name'>
                 <p className='nickname'>{post.user.nickname}</p>
@@ -246,8 +254,19 @@ function DetailForm() {
         <div className="comments-section">
           {comments.map((comment, index) => (
             <div key={`${comment.id}-${index}`} className="comment-item">
-              <p>{comment.content}</p>
-              <p className='post-detail-container__comment-time'>{formatDate(comment.created_at)}</p>
+              <div className='comment-writer-profile'>
+                <Link to={`/profile/${comment.user.username}`}>
+                  <img src={comment.user.profile_pic} alt="" />
+                </Link>
+                <div className='comment-writer-profile-name'>
+                  <Link to={`/profile/${comment.user.username}`}>
+                    <p className='nickname'>{comment.user.nickname}</p>
+                  </Link>
+                  <p className='username'>@{comment.user.username}</p>
+                </div>
+              </div>
+              <p className='content'>{comment.content}</p>
+              <p className='post-detail-container__comment-time'>{formatDate(comment.timestamp)}</p>
             </div>
           ))}
         </div>

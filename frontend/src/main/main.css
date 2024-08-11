@@ -716,6 +716,8 @@
 .post-detail-container__comment-time {
     font-size: 0.75rem;
     color: #94969B;
+    margin-top: 1rem;
+    margin-left: 50px;
 }
 
 
@@ -799,6 +801,26 @@
 .alert-comment > a {
     color: #F07489;
 }
+
+.post-detail-container .comments-section .comment-writer-profile {
+    display: flex;
+    margin-bottom: 1rem;
+}
+.post-detail-container .comments-section .comment-writer-profile img{
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    margin-right: 1rem;
+}
+
+.post-detail-container .comments-section .comment-writer-profile-name .username {
+    font-size: 1rem;
+    color: #9DA6B5;
+}
+.post-detail-container .comments-section .content {
+    margin-left: 50px;
+}
+
 
 @media (max-width: 768px) {
     .post-detail-container__title {
