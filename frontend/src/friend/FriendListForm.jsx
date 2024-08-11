@@ -118,6 +118,7 @@ function FriendListForm() {
                     friend.id === following_id ? { ...friend, isFollowing: false } : friend
                 )
             );
+            console.log(friends);
         } catch (err) {
             if (err.response) {
                 setError(err.response.data.error)

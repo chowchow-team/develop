@@ -336,7 +336,7 @@
 }
 .main-container__post-list-item-i-view {
     display: flex;
-    margin-right: 2rem;
+    margin-right: 1rem;
 }
 .main-container__post-list-item-i-view > img{
     height: 16px;
@@ -347,6 +347,14 @@
     margin-right: 1rem;
 }
 .main-container__post-list-item-i-comment > img{
+    height: 16px;
+    margin-right: .5rem;
+}
+.main-container__post-list-item-i-like {
+    display: flex;
+    margin-right: 1rem;
+}
+.main-container__post-list-item-i-like > img{
     height: 16px;
     margin-right: .5rem;
 }

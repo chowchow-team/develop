@@ -26,39 +26,19 @@ function ProfileDetailForm() {
 
     const [activeTab, setActiveTab] = useState('mypost');
     const [posts, setPosts] = useState([]);
-    const [offset, setOffset] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
-    const [hasMore, setHasMore] = useState(true);
-    const limit = 10;
-    const [isFollowing, setFollowing ] = useState(null);
+    const [isFollowing, setFollowing] = useState(null);
 
     const isOwnProfile = user && user.username === username;
 
     useEffect(() => {
-       fetchProfile();
-    }, [user, navigate, username,isFollowing]);
+        fetchProfile();
+    }, [user, navigate, username, isFollowing]);
 
     useEffect(() => {
         setPosts([]);
-        setOffset(0);
-        setHasMore(true);
-        fetchInitialPosts();
+        fetchPosts();
     }, [activeTab, username]);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            if (
-                window.innerHeight + document.documentElement.scrollTop + 1 >=
-                document.documentElement.scrollHeight &&
-                !isLoading &&
-                hasMore
-            ) {
-                fetchMorePosts();
-            }
-        };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, [isLoading, hasMore, offset]);
 
     const fetchProfile = async () => {
         try {
@@ -72,80 +52,69 @@ function ProfileDetailForm() {
         }
     };
 
-    const fetchInitialPosts = async () => {
+    const fetchPosts = async () => {
         setIsLoading(true);
         try {
-            const addr = activeTab === 'mypost' ? `/api/main/post/${username}/` : `/api/profile/${username}/likes/`;
-            const response = await axios.get(`${API_BASE_URL}${addr}?limit=${limit}&offset=0`, {
-                withCredentials: true
-            });
-            setPosts(response.data.results);
-            setOffset(response.data.results.length);
-            setHasMore(response.data.next);
+            let response;
+            if (activeTab === 'mypost') {
+                response = await axios.get(`${API_BASE_URL}/api/main/post/${username}/`, {
+                    withCredentials: true
+                });
+                setPosts(response.data.results);  // mypost의 경우 results 배열을 저장
+            } else if (activeTab === 'like') {
+                response = await axios.get(`${API_BASE_URL}/api/main/liked-posts/`, {
+                    withCredentials: true
+                });
+                setPosts(response.data);  // like의 경우 바로 데이터를 저장
+            }
+            
+            console.log('Fetched posts:', response.data);
             setIsLoading(false);
         } catch (error) {
-            console.error('게시물을 불러오는데 실패했습니다', error);
-            setIsLoading(false);
-        }
-    };
-
-    const fetchMorePosts = async () => {
-        setIsLoading(true);
-        try {
-            const addr = activeTab === 'mypost' ? `/api/main/post/${username}/` : `/api/profile/${username}/likes/`;
-            const response = await axios.get(`${API_BASE_URL}${addr}?limit=${limit}&offset=${offset}`, {
-                withCredentials: true
-            });
-            setPosts(prev => [...prev, ...response.data.results]);
-            setOffset(prevOffset => prevOffset + response.data.results.length);
-            setHasMore(response.data.next);
-            setIsLoading(false);
-        } catch (error) {
-            console.error('추가 게시물을 불러오는데 실패했습니다', error);
+            console.error('게시물을 불러오는데 실패했습니다', error.response?.data || error.message);
+            setPosts([]);
             setIsLoading(false);
         }
     };
 
     const handleFollowClick = async (following_id) => {
         try {
-            const user_id = 1; // 현재 사용자의 사용자 id로 대체
+            const user_id = user.id; // 현재 사용자의 ID 사용
             const response = await axios.post(`${API_BASE_URL}/api/main/follow/request/`, {
-                    following_id: following_id,
-                    follower_id: user_id
-                }
-            );
+                following_id: following_id,
+                follower_id: user_id
+            });
             setFollowing(true);
         } catch (err) {
-            console.assert("following_id not found");
+            console.error("팔로우 요청 실패", err);
         }
     };
 
-    const checkFollow = async (mans_id) =>{
+    const checkFollow = async (mans_id) => {
         try {
             const response = await axios.get(`${API_BASE_URL}/api/main/following/check/`, {
-                params:{
-                    user_id : mans_id, // 팔로우 하려는 상대
-                    follower_id: 1 //나
+                params: {
+                    user_id: mans_id, // 팔로우 하려는 상대
+                    follower_id: user.id // 현재 사용자
                 }
             });
             setFollowing(response.data.isFollowing);
         } catch (err) {
-            console.error(`Following update failed for friend }`, err);
+            console.error(`팔로우 상태 확인 실패`, err);
         }
-    }
+    };
+
     const handleUnfollowClick = async (following_id) => {
         try {
-            const user_id = 1;
-            const response = await axios.post(`${API_BASE_URL}/api/main/unfollow/request/`,{
-                following_id : following_id,
-                follower_id : user_id
+            const user_id = user.id;
+            const response = await axios.post(`${API_BASE_URL}/api/main/unfollow/request/`, {
+                following_id: following_id,
+                follower_id: user_id
             });
+            setFollowing(false);
         } catch (err) {
-            if (err.response) {
-                console.log('follow_id not found');
-            }
+            console.error('언팔로우 요청 실패', err);
         }
-        setFollowing(false);
     };
 
     const formatDate = (dateStr) => {
@@ -172,7 +141,13 @@ function ProfileDetailForm() {
             return `${diffYears}년 전`;
         }
     };
-    checkFollow(50);
+
+    useEffect(() => {
+        if (profile.id) {
+            checkFollow(profile.id);
+        }
+    }, [profile]);
+
     return (
         <div className='my-space-container'>
             <div className='my-space-container__profile'>
@@ -189,7 +164,7 @@ function ProfileDetailForm() {
                             ) : (
                                 <button 
                                     className='follow-btn'
-                                    onClick={() => isFollowing ? handleUnfollowClick(50) : handleFollowClick(50)}
+                                    onClick={() => isFollowing ? handleUnfollowClick(profile.id) : handleFollowClick(profile.id)}
                                 >
                                     {isFollowing ? '언팔로우' : '팔로우'}
                                 </button>
@@ -197,12 +172,11 @@ function ProfileDetailForm() {
                         </div>
                         
                         <p className='username'>@{username}</p>
-                        <p className='bio'>{profile.is_animal? '':profile.profile?.bio || profile.bio}</p>
+                        <p className='bio'>{profile.is_animal? '' : profile.profile?.bio || profile.bio}</p>
                         
                     </div>
                 </div>
                 <div className='my-space-container__profile-follow'>
-                    {/* profile.nickname을 props로 넘기기 */}
                     <Link to={`/profile/followlist/${username}/follower`} state={{ nickname: profile.profile?.nickname }}>
                         <p className='follower'>팔로워 <span>{profile.followers_count}</span></p>
                     </Link>
@@ -221,44 +195,46 @@ function ProfileDetailForm() {
                     게시물
                 </button>
                 {profile.is_animal ? 
-                
-                <button
-                    className={`like-btn ${activeTab === 'animal-detail' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('animal-detail')}
-                    role="tab"
-                    aria-selected={activeTab === 'animal-detail'}
-                >
-                    상세정보
-                </button>
-                :
-                <button
-                    className={`like-btn ${activeTab === 'like' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('like')}
-                    role="tab"
-                    aria-selected={activeTab === 'like'}
-                >
-                    좋아요
-                </button>}
+                    <button
+                        className={`like-btn ${activeTab === 'animal-detail' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('animal-detail')}
+                        role="tab"
+                        aria-selected={activeTab === 'animal-detail'}
+                    >
+                        상세정보
+                    </button>
+                    :
+                    <button
+                        className={`like-btn ${activeTab === 'like' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('like')}
+                        role="tab"
+                        aria-selected={activeTab === 'like'}
+                    >
+                        좋아요
+                    </button>
+                }
             </div>
             {activeTab !== 'animal-detail' &&
-            <div className='my-space-container__posts'>
-                {posts.length > 0 ? (
-                    <ul className="main-container__post-list">
-                        {posts.map((post) => (
-                            <PostForm key={post.id} post={post} formatDate={formatDate} />
-                        ))}
-                    </ul>
-                ) : (
-                    <p>등록된 게시물이 없습니다</p>
-                )}
-                {isLoading && <p>로딩 중...</p>}
-            </div>}
+                <div className='my-space-container__posts'>
+                    {isLoading ? (
+                        <p>로딩 중...</p>
+                    ) : posts && posts.length > 0 ? (
+                        <ul className="main-container__post-list">
+                            {posts.map((post) => (
+                                <PostForm key={post.id} post={post} formatDate={formatDate} />
+                            ))}
+                        </ul>
+                    ) : (
+                        <p>{activeTab === 'like' ? '좋아요한 게시물이 없습니다' : '등록된 게시물이 없습니다'}</p>
+                    )}
+                </div>
+            }
             {activeTab === 'animal-detail' && 
-            <div className='my-space-container__posts'>
-                <p>품종: {profile?.profile.breed}</p>
-                <p>나이: {profile?.profile.age}</p>
-                <p>성별: {profile?.profile.sex}</p>
-            </div>
+                <div className='my-space-container__posts'>
+                    <p>품종: {profile?.profile.breed}</p>
+                    <p>나이: {profile?.profile.age}</p>
+                    <p>성별: {profile?.profile.sex}</p>
+                </div>
             }
         </div>
     );

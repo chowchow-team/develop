@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { useNavigate, useParams, useLocation, Link } from 'react-router-dom';
 import { BackButton } from '../snippets';
 import { UserContext } from "../UserContext";
 import { URLManagement, getCookie } from '../snippets';
@@ -142,6 +142,7 @@ function UserFollowListForm() {
             {friends.length > 0 ? (
                 <ul className="friendList">
                     {friends.map((friend, index) => (
+                        <Link to={`/profile/${friend.username}`}>
                         <li key={index} className="friendItem">
                             <img src={`${friend.profile_pic}`} alt="Profile" className="friendProfilePic" />
                             <div className="friendInfo">
@@ -160,6 +161,7 @@ function UserFollowListForm() {
                                 </button>
                             )}
                         </li>
+                        </Link>
                     ))}
                 </ul>
             ) : (
