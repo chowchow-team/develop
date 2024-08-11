@@ -8,9 +8,9 @@ const PostForm = ({ post, formatDate }) => {
     <Link to={`/feed/posts/${post.id}`} className="main-container__post-link">
       <li key={post.id} className="main-container__post-list-item">
         <div className='main-container__post-list-item-profile'>
-          <img src={post.user.profile_pic} alt="" />
+          <Link to={`/profile/${post.user.username}`}><img src={post.user.profile_pic} alt="" /></Link>
           <div className='main-container__post-list-item-profile-name'>
-            <p className='nickname'>{post.user.nickname}</p>
+          <Link to={`/profile/${post.user.username}`}><p className='nickname'>{post.user.nickname}</p></Link>
             <p className='username'>@{post.user.username}</p>
           </div>
         </div>

@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import {MainForm, NavForm, DetailForm, CreateForm} from './main';
 import { SignupForm, LoginForm, LogoutForm, FindIDForm, FindPWForm, ResetPWForm, SettingForm, SignupRedirect } from './account';
-import { ProfileForm, ManProfileForm, UserFollowListForm } from './profile';
+import { ProfileForm, ProfileDetailForm, UserFollowListForm } from './profile';
 import { ChatForm, DMForm, TestForm } from './chat';
 import { FriendListForm } from './friend';
 import { NotFoundForm, FooterForm, PrepareForm} from './snippets';
@@ -23,7 +23,7 @@ function App() {
                     <Route path="/logout" element={<LogoutForm />} />
                     <Route path="/chat" element={<ChatForm />} />
                     <Route path="/profile/edit" element={<ProfileForm />} />
-                    <Route path="/profile/m/:username" element={<ManProfileForm />} />
+                    <Route path="/profile/:username" element={<ProfileDetailForm />} />
                     <Route path="/profile/followlist/:username/:flag" element={<UserFollowListForm />} />
                     <Route path="/friend" element={<FriendListForm />} />
                     <Route path="/dm/:id" element={<DMForm />} />

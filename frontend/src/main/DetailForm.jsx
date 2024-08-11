@@ -191,13 +191,16 @@ function DetailForm() {
           :
           <p className='post-detail-container__copylink' onClick={handleCopyLink}>링크복사</p>
         }
+        <Link to={`/profile/${post.user.username}`}>
         <div className='post-detail-container-profile'>
+          
             <img src={post.user.profile_pic} alt="" />
             <div className='post-detail-container-profile-name'>
                 <p className='nickname'>{post.user.nickname}</p>
                 <p className='username'>@{post.user.username}</p>
             </div>
         </div>
+        </Link>
         <div className='post-detail-container__content'>
           <p>{post.content}</p>
         </div>

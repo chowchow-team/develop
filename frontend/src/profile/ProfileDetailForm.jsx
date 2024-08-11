@@ -9,7 +9,7 @@ import PostForm from '../main/PostForm';
 
 import './profile.css';
 
-function ManProfileForm() {
+function ProfileDetailForm() {
     const [profile, setProfile] = useState({
         nickname: '',
         bio: '',
@@ -35,12 +35,6 @@ function ManProfileForm() {
     const isOwnProfile = user && user.username === username;
 
     useEffect(() => {
-        /*
-        if (!user) {
-            navigate('/login');
-        } else {
-            fetchProfile();
-        }*/
        fetchProfile();
     }, [user, navigate, username,isFollowing]);
 
@@ -115,7 +109,7 @@ function ManProfileForm() {
     const handleFollowClick = async (following_id) => {
         try {
             const user_id = 1; // 현재 사용자의 사용자 id로 대체
-            const response = await axios.post('http://localhost:8000/api/main/follow/request/', {
+            const response = await axios.post(`${API_BASE_URL}/api/main/follow/request/`, {
                     following_id: following_id,
                     follower_id: user_id
                 }
@@ -128,7 +122,7 @@ function ManProfileForm() {
 
     const checkFollow = async (mans_id) =>{
         try {
-            const response = await axios.get('http://localhost:8000/api/main/following/check/', {
+            const response = await axios.get(`${API_BASE_URL}/api/main/following/check/`, {
                 params:{
                     user_id : mans_id, // 팔로우 하려는 상대
                     follower_id: 1 //나
@@ -142,7 +136,7 @@ function ManProfileForm() {
     const handleUnfollowClick = async (following_id) => {
         try {
             const user_id = 1;
-            const response = await axios.post('http://localhost:8000/api/main/unfollow/request/',{
+            const response = await axios.post(`${API_BASE_URL}/api/main/unfollow/request/`,{
                 following_id : following_id,
                 follower_id : user_id
             });
@@ -270,4 +264,4 @@ function ManProfileForm() {
     );
 }
 
-export default ManProfileForm;
+export default ProfileDetailForm;
