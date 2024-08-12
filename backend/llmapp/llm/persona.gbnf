@@ -1,0 +1,10 @@
+root ::= input output
+input ::= "종: " species "\n이름: " name "\n성별: " gender "\n현재시간: " time "\n성격: " personality "\n\n"
+species ::= "강아지(리트리버)" | "고양이" | "햄스터" | [가-힣]+
+name ::= [가-힣]+
+gender ::= "남자" | "여자"
+time ::= ("오전" | "오후") " " [0-9]+ "시"
+personality ::= [^\n]+
+output ::= paragraph
+paragraph ::= sentence+ 
+sentence ::= [^.!?]+ ("." | "!" | "?")
