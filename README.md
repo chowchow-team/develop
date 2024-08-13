@@ -59,4 +59,4 @@ python manage.py crontab remove # 크론탭제거
 
 ```
 
-test
+test2

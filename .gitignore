@@ -3,7 +3,7 @@ venv/
 ivenv/
 .idea/
 __pycache__/
-#backend/media/
+backend/media/
 db.sqlite3
 backend/llmapp/llm/
 backend/*/migrations/__pycache__/
