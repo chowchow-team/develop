@@ -259,7 +259,8 @@ class FollowingListAPIView(APIView):
         followings = User.objects.filter(id__in=following_ids).select_related('profile', 'animalprofile')
         serializer = FollowingListSerializer(followings, many=True)
         return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
-    
+
+"""
 class FollowRequestAPIView(APIView):
     def post(self, request):
         following_id = request.data.get('following_id')
@@ -274,21 +275,70 @@ class FollowRequestAPIView(APIView):
         FollowService.follow(follower, following)
         
         return Response({"status": "success"}, status=status.HTTP_201_CREATED)
+"""
+class FollowRequestAPIView(APIView):
+    def post(self, request):
+        following_id = request.data.get('following_id')
+        follower_id = request.data.get('follower_id')
+
+        if not following_id or not follower_id:
+            return Response({"status": "error", "message": "Both follower and following identifiers are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            follower = self.get_user(follower_id)
+            following = self.get_user(following_id)
+        except User.DoesNotExist:
+            return Response({"status": "error", "message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        FollowService.follow(follower, following)
+        
+        return Response({"status": "success"}, status=status.HTTP_201_CREATED)
+
+    def get_user(self, identifier):
+        """
+        Get user by id or username
+        """
+        if isinstance(identifier, int) or identifier.isdigit():
+            return User.objects.get(id=int(identifier))
+        else:
+            return User.objects.get(username=identifier)
+
 
 class UnfollowRequestAPIView(APIView):
     def post(self, request):
         following_id = request.data.get('following_id')
         follower_id = request.data.get('follower_id')
 
+        if not following_id or not follower_id:
+            return Response({
+                "message": "Both follower_id and following_id are required",
+                "status": "error"
+            }, status=status.HTTP_400_BAD_REQUEST)
+
         try:
-            follower = User.objects.get(id=follower_id)
-            following = User.objects.get(id=following_id)
+            follower = self.get_user(follower_id)
+            following = self.get_user(following_id)
         except User.DoesNotExist:
-            return Response({"status": "error", "message": "User not found"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({
+                "message": "User not found",
+                "status": "error"
+            }, status=status.HTTP_404_NOT_FOUND)
 
         FollowService.unfollow(follower, following)
         
-        return Response({"status": "success"}, status=status.HTTP_200_OK)
+        return Response({
+            "message": "Successfully unfollowed",
+            "status": "success"
+        }, status=status.HTTP_200_OK)
+
+    def get_user(self, identifier):
+        """
+        Get user by id or username
+        """
+        if isinstance(identifier, int) or (isinstance(identifier, str) and identifier.isdigit()):
+            return User.objects.get(id=int(identifier))
+        else:
+            return User.objects.get(username=identifier)
 
 
 class FollowCheckAPIView(APIView): #frontend에서 follow <-> unfollow 버튼 전환을 위해 사용

@@ -19,7 +19,7 @@ function ProfileDetailForm() {
         following_count: 0,
     });
 
-    const { user } = useContext(UserContext);
+    const { user, getUserId } = useContext(UserContext);
     const navigate = useNavigate();
     const { username } = useParams();
     const API_BASE_URL = URLManagement('http');
@@ -30,7 +30,7 @@ function ProfileDetailForm() {
     const [isFollowing, setFollowing] = useState(null);
 
     const isOwnProfile = user && user.username === username;
-
+    const userid= getUserId();
     useEffect(() => {
         fetchProfile();
     }, [user, navigate, username, isFollowing]);
@@ -91,6 +91,7 @@ function ProfileDetailForm() {
     };
 
     const checkFollow = async (mans_id) => {
+        console.log('checkFollow', mans_id);
         try {
             const response = await axios.get(`${API_BASE_URL}/api/main/following/check/`, {
                 params: {
@@ -106,10 +107,9 @@ function ProfileDetailForm() {
 
     const handleUnfollowClick = async (following_id) => {
         try {
-            const user_id = user.id;
             const response = await axios.post(`${API_BASE_URL}/api/main/unfollow/request/`, {
                 following_id: following_id,
-                follower_id: user_id
+                follower_id: user.id
             });
             setFollowing(false);
         } catch (err) {
@@ -147,7 +147,7 @@ function ProfileDetailForm() {
             checkFollow(profile.id);
         }
     }, [profile]);
-
+    console.log('profile', profile);
     return (
         <div className='my-space-container'>
             <div className='my-space-container__profile'>
@@ -164,7 +164,7 @@ function ProfileDetailForm() {
                             ) : (
                                 <button 
                                     className='follow-btn'
-                                    onClick={() => isFollowing ? handleUnfollowClick(profile.id) : handleFollowClick(profile.id)}
+                                    onClick={() => isFollowing ? handleUnfollowClick(username) : handleFollowClick(username)}
                                 >
                                     {isFollowing ? '언팔로우' : '팔로우'}
                                 </button>
