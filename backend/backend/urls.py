@@ -26,5 +26,6 @@ urlpatterns = [
     path('api/chat/', include('chatapp.urls')),
     path('api/notification/', include('notificationapp.urls')),
     path('api/community/', include('communityapp.urls')),
-    path('api/main/',include('mainapp.urls'))
+    path('api/main/',include('mainapp.urls')),
+    path('api/llm/', include('llmapp.urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

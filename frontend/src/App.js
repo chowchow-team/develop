@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import {MainForm, NavForm, DetailForm, CreateForm} from './main';
 import { SignupForm, LoginForm, LogoutForm, FindIDForm, FindPWForm, ResetPWForm, SettingForm, SignupRedirect } from './account';
 import { ProfileForm, ProfileDetailForm, UserFollowListForm } from './profile';
-import { ChatForm, DMForm, TestForm } from './chat';
+import { ChatForm, DMForm, TestForm, AnimalDMForm } from './chat';
 import { FriendListForm } from './friend';
 import { NotFoundForm, FooterForm, PrepareForm} from './snippets';
 import { CMainForm, CCreateForm, CDetailForm } from './community';
@@ -27,6 +27,7 @@ function App() {
                     <Route path="/profile/followlist/:username/:flag" element={<UserFollowListForm />} />
                     <Route path="/friend" element={<FriendListForm />} />
                     <Route path="/dm/:id" element={<DMForm />} />
+                    <Route path="/animal-dm/:username" element={<AnimalDMForm />} />
                     <Route path="/find-id" element={<FindIDForm />} />
                     <Route path="/find-pw" element={<FindPWForm />} />
                     <Route path="/password-reset/:uidb64/:token" element={<ResetPWForm />} />

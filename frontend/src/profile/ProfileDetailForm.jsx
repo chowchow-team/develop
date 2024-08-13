@@ -173,7 +173,7 @@ function ProfileDetailForm() {
                         
                         <p className='username'>@{username}</p>
                         <p className='bio'>{profile.is_animal? '' : profile.profile?.bio || profile.bio}</p>
-                        
+                        <Link to={`/animal-dm/${username}`}>메세지</Link>
                     </div>
                 </div>
                 <div className='my-space-container__profile-follow'>
