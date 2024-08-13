@@ -10,12 +10,12 @@ error_exit() {
 
 path=$(pwd)
 
-python -m venv ivenv || error_exit "Failed to create virtual environment"
+python3 -m venv ivenv || error_exit "Failed to create virtual environment"
 . ivenv/bin/activate || error_exit "Failed to activate virtual environment"
-pip install -r "$path/backend/requirements.txt" || error_exit "Failed to install requirements"
+pip3 install -r "$path/backend/requirements.txt" || error_exit "Failed to install requirements"
 
 # llama-cpp-python (Metal 지원) > cpu 버전 설치된 상태일 경우 삭제 후 Metal 지원 버전 설치하도록함
-CMAKE_ARGS="-DLLAMA_METAL=on" FORCE_CMAKE=1 pip install --upgrade --force-reinstall llama-cpp-python --no-cache-dir || error_exit "Failed to install llama-cpp-python with Metal support"
+CMAKE_ARGS="-DLLAMA_METAL=on" FORCE_CMAKE=1 pip3 install --upgrade --force-reinstall llama-cpp-python --no-cache-dir || error_exit "Failed to install llama-cpp-python with Metal support"
 
 
 cd "$path/backend" || error_exit "Failed to change directory to backend"
