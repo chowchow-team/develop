@@ -137,8 +137,6 @@ def llm_post(user):
 
     # 0에서 6 사이의 랜덤한 정수를 생성
     num = user.char_num
-    print("!"*30)
-    print(num)
     if True:
         # 입력 데이터
         logger.info(f"Animal profile data: {profile_data}")
