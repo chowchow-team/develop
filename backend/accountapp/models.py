@@ -51,6 +51,7 @@ class User(AbstractBaseUser):
     email = models.EmailField(max_length=255, unique=True, null=True, blank=True)
     username = models.CharField(max_length=20, null=False,
                                 unique=True, validators=[username_pattern])
+    char_num = models.IntegerField(default=-1)
     is_active = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
