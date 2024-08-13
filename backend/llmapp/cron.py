@@ -8,17 +8,35 @@ from langchain_core.callbacks import CallbackManager, StreamingStdOutCallbackHan
 from langchain_core.prompts import PromptTemplate
 from django.contrib.auth import get_user_model
 import django
+import logging
+from django.conf import settings
 
 # Add the project root to the Python path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+#sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+#sys.path.append(os.path.join(os.path.dirname(__file__), '../../'))
+
+current_dir = os.path.dirname(os.path.abspath(__file__)) #'/develop/backend'
+backend_dir = os.path.dirname(current_dir)
+sys.path.append(backend_dir)
 
 # Set up Django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings.local')
 django.setup()
 
+MODEL_PATH = os.path.join(current_dir, "llm", "EEVEQ4.gguf")
+
 from accountapp.serializers import ProfileSerializer
 from mainapp.models import Post
 from mainapp.serializers import PostSerializer
+
+# 로깅 설정
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler(os.path.join(settings.BASE_DIR, 'llm_post.log'))
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 def extract_text_from_html(html_content):
     # HTML 태그 제거
@@ -27,8 +45,8 @@ def extract_text_from_html(html_content):
     text = re.sub(r'\s+', ' ', text)
     return text.strip()
 
-
 def llm_post(user):
+    logger.info(f"Starting llm_post for user: {user.username}")
     # 프롬프트 템플릿 설정
     profile = ProfileSerializer(user)
     profile_data = profile.data
@@ -45,7 +63,7 @@ def llm_post(user):
 
     # LlamaCpp 모델 초기화
     llm = LlamaCpp(
-        model_path="./llm/EEVEQ4.gguf",  # 모델 경로를 정확히 입력
+        model_path=MODEL_PATH,
         n_gpu_layers=n_gpu_layers,  # GPU 레이어 수 설정
         n_batch=n_batch,  # 배치 크기 설정
         f16_kv=True,  # f16_kv 설정 활성화 
@@ -55,7 +73,7 @@ def llm_post(user):
     )
 
     # 입력 데이터
-    print(f"동물의 프로필은: {profile_data}")
+    logger.info(f"Animal profile data: {profile_data}")
     input_text = f"""종: {profile_data['profile']['species']}
     이름: {profile_data['profile']['nickname']}
     성별: {profile_data['profile']['sex']}
@@ -69,9 +87,6 @@ def llm_post(user):
     자랑은 아닙니다,, ㅎㅎㅎ 젊게 사는 게 좋지요~~,, 꽃 한 송이 놓구 갑니다~~@>~~~~
     """
 
-    #prompt = f"{input_text}이정보가 너에 대한 정보야. 너가 이 정보의 인물이라고 가정하고, 200자 정도 짧은 일상글을 생성하는게 너의 목표야. 글은 1인칭으로 작성되어야해. 말투는 아래와 같이 해야해: {output_style}"
-    #prompt = f"{input_text}위 정보를 바탕으로 해당 동물의 페르소나를 가지고 300자 정도의 짧은 일상글을 생성해주세요. 1인칭 시점에서 작성해주세요."
-
     prompt = f"""
     {input_text}
 
@@ -83,26 +98,34 @@ def llm_post(user):
     이제 글을 작성해줘.
     """
 
+    logger.info("Generating post content")
     # 모델에 프롬프트를 전달하고 응답을 받음
     response = llm.invoke(prompt)
 
-    # 결과 출력
+    logger.info(f"Generated post content for user {user.username}: {response[:100]}...")  # 처음 100자만 로깅
     post = Post(user=user, content=response.strip(), view_count=0)
-    post.save()  # 데이터베이스에 저장
+    post.save()
+    logger.info(f"Post saved for user {user.username} with ID: {post.id}")
 
     return post
 
 User = get_user_model()
 
 def update_animals():
+    logger.info("Starting update_animals function")
+    logger.info(f"Current working directory: {os.getcwd()}")
     users = User.objects.filter(is_animal=True)[:5]
-    print(users or None)
-    # llm_post 함수가 이제 Post 객체를 반환하여 자동으로 저장합니다.
+    logger.info(f"Found {len(users)} animal users to update")
+    
     for user in users:
-        post = llm_post(user)
-        print(f"Post created for user {user.username}: {post.content}")
+        try:
+            post = llm_post(user)
+            logger.info(f"Successfully created post for user {user.username}: {post.id}")
+        except Exception as e:
+            logger.error(f"Error creating post for user {user.username}: {str(e)}")
 
 if __name__ == "__main__":
+    logger.info("Script started")
+    logger.info(f"Current working directory: {os.getcwd()}")
     update_animals()
-
-
+    logger.info("Script completed")
