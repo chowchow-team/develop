@@ -50,8 +50,8 @@ def llm_post(user):
     # 프롬프트 템플릿 설정
     profile = ProfileSerializer(user)
     profile_data = profile.data
-    template = """Question: {question}
-    Answer: Let's work this out in a step by step way to be sure we have the right answer."""
+    template = """요청: {question}
+    답변: 사용자의 요청을 정확하게 반영하여 답변합니다."""
     prompt = PromptTemplate.from_template(template)
 
     # 콜백 관리자를 설정하여 출력 스트리밍 지원
@@ -69,8 +69,26 @@ def llm_post(user):
         f16_kv=True,  # f16_kv 설정 활성화 
         callback_manager=callback_manager,  # 콜백 관리자 설정
         verbose=True,  # 자세한 로그 출력을 위해 활성화
-        n_threads=20,  # 스레드 수 설정 
+        n_threads=8,  # 스레드 수 설정 
     )
+    
+    characters = ["쾌활하지만 철학적인 사고를 자주함","음식을 좋아하는 미식가임. 음식의 특징을 잘 파악하며 소탈할 말투로 음식 리뷰글을 씀",]
+    output_styles = ["""
+    허허,,, 저랑은 좀,, 반대네요,,, 손주 학교 앞에 가면,,, 형이냐구 막;;; 물어보던디;;; ㅎㅎㅎ,,,
+    자랑은 아닙니다,, ㅎㅎㅎ 젊게 사는 게 좋지요~~,, 꽃 한 송이 놓구 갑니다~~@>~~~~
+    """,
+    """
+    ✨더미식 비빔면✨
+
+    평점: 8.5/10
+
+    볶은 고추와 육수로 만들어진 매콤한 양념장에 다양한 과일이 들어가서 상큼하고도 달콤하면서도 또 매콤한 밸런스가 잘 어울리는 조합이었소이다. 
+    고기와 함께 먹는 비빔면으로 이 제품을 추천하오. 팔도비빔면에 비해서 면발이 조금 굵은 느낌이었소.
+    """,
+    """
+    
+    """
+    ]
 
     # 입력 데이터
     logger.info(f"Animal profile data: {profile_data}")
@@ -78,13 +96,8 @@ def llm_post(user):
     이름: {profile_data['profile']['nickname']}
     성별: {profile_data['profile']['sex']}
     현재시간: 오후 1시
-    성격: 쾌활하지만 철학적인 사고를 자주함
+    성격: {character}
     말투 예시: 
-    """
-
-    output_style="""
-    허허,,, 저랑은 좀,, 반대네요,,, 손주 학교 앞에 가면,,, 형이냐구 막;;; 물어보던디;;; ㅎㅎㅎ,,,
-    자랑은 아닙니다,, ㅎㅎㅎ 젊게 사는 게 좋지요~~,, 꽃 한 송이 놓구 갑니다~~@>~~~~
     """
 
     prompt = f"""
