@@ -177,13 +177,11 @@ User = get_user_model()
 def update_animals():
     logger.info("Starting update_animals function")
     logger.info(f"Current working directory: {os.getcwd()}")
-    users = User.objects.filter(is_animal=True)[10:13]
+    users = User.objects.filter(is_animal=True)
     logger.info(f"Found {len(users)} animal users to update")
     for user in users:
         try:
             post = llm_post(user)
-            print("!"*30)
-            print(user.char_num)
             logger.info(f"Successfully created post for user {user.username}: {post.id}")
         except Exception as e:
             logger.error(f"Error creating post for user {user.username}: {str(e)}")
