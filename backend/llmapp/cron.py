@@ -96,7 +96,7 @@ def llm_post(user):
     이름: {profile_data['profile']['nickname']}
     성별: {profile_data['profile']['sex']}
     현재시간: 오후 1시
-    성격: {character}
+    성격: {characters}
     말투 예시: 
     """
 
@@ -106,7 +106,7 @@ def llm_post(user):
     이제, 마치 너가 {input_text}에 설명된 인물이라 생각하고, SNS에 올릴 짧고 일상적인 글을 작성해줘. 이 글은 약 200자 정도로, 쾌활하면서도 철학적인 사고를 반영해야 해. 또한, 아래의 예시와 같은 친근하고 유머러스한 말투를 사용해야 해.
 
     스타일 예시:
-    {output_style}
+    {output_styles}
 
     이제 글을 작성해줘.
     """
