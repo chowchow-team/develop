@@ -19,7 +19,7 @@
 ```
 
 
-쉘파일 실패시:
+쉘파일 실패 시:
 ``` bash
 0. clone시 lfs 를 필요로 합니다.
 git lfs install
