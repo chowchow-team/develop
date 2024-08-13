@@ -30,9 +30,9 @@ incremental==22.10.0
 Jinja2==3.1.4
 jsonpatch==1.33
 jsonpointer==3.0.0
-langchain==0.2.13
-langchain-community==0.2.12
-langchain-core==0.2.30
+langchain==0.2.12
+langchain-community==0.2.11
+langchain-core==0.2.29
 langchain-text-splitters==0.2.2
 langsmith==0.1.99
 llama_cpp_python==0.2.87
@@ -56,6 +56,7 @@ PyYAML==6.0.2
 redis==5.0.1
 requests==2.32.3
 service-identity==24.1.0
+setuptools==72.1.0
 six==1.16.0
 SQLAlchemy==2.0.32
 sqlparse==0.4.4
@@ -63,7 +64,7 @@ tenacity==8.5.0
 Twisted==23.10.0
 txaio==23.1.1
 typing-inspect==0.9.0
-typing_extensions==4.9.0
+typing_extensions==4.12.2
 urllib3==2.2.2
 whitenoise==6.6.0
 yarl==1.9.4
