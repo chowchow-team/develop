@@ -8,6 +8,19 @@
 
 ## How to start
 ``` bash
+0813: 자동화설정을 추가했음
+1. develop/backend/.env 추가
+2. chmod +x initialize.sh
+3. ./initialize.sh
+4. cd develop/backend
+5. daphne -p 8000 backend.asgi:application
+6. cd develop/frontend
+7. npm start
+```
+
+
+쉘파일 실패시:
+``` bash
 0. clone시 lfs 를 필요로 합니다.
 git lfs install
 git clone "~~~" 
