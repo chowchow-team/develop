@@ -25,7 +25,6 @@ INSTALLED_APPS = [
     'chatapp',
     'friendapp',
     'notificationapp',
-    'communityapp',
     'mainapp',
     'django_crontab',
     
