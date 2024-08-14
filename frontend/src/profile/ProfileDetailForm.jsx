@@ -74,7 +74,9 @@ function ProfileDetailForm() {
             console.log('Fetched posts:', response.data);
             setIsLoading(false);
         } catch (error) {
-            alert('게시물을 불러오는데 실패했습니다.');
+            if(activeTab !== 'animal-detail'){
+                alert('게시물을 불러오는데 실패했습니다');
+            }
             setPosts([]);
             setIsLoading(false);
         }
