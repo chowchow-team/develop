@@ -1,0 +1,5 @@
+/Users/aiden-kwak/Web/chow1.3/develop/backend/accountapp/cron.py:33: B113[bandit]: MEDIUM: Requests call without timeout
+/Users/aiden-kwak/Web/chow1.3/develop/backend/accountapp/cron.py:77: B113[bandit]: MEDIUM: Requests call without timeout
+/Users/aiden-kwak/Web/chow1.3/develop/backend/accountapp/cron.py:104: B311[bandit]: LOW: Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+/Users/aiden-kwak/Web/chow1.3/develop/backend/chatapp/consumers.py:125: B311[bandit]: LOW: Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+/Users/aiden-kwak/Web/chow1.3/develop/backend/llmapp/cron.py:49: B311[bandit]: LOW: Standard pseudo-random generators are not suitable for security/cryptographic purposes.

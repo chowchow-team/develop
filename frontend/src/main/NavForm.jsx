@@ -36,11 +36,13 @@ function NavForm() {
             }
         }
     };
+    /*
     useEffect(() => {
         if (user) {
             checkNotifications();
         }
     }, [user, location]);
+    */
 
     const toggleMenu = (event) => {
         event.stopPropagation();
@@ -118,7 +120,7 @@ function NavForm() {
                   </Link>
                   <ul>
                       <li><Link to="/"><span>홈</span></Link></li>
-                      {user && <li><Link to={`/profile/m/${user.username}`}><span>프로필</span></Link></li>}
+                      {user && <li><Link to={`/profile/${user.username}`}><span>프로필</span></Link></li>}
                       <li><Link to="/setting"><span>계정관리</span></Link></li>
                       <li><Link to="/community"><span>메세지</span></Link></li>
                       <li>
