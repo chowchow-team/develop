@@ -32,8 +32,6 @@ CHANNEL_LAYERS = {
 }
 
 CSRF_TRUSTED_ORIGINS = [
-    'http://15.165.203.242',
-    'https://15.165.203.242',
     'https://챠우챠우(미정).com',
 ]
 

@@ -22,8 +22,11 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth import update_session_auth_hash
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
+from django_ratelimit.decorators import ratelimit
+from django.utils.decorators import method_decorator 
 
-class AccountCreateAPI(APIView):
+class AccountCreateAPI(APIView): # ip 기준 분당 5회 요청 제한으로 DoS 공격 방지함
+    @method_decorator(ratelimit(key='ip', rate='5/h', method=['POST'], block=True))
     def post(self, request):
         serializer = AccountCreateSerializer(data=request.data)
         if serializer.is_valid():
@@ -87,6 +90,7 @@ class ActivateAccountAPI(APIView):
         
 # 로그인
 class LoginAPI(APIView):
+    @method_decorator(ratelimit(key='ip', rate='5/h', method=['POST'], block=True))
     def post(self, request, format=None):
         username = request.data.get("username")
         password = request.data.get("password")
@@ -107,16 +111,6 @@ class LogoutAPI(APIView):
         logout(request) 
         return Response({"message": "로그아웃 되었습니다."}, status=status.HTTP_200_OK)
 
-'''
-class UserProfileDetailAPI(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get(self, request, slug, format=None):
-        user = get_object_or_404(User, username=slug)
-        profile = get_object_or_404(Profile, user=user)
-        serializer = ProfileSerializer(profile)
-        return Response(serializer.data)
-'''
 
 class UserProfileDetailAPI(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -128,7 +122,7 @@ class UserProfileDetailAPI(APIView):
 
 class UserProfileUpdateAPI(APIView):
     permission_classes = [permissions.IsAuthenticated]
-
+    @method_decorator(ratelimit(key='ip', rate='5/h', method=['POST'], block=True))
     def post(self, request, slug, format=None):
         # slug로 User 객체를 찾습니다.
         user = get_object_or_404(User, username=slug)
@@ -155,6 +149,7 @@ class UserProfileUpdateAPI(APIView):
 
 
 class UsernameRecoveryAPI(APIView):
+    @method_decorator(ratelimit(key='ip', rate='5/h', method=['POST'], block=True))
     def post(self, request):
         email = request.data.get('email')
         user_model = get_user_model()
@@ -183,6 +178,7 @@ class UsernameRecoveryAPI(APIView):
         return Response({'message': '귀하의 아이디 정보를 이메일로 전송하였습니다.'}, status=status.HTTP_200_OK)
 
 class PasswordResetRequestAPI(APIView): # 등록된 이메일인지확인, 새로운 비밀번호 전송
+    @method_decorator(ratelimit(key='ip', rate='5/h', method=['POST'], block=True))
     def post(self, request):
         email = request.data.get('email')
         user_model = get_user_model()

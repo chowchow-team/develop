@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'notificationapp',
     'mainapp',
     'django_crontab',
+    'django_ratelimit',
     
     'django.contrib.admin',
     'django.contrib.auth',
@@ -53,15 +54,19 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware', # 개발용
 ]
 
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
 
 
 # Channels ASGI interface 세팅
 ASGI_APPLICATION = 'backend.asgi:application'
-
-#CORS_ALLOW_ORIGINS = [
-#    'http://localhost:3000',
-#    'http://localhost:8000',
-#]
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
