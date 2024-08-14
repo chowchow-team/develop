@@ -74,8 +74,8 @@ function SignupForm() {
                 title='챠우챠우: 회원가입'
                 description='[회원가입하기] 챠우챠우'
                 keywords='챠우챠우, 유기동물, 유기견, 유기묘, 입양'
-                image='https://mongles.com/og_image.png'
-                url='https://mongles.com/signup/'
+                image='https://챠우챠우(미정).com/og_image.png'
+                url='https://챠우챠우(미정).com/signup/'
             />
             <div className='logo-img'>
                 <img src={logo} alt="Logo" />

@@ -72,14 +72,14 @@ class ActivateAccountAPI(APIView):
             if settings.DEBUG:
                 return HttpResponseRedirect('http://localhost:3000/login')
             else:
-                return HttpResponseRedirect('https://mongles.com/login')
+                return HttpResponseRedirect('https://챠우챠우(미정).com/login')
         else:
             if user is not None and user.is_active==False:
                 user.delete()
             if settings.DEBUG:
                 return HttpResponseRedirect('http://localhost:3000/login')
             else:
-                return HttpResponseRedirect('https://mongles.com/login')
+                return HttpResponseRedirect('https://챠우챠우(미정).com/login')
             #print('이메일 인증이 실패하였습니다.') # 검토후 삭제
             #return Response({'message': '이메일 인증이 실패하였습니다.'})
         
@@ -169,7 +169,7 @@ class UsernameRecoveryAPI(APIView):
         html_message = render_to_string('accountapp/recover_username_email.html', {
             'username': user.username,
             #'domain': current_site.domain,
-            'domain': "mongles.com",
+            'domain': "챠우챠우(미정).com",
         })
         send_mail(
             subject=mail_subject, 

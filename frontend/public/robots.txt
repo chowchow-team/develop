@@ -9,4 +9,4 @@ Allow : /
 User-agent: Yeti
 Allow: /
 
-Sitemap: https://mongles.com/sitemap.xml
+Sitemap: https://챠우챠우(미정).com/sitemap.xml
