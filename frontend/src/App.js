@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import {MainForm, NavForm, DetailForm, CreateForm} from './main';
 import { SignupForm, LoginForm, LogoutForm, FindIDForm, FindPWForm, ResetPWForm, SettingForm, SignupRedirect } from './account';
 import { ProfileForm, ProfileDetailForm, UserFollowListForm } from './profile';
-import { ChatForm, DMForm, TestForm, AnimalDMForm } from './chat';
+import { AnimalDMForm } from './chat';
 import { FriendListForm } from './friend';
 import { NotFoundForm, FooterForm, PrepareForm} from './snippets';
 
@@ -20,12 +20,10 @@ function App() {
                     <Route path="/signup" element={<SignupForm />} />
                     <Route path="/login" element={<LoginForm />} />
                     <Route path="/logout" element={<LogoutForm />} />
-                    <Route path="/chat" element={<ChatForm />} />
                     <Route path="/profile/edit" element={<ProfileForm />} />
                     <Route path="/profile/:username" element={<ProfileDetailForm />} />
                     <Route path="/profile/followlist/:username/:flag" element={<UserFollowListForm />} />
                     <Route path="/friend" element={<FriendListForm />} />
-                    <Route path="/dm/:id" element={<DMForm />} />
                     <Route path="/animal-dm/:username" element={<AnimalDMForm />} />
                     <Route path="/find-id" element={<FindIDForm />} />
                     <Route path="/find-pw" element={<FindPWForm />} />

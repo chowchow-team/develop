@@ -39,9 +39,8 @@ function AnimalDMForm() {
                 withCredentials: true
             });
             setProfile(response.data);
-            console.log(profile);
         } catch (error) {
-            console.error('프로필 정보를 불러오는데 실패했습니다', error);
+            alert('프로필 정보를 불러오는데 실패했습니다');
         }
     };
 
@@ -57,7 +56,7 @@ function AnimalDMForm() {
                     });
                     setChat(response.data);
                 } catch (error) {
-                    console.error('Failed to fetch chat data:', error);
+                    alert('채팅 내용을 불러오는데 실패했습니다');
                 }
             }
         };
@@ -103,7 +102,7 @@ function AnimalDMForm() {
             setChat(response.data.reverse());
         })
         .catch(error => {
-            console.error('채팅 내용을 불러오는데 실패했습니다.', error);
+            alert('채팅 내용을 불러오는데 실패했습니다');
         });
     }, [username]);
 
@@ -141,7 +140,7 @@ function AnimalDMForm() {
             setIsLoading(false);
         })
         .catch(error => {
-            console.error('응답을 받아오는데 실패했습니다.', error);
+            alert('메시지 전송 중 오류가 발생했습니다.');
             setIsLoading(false);
         });
         if (inputRef.current) inputRef.current.value = '';

@@ -81,7 +81,6 @@ function MainForm() {
             setHasMore(!!response.data.next);
             setIsLoading(false);
         } catch (error) {
-            console.error(error);
             setIsLoading(false);
         }
     };
@@ -95,7 +94,7 @@ function MainForm() {
             setHasMore(!!response.data.next);
             setIsLoading(false);
         } catch (error) {
-            console.error(error);
+            alert('게시물을 불러오는데 실패했습니다');
             setIsLoading(false);
         }
     };

@@ -25,7 +25,7 @@ const LikeButton = ({ postId, likeCount, isLiked, onLikeToggle }) => {
       const newLikeCount = response.data.like_count;
       onLikeToggle(newIsLiked, newLikeCount);
     } catch (error) {
-      console.error('Error toggling like:', error);
+      alert('좋아요를 업데이트하는데 실패했습니다.');
     }
   };
 
@@ -45,7 +45,7 @@ const PostForm = ({ post, formatDate }) => {
     setIsLiked(liked);
     setLikeCount(newCount);
   }, []);
-  console.log(post);
+
   return (
     <Link to={`/feed/posts/${post.id}`} className="main-container__post-link">
       <li key={post.id} className="main-container__post-list-item">

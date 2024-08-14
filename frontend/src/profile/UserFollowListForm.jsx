@@ -56,7 +56,6 @@ function UserFollowListForm() {
                         isFollowing: response.data.isFollowing
                     });
                 } catch (err) {
-                    console.error(`Following update failed for friend with ID ${friend.id}`, err);
                     setError("팔로우 상태를 업데이트하는 데 실패했습니다.");
                 }
             }
@@ -64,7 +63,6 @@ function UserFollowListForm() {
             setFriends(updatedFriends);
         } catch (error) {
             setError("친구 목록을 불러오는 데 실패했습니다.");
-            console.error("친구 목록을 불러오는 데 실패했습니다.", error);
         }
     };
 

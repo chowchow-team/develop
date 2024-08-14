@@ -26,7 +26,7 @@ export const UserProvider = ({ children }) => {
                     localStorage.removeItem('userData');
                 }
             } catch (error) {
-                console.error('Failed to parse stored user data:', error);
+                alert('로그인 정보를 불러오는 중 오류가 발생했습니다.');
                 localStorage.removeItem('userData');
             }
         }

@@ -61,7 +61,7 @@ function DetailForm() {
           navigate('/');
         })
         .catch(error => {
-          console.error("Error deleting the post: ", error);
+          alert('게시물 삭제에 실패했습니다.');
         });
     }
   };
@@ -77,7 +77,7 @@ function DetailForm() {
         setOffset(commentsResponse.data.results.length);
         setHasMore(commentsResponse.data.next);
       } catch (error) {
-        console.error("Error loading the post or comments: ", error);
+        alert('게시물을 불러오는데 실패했습니다.');
       }
     };
 
@@ -91,7 +91,7 @@ function DetailForm() {
           setIsFollowing(response.data.isFollowing);
         })
         .catch(error => {
-          console.error("Error checking follow status: ", error);
+          alert('팔로우 상태를 불러오는데 실패했습니다.');
         });
     }
   }, [user, post]);
@@ -113,7 +113,7 @@ function DetailForm() {
         setAllCommentsLoaded(true);
       }
     } catch (error) {
-      console.error("Error fetching additional comments: ", error);
+      alert('댓글을 불러오는데 실패했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -150,7 +150,7 @@ function DetailForm() {
       setComments(prev => [response.data, ...prev]);
       setCommentContent('');
     } catch (error) {
-      console.error("Error adding a comment: ", error);
+      alert('댓글을 추가하는데 실패했습니다.');
     }
   };
 
@@ -180,7 +180,7 @@ function DetailForm() {
       }
       setIsFollowing(!isFollowing);
     } catch (error) {
-      console.error("Error following/unfollowing user: ", error);
+      alert('팔로우 상태를 업데이트하는데 실패했습니다.');
     }
   };
 

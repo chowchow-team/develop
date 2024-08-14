@@ -51,7 +51,7 @@ function ProfileDetailForm() {
             setProfile(response.data);
             console.log(profile);
         } catch (error) {
-            console.error('프로필 정보를 불러오는데 실패했습니다', error);
+            alert('프로필 정보를 불러오는데 실패했습니다');
         }
     };
 
@@ -74,7 +74,7 @@ function ProfileDetailForm() {
             console.log('Fetched posts:', response.data);
             setIsLoading(false);
         } catch (error) {
-            console.error('게시물을 불러오는데 실패했습니다', error.response?.data || error.message);
+            alert('게시물을 불러오는데 실패했습니다.');
             setPosts([]);
             setIsLoading(false);
         }
@@ -89,7 +89,7 @@ function ProfileDetailForm() {
             });
             setFollowing(true);
         } catch (err) {
-            console.error("팔로우 요청 실패", err);
+            alert('팔로우 요청에 실패했습니다.');
         }
     };
 
@@ -104,7 +104,7 @@ function ProfileDetailForm() {
             });
             setFollowing(response.data.isFollowing);
         } catch (err) {
-            console.error(`팔로우 상태 확인 실패`, err);
+            alert('팔로우 상태를 불러오는데 실패했습니다.');
         }
     };
 
@@ -116,7 +116,7 @@ function ProfileDetailForm() {
             });
             setFollowing(false);
         } catch (err) {
-            console.error('언팔로우 요청 실패', err);
+            alert('언팔로우 요청에 실패했습니다.');
         }
     };
 

@@ -19,7 +19,7 @@ function LogoutForm() {
                 withCredentials: true
             });
         } catch (error) {
-            console.error('Logout API call failed:', error);
+            alert('로그아웃 중 오류가 발생했습니다.');
         } finally {
             clearUser();
             navigate('/', { replace: true });

@@ -76,7 +76,20 @@ function CreateForm() {
                 navigate('/');
             })
             .catch(error => {
-                console.log('게시글 생성 오류:', error);
+                if(error.response){
+                    if(error.response.status === 401){
+                        alert('로그인이 필요합니다.');
+                        navigate('/login');
+                    } else if(error.response.status === 400){
+                        alert('게시물을 작성하는데 실패했습니다.');
+                    } else if(error.response.status === 500){
+                        alert('이미지 형식은 jpg, jpeg, png만 가능합니다.');
+                    } else{
+                        alert('서버와의 통신이 원활하지 않습니다.');
+                    }
+                }else{
+                    alert('서버와의 통신이 원활하지 않습니다.');
+                }   
             });
     };
 

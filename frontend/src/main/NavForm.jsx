@@ -26,24 +26,6 @@ function NavForm() {
     const isDMPath = dmPath.some((regex) => location.pathname.match(regex));
     const shouldHideNav = (hideNavOnPaths.includes(location.pathname) || isDMPath) && isMobile;
 
-    const checkNotifications = async () => {
-        if (user) {
-            try {
-                const response = await axios.get(`${API_BASE_URL}/api/notification/check-notification`, { withCredentials: true });
-                setHasNotification(response.data.message === "You have notifications");
-            } catch (error) {
-                console.error("알림 상태 확인 실패", error);
-            }
-        }
-    };
-    /*
-    useEffect(() => {
-        if (user) {
-            checkNotifications();
-        }
-    }, [user, location]);
-    */
-
     const toggleMenu = (event) => {
         event.stopPropagation();
         setIsMenuOpen(!isMenuOpen);

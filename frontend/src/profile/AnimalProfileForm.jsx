@@ -19,7 +19,7 @@ function AnimalProfileForm() {
         following_count: 0,
     });
 
-    const { user } = useContext(UserContext);
+    const { user, getUserId } = useContext(UserContext);
     const navigate = useNavigate();
     const { username } = useParams();
     const API_BASE_URL = URLManagement('http');
@@ -35,12 +35,6 @@ function AnimalProfileForm() {
     const isOwnProfile = user && user.username === username;
 
     useEffect(() => {
-        /*
-        if (!user) {
-            navigate('/login');
-        } else {
-            fetchProfile();
-        }*/
        fetchProfile();
     }, [user, navigate, username,isFollowing]);
 
@@ -73,7 +67,7 @@ function AnimalProfileForm() {
             });
             setProfile(response.data);
         } catch (error) {
-            console.error('프로필 정보를 불러오는데 실패했습니다', error);
+            alert('프로필 정보를 불러오는데 실패했습니다');
         }
     };
 
@@ -89,7 +83,7 @@ function AnimalProfileForm() {
             setHasMore(response.data.next);
             setIsLoading(false);
         } catch (error) {
-            console.error('게시물을 불러오는데 실패했습니다', error);
+            alert('게시물을 불러오는데 실패했습니다');
             setIsLoading(false);
         }
     };
@@ -106,15 +100,15 @@ function AnimalProfileForm() {
             setHasMore(response.data.next);
             setIsLoading(false);
         } catch (error) {
-            console.error('추가 게시물을 불러오는데 실패했습니다', error);
+            alert('게시물을 불러오는데 실패했습니다');
             setIsLoading(false);
         }
     };
 
     const handleFollowClick = async (following_id) => {
         try {
-            const user_id = 1; // 현재 사용자의 사용자 id로 대체
-            const response = await axios.post('http://localhost:8000/api/main/follow/request/', {
+            const user_id = getUserId(); // 현재 사용자의 사용자 id로 대체
+            const response = await axios.post(`${API_BASE_URL}/api/main/follow/request/`, {
                     following_id: following_id,
                     follower_id: user_id
                 }
@@ -127,27 +121,35 @@ function AnimalProfileForm() {
 
     const checkFollow = async (mans_id) =>{
         try {
-            const response = await axios.get('http://localhost:8000/api/main/following/check/', {
+            const response = await axios.get(`${API_BASE_URL}/api/main/following/check/`, {
                 params:{
                     user_id : mans_id, // 팔로우 하려는 상대
-                    follower_id: 1 //나
+                    follower_id: getUserId() //나
                 }
             });
             setFollowing(response.data.isFollowing);
         } catch (err) {
-            console.error(`Following update failed for friend }`, err);
+            alert('팔로우 상태를 불러오는데 실패했습니다.');
         }
     }
     const handleUnfollowClick = async (following_id) => {
         try {
-            const user_id = 1;
-            const response = await axios.post('http://localhost:8000/api/main/unfollow/request/',{
+            const user_id = getUserId();
+            const response = await axios.post(`${API_BASE_URL}/api/main/unfollow/request/`,{
                 following_id : following_id,
                 follower_id : user_id
             });
         } catch (err) {
             if (err.response) {
-                console.log('follow_id not found');
+                if (err.response.status === 404) {
+                    alert('팔로우 관계를 찾을 수 없습니다.');
+                } else if (err.response.status === 400) {
+                    alert('잘못된 요청입니다. 다시 시도해 주세요.');
+                }
+            } else if (err.request) {
+                alert('서버와의 통신 중 오류가 발생했습니다. 네트워크 연결을 확인해 주세요.');
+            } else {
+                alert('오류가 발생했습니다. 다시 시도해 주세요.');
             }
         }
         setFollowing(false);
