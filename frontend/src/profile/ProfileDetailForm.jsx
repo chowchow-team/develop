@@ -161,7 +161,34 @@ function ProfileDetailForm() {
         };
     };
 
-    console.log('profile', profile);
+    const YouTubeEmbed = ({ url }) => {
+        if (!url) return null;
+      
+        // YouTube URL에서 비디오 ID 추출
+        const getYouTubeId = (url) => {
+          const parts = url.split('/');
+          return parts[parts.length - 1];
+        };
+      
+        const videoId = getYouTubeId(url);
+      
+        if (!videoId) return <p>유효하지 않은 YouTube URL입니다.</p>;
+      
+        return (
+          <div className="video-responsive">
+            <iframe
+              width="853"
+              height="480"
+              src={`https://www.youtube.com/embed/${videoId}`}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              title="Embedded youtube"
+            />
+          </div>
+        );
+    };
+
     return (
         <div className='my-space-container'>
             <div className='my-space-container__profile'>
@@ -244,17 +271,20 @@ function ProfileDetailForm() {
                 </div>
             }
             {activeTab === 'animal-detail' && 
-                <div className='my-space-container__posts'>
-                    <p>이름: {profile?.profile.nickname}</p>
-                    <p>품종: {profile?.profile.species} & {profile?.profile.kind}</p>
-                    <p>나이: {profile?.profile.age}</p>
-                    <p>성별: {profile?.profile.sex}</p>
-                    <p>보호소: {profile?.profile.center}</p>
-                    <p></p>
-                    <div>동물정보:
+                <div className='my-space-container__posts__animaldetail'>
+                    <p className='nickname'><span>이름</span> {profile?.profile.nickname}</p>
+                    <p className='species'><span>품종</span> {profile?.profile.species} / {profile?.profile.kind}</p>
+                    <p className='age'><span>나이</span> {profile?.profile.age}</p>
+                    <p className='sex'><span>성별</span> {profile?.profile.sex}</p>
+                    <p className='center'><span>보호소</span> {profile?.profile.center}</p>
+                    <div className='youtube'>
+                        <YouTubeEmbed url={profile?.profile.youtube} />
+                        <a href={profile?.profile.youtube} target="_blank" rel="noopener noreferrer">YouTube에서 보기</a>
+                    </div>
+                    <div className='bio'> {/* createMarkup으로 html 소독했음: xss 안전*/}
                         <div dangerouslySetInnerHTML={createMarkup(profile?.profile.bio)} />
                     </div>
-                    <p>소개영상: <a href={profile?.profile.youtube} target="_blank" rel="noopener noreferrer">{profile?.profile.youtube}</a></p>
+                    
                 </div>
             }
         </div>

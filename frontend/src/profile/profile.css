@@ -259,3 +259,61 @@ textarea {
     font-weight: bold;
     margin-bottom: 1rem;
 }
+
+
+/* ProfileDetailForm 동물상세정보 */
+/* ProfileDetailForm 동물상세정보 */
+/* ProfileDetailForm 동물상세정보 */
+/* ProfileDetailForm 동물상세정보 */
+/* ProfileDetailForm 동물상세정보 */
+
+.my-space-container__posts__animaldetail .bio{
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 
+        -10px 0 15px -5px rgba(0, 0, 0, 0.1),  /* 좌측 그림자 */
+        10px 0 15px -5px rgba(0, 0, 0, 0.1),   /* 우측 그림자 */
+        0 -10px 15px -5px rgba(0, 0, 0, 0.1),  /* 상단 그림자 */
+        0 5px 10px -5px rgba(0, 0, 0, 0.05);   /* 하단 그림자 (약하게) */
+    padding: 1rem;
+    max-width: 90%;
+    margin: 2rem auto;
+}
+.my-space-container__posts__animaldetail > p{
+    margin-left: 3rem;
+    margin-bottom: 20px;
+}
+.my-space-container__posts__animaldetail > p > span{
+    border: #F07489 1px solid;
+    border-radius: 2rem;
+    padding: 3px 13px;
+    background-color: #F07489;
+    color: white;
+    margin-right: 1rem;
+}
+.my-space-container__posts__animaldetail .youtube{
+    max-width: 85%;
+    margin: 0 auto;
+    border-radius: 2rem;
+}
+.my-space-container__posts__animaldetail .video-responsive {
+    overflow: hidden;
+    padding-bottom: 56.25%;
+    position: relative;
+    height: 0;
+    border-radius: .5rem;
+}
+.my-space-container__posts__animaldetail .video-responsive iframe {
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+.my-space-container__posts__animaldetail .youtube a{
+    font-size: 1rem;
+    margin-left: .5rem;
+}
+.my-space-container__posts__animaldetail .youtube a:hover{
+    color: #F07489;
+}
