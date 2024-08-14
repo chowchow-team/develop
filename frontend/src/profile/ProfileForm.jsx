@@ -89,12 +89,29 @@ function ProfileForm() {
             setTimeout(() => setMessage(''), 5000);
         } catch (error) {
             let errorMessage = '프로필 업데이트에 실패했습니다.';
-            if (error.response && error.response.data) {
-                const errorData = error.response.data;
-                if (typeof errorData === 'string') {
-                    errorMessage = errorData;
-                } else if (typeof errorData === 'object') {
-                    errorMessage = Object.values(errorData).flat().join(', ');
+            if (!error.response) {
+                errorMessage = '네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요.';
+            } else {
+                const { status, data } = error.response;
+        
+                switch (status) {
+                    case 400:
+                        errorMessage = '프로필 업데이트에 실패했습니다.';
+                        break;
+                    case 401:
+                        errorMessage = '인증에 실패했습니다. 다시 로그인해주세요.';
+                        break;
+                    case 403:
+                        errorMessage = '너무 많은 요청을 보냈습니다. 잠시 후 다시 시도해주세요.';
+                        break;
+                    case 404:
+                        errorMessage = '요청한 리소스를 찾을 수 없습니다.';
+                        break;
+                    case 500:
+                        errorMessage = 'jpg, jpeg, png 형식의 이미지만 업로드할 수 있습니다.';
+                        break;
+                    default:
+                        errorMessage = '오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
                 }
             }
             setError(errorMessage);

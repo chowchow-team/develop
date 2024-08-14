@@ -1,6 +1,17 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from PIL import Image
+from io import BytesIO
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.core.exceptions import ValidationError
+import sys
+import os
+import time
+import uuid
+import magic
+import re
+from django.db import transaction
+
 
 User = get_user_model()
 
@@ -21,6 +32,23 @@ class Post(models.Model):
     
     def like_count(self):
         return self.likes.count()
+    
+    @transaction.atomic
+    def save_with_images(self, image_files):
+        try:
+            self.full_clean()
+            super().save()
+            
+            for image_file in image_files:
+                post_image = PostImage(post=self, image=image_file)
+                post_image.full_clean()
+                post_image.save()
+
+        except ValidationError as e:
+            raise ValidationError(f"게시물 저장 실패: {str(e)}")
+        except Exception as e:
+            raise Exception(f"게시물 저장 중 오류 발생: {str(e)}")
+
 
 class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -37,19 +65,81 @@ class Comment(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
 
-
 class PostImage(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='images')
+    post = models.ForeignKey('Post', on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to='post_images/')
-    
+
+    def clean(self):
+        if self.image:
+            self.validate_image()
+
+    @transaction.atomic
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        img = Image.open(self.image.path)
+        self.full_clean()
+        if self.pk:
+            old_instance = PostImage.objects.get(pk=self.pk)
+            if old_instance.image != self.image:
+                if old_instance.image:
+                    old_instance.image.delete(save=False)
+                if self.image:
+                    self.process_new_image()
+        else:
+            if self.image:
+                self.process_new_image()
         
-        if img.height > 1080 or img.width > 1080:
-            output_size = (1080, 1080)
-            img.thumbnail(output_size)
-            img.save(self.image.path)
+        super().save(*args, **kwargs)
+
+    def validate_image(self):
+        max_size = 10 * 1024 * 1024  # 10MB
+        if self.image.size > max_size:
+            raise ValidationError("파일 크기는 10MB를 초과할 수 없습니다.")
+
+        allowed_extensions = ['jpg', 'jpeg', 'png', 'gif']
+        file_name = self.image.name.lower()
+        extensions = re.findall(r'\.([^.]+)', file_name)
+        if not extensions:
+            raise ValidationError("파일에 확장자가 없습니다.")
+        if not all(ext in allowed_extensions for ext in extensions):
+            raise ValidationError(f"허용되지 않는 파일 형식입니다. 허용된 확장자: {', '.join(allowed_extensions)}")
+
+        try:
+            file_content = self.image.read()
+            mime = magic.Magic(mime=True)
+            file_mime = mime.from_buffer(file_content)
+            allowed_mimes = ['image/jpeg', 'image/png', 'image/gif']
+            if file_mime not in allowed_mimes:
+                raise ValidationError(f"허용되는 파일 형식은 JPEG, PNG, GIF입니다. 감지된 형식: {file_mime}")
+            Image.open(BytesIO(file_content)).verify()
+        except Exception as e:
+            raise ValidationError(f"유효하지 않은 이미지 파일입니다: {str(e)}")
+        finally:
+            self.image.seek(0)
+
+    def process_new_image(self):
+        try:
+            start_time = time.time()
+            with Image.open(self.image) as image:
+                if time.time() - start_time > 5:  # 5초
+                    raise ValidationError("이미지 처리시간이 너무 오래걸립니다.")
+
+                output = BytesIO()
+                image = image.resize((1080, 1080))
+                if image.mode != "RGB":
+                    image = image.convert("RGB")
+                image.save(output, format='JPEG', quality=90)
+                output.seek(0)
+
+            safe_filename = f"{uuid.uuid4().hex}.jpg"
+            
+            self.image.save(
+                safe_filename,
+                content=InMemoryUploadedFile(output, 'ImageField', safe_filename, 'image/jpeg', sys.getsizeof(output), None),
+                save=False
+            )
+
+            os.chmod(self.image.path, 0o644)
+        except Exception as e:
+            raise ValidationError(f"이미지 처리 중 오류가 발생했습니다: {str(e)}")        
 
 class FollowList(models.Model):
     follower = models.ForeignKey(User, related_name='following', on_delete=models.CASCADE,null=True)
