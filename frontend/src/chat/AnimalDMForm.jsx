@@ -46,12 +46,36 @@ function AnimalDMForm() {
     };
 
     useEffect(() => {
+        const fetchChat = async () => {
+            if (profile && profile.profile && profile.profile.id) { // profile과 profile.profile이 null이 아닌지 체크
+                try {
+                    const response = await axios.get(`${API_BASE_URL}/api/llm/chat/`, {
+                        withCredentials: true,
+                        params: {
+                            "other_user_id": profile.profile.id,
+                        }
+                    });
+                    setChat(response.data);
+                } catch (error) {
+                    console.error('Failed to fetch chat data:', error);
+                }
+            }
+        };
+    
+        fetchChat(); // profile 객체가 존재하는지에 관계 없이 처음에는 fetchChat()을 실행
+    
+    }, [profile]); // profile 객체가 변경될 때마다 useEffect 재실행
+    
+    
+
+    useEffect(() => {
         setScreenSize();
         window.addEventListener('resize', setScreenSize);
         return () => {
             window.removeEventListener('resize', setScreenSize);
         };
     }, [setIsKeyboardActive]);
+
 
     useEffect(() => {
         const timer = setTimeout(() => {

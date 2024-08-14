@@ -66,7 +66,7 @@ class ChatbotAPIView(APIView):
             messages = Message.objects.filter(
                 (Q(sender=user) & Q(receiver=other_user)) |
                 (Q(sender=other_user) & Q(receiver=user))
-            ).order_by('timestamp')
+            ).order_by('-timestamp')
             
             chat_history = [{
                 'sender': msg.sender.username,

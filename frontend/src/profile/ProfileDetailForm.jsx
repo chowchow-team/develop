@@ -6,8 +6,11 @@ import { BackButton } from '../snippets';
 import defaultImg from '../static/img/logo.png';
 import { URLManagement, getCookie } from '../snippets';
 import PostForm from '../main/PostForm';
+import DOMPurify from 'dompurify';
 
 import './profile.css';
+
+
 
 function ProfileDetailForm() {
     const [profile, setProfile] = useState({
@@ -117,6 +120,7 @@ function ProfileDetailForm() {
         }
     };
 
+
     const formatDate = (dateStr) => {
         const postDate = new Date(dateStr);
         const now = new Date();
@@ -147,6 +151,14 @@ function ProfileDetailForm() {
             checkFollow(profile.id);
         }
     }, [profile]);
+
+    // 악성 html 코드 확인 -> dangerouslySetInnerHTML 사용전 악성 html인지 확인이 필요
+    const createMarkup = (html) => {           
+        return {
+            __html: DOMPurify.sanitize(html)
+        };
+    };
+
     console.log('profile', profile);
     return (
         <div className='my-space-container'>
@@ -231,9 +243,16 @@ function ProfileDetailForm() {
             }
             {activeTab === 'animal-detail' && 
                 <div className='my-space-container__posts'>
-                    <p>품종: {profile?.profile.breed}</p>
+                    <p>이름: {profile?.profile.nickname}</p>
+                    <p>품종: {profile?.profile.species} & {profile?.profile.kind}</p>
                     <p>나이: {profile?.profile.age}</p>
                     <p>성별: {profile?.profile.sex}</p>
+                    <p>보호소: {profile?.profile.center}</p>
+                    <p></p>
+                    <div>동물정보:
+                        <div dangerouslySetInnerHTML={createMarkup(profile?.profile.bio)} />
+                    </div>
+                    <p>소개영상: <a href={profile?.profile.youtube} target="_blank" rel="noopener noreferrer">{profile?.profile.youtube}</a></p>
                 </div>
             }
         </div>
