@@ -97,7 +97,6 @@ function NavForm() {
                         <Link to="/"><span>홈</span></Link>
                         {user && <li><Link to={`/profile/${user.username}`}><span>프로필</span></Link></li>}
                         <Link to="/setting"><span>계정관리</span></Link>
-                        <li><Link to="/community"><span>메세지</span></Link></li>
                         <Link to="/friend">
                             <span>친구관리</span>
                             {hasNotification && <span className="notification-dot"></span>}
@@ -122,7 +121,6 @@ function NavForm() {
                       <li><Link to="/"><span>홈</span></Link></li>
                       {user && <li><Link to={`/profile/${user.username}`}><span>프로필</span></Link></li>}
                       <li><Link to="/setting"><span>계정관리</span></Link></li>
-                      <li><Link to="/community"><span>메세지</span></Link></li>
                       <li>
                           <Link to="/friend">
                               <span>친구관리</span>

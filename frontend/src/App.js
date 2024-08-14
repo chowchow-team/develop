@@ -6,7 +6,6 @@ import { ProfileForm, ProfileDetailForm, UserFollowListForm } from './profile';
 import { ChatForm, DMForm, TestForm, AnimalDMForm } from './chat';
 import { FriendListForm } from './friend';
 import { NotFoundForm, FooterForm, PrepareForm} from './snippets';
-import { CMainForm, CCreateForm, CDetailForm } from './community';
 
 import { UserProvider } from './UserContext';
 
@@ -34,15 +33,9 @@ function App() {
                     <Route path="/password-change" element={<ResetPWForm />} />
                     <Route path="/setting" element={<SettingForm />} />
                     <Route path="/activate/:uidb64/:token" element={<SignupRedirect />} />
-                    <Route path="/community" element={<CMainForm />} />
-                    {/*<Route path="/community" element={<PrepareForm />} />*/}
-                    <Route path="/community/create" element={<CCreateForm />} />
-                    <Route path="/community/posts/:pk" element={<CDetailForm />} />
                     <Route path="/feed/posts/:pk" element={<DetailForm />} />
                     <Route path="/feed/posts/create" element={<CreateForm />} />
-                    {/*<Route path="/test" element={<TestForm />} />*/}
                     <Route path="/admin" element={<MainForm />} />
-                    {/*<Route path="/e1i5" element={<E1I5Stream />} />*/}
                     <Route path="*" element={<NotFoundForm />} />
                 </Routes>
                 <FooterForm />
