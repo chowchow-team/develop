@@ -30,7 +30,7 @@ def call_api():
     key = settings.ANIMAL_API_KEY
     url = f"http://openapi.seoul.go.kr:8088/{key}/json/TbAdpWaitAnimalView/1/70/"
     
-    response = requests.get(url)
+    response = requests.get(url, timeout=10)
     
     if response.status_code == 200:
         data = response.json()
@@ -74,7 +74,7 @@ def get_youtube_thumbnail_url(youtube_url, default_url=None):
     return default_url
 
 def download_image(url):
-    response = requests.get(url)
+    response = requests.get(url, timeout=10)
     if response.status_code == 200:
         image = Image.open(BytesIO(response.content))
         image = image.convert('RGB')
