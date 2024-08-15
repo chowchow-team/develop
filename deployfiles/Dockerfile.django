@@ -1,7 +1,6 @@
-# Python 이미지를 기반으로 함
-FROM python:3.9.6
+FROM python:3.9.19
 
-# SSH 설정 (GitHub 비공개 리포지토리 클론을 위함)
+# SSH 설정 (배포시엔 GitHub 비공개할거니까)
 RUN mkdir /root/.ssh/
 ADD ./.ssh/id_rsa /root/.ssh/id_rsa
 RUN chmod 600 /root/.ssh/id_rsa
@@ -9,20 +8,21 @@ RUN touch /root/.ssh/known_hosts
 RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
 
 # 재실행용
-RUN echo "testing:5"
+RUN echo "testing:1"
 
 # 작업 디렉토리 설정
 WORKDIR /app
 
 # GitHub에서 프로젝트 클론
-RUN git clone git@github.com:Aiden-Kwak/mongle.git
+RUN git clone git@github.com:chowchow-team/develop.git
 
 # 클론된 프로젝트의 backend 디렉토리로 작업 디렉토리 변경
-WORKDIR /app/mongle
+WORKDIR /app/develop
 
-WORKDIR /app/mongle/backend
+WORKDIR /app/develop/backend
 
 RUN pip install -r requirements.txt
+#추후에 모델 GPU 사용설정 추가해야함
 
 ENV DJANGO_SETTINGS_MODULE=backend.settings.deploy
 

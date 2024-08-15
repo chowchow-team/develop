@@ -6,15 +6,15 @@ SECRET_KEY = read_secret('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*'] # 도메인 구입 후 변경
+ALLOWED_HOSTS = ['챠우챠우(미정).com'] # 도메인 구입 후 변경
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "mongle",
-        "USER": "mongle",
+        "NAME": "chow",
+        "USER": "chow",
         "PASSWORD": read_secret('MYSQL_PASSWORD'),
         "HOST": "mariadb",
         "PORT": "3306",
@@ -50,7 +50,8 @@ EMAIL_HOST_PASSWORD = read_secret('EMAIL_HOST_PASSWORD')   # 이메일 비밀번
 EMAIL_USE_TLS = True
 
 CRONJOBS=[
-    ('0 6 * * *', 'accountapp.cron.my_scheduled_job')
+    ('0 6 * * *', 'accountapp.cron.my_scheduled_job'),
+    ('*/1 * * * *', 'llmapp.cron.update_animals'),
 ]
 
 from django.conf import settings

@@ -69,7 +69,7 @@ def refine_info(species,sex):
 
 def llm_post(user):
     if user.char_num == -1:
-        user.char_num = random.randrange(0,5)
+        user.char_num = random.randrange(0,5) # 비보안 목적의 단순 무작위 선택입니다. (0부터 5까지) 보안취약점 없음.
     logger.info(f"Starting llm_post for user: {user.username}")
     # 프로파일 데이터 가져오기
     profile = ProfileSerializer(user)

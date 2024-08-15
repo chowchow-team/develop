@@ -1,7 +1,6 @@
-# Node 이미지를 기반으로 함
 FROM node:21 as builder
 
-# SSH 설정 (GitHub 비공개 리포지토리 클론을 위함)
+# SSH 설정 (배포시엔 GitHub 비공개할거니까)
 RUN mkdir /root/.ssh/
 ADD ./.ssh/id_rsa /root/.ssh/id_rsa
 RUN chmod 600 /root/.ssh/id_rsa
@@ -11,28 +10,24 @@ RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
 WORKDIR /app
 
 # 재실행용
-RUN echo "testing:2"
+RUN echo "testing:1"
 
 # GitHub에서 프로젝트 클론
-RUN git clone git@github.com:Aiden-Kwak/mongle.git
+RUN git clone git@github.com:chowchow-team/develop.git
 
-WORKDIR /app/mongle/frontend
+WORKDIR /app/develop/frontend
 
 RUN npm cache clean --force
-# 의존성 설치
+
 RUN npm install
 
-# React 애플리케이션 빌드
 RUN npm run build
 
-# Nginx를 사용하여 React 빌드 파일 제공
 FROM nginx:1.19.5 as production-stage
 
 # 빌드 단계에서 생성된 빌드 파일을 Nginx 서버로 복사
 COPY --from=builder /app/mongle/frontend/build /usr/share/nginx/html
 
-# 80 포트 열기
 EXPOSE 80
 
-# Nginx 실행
 CMD ["nginx", "-g", "daemon off;"]
