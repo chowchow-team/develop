@@ -6,7 +6,7 @@ SECRET_KEY = read_secret('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*'] # 도메인 구입 후 변경
+ALLOWED_HOSTS = ['챠우챠우(미정).com'] # 도메인 구입 후 변경
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
