@@ -44,37 +44,47 @@ def extract_text_from_html(html_content):
     text = re.sub(r'\s+', ' ', text)
     return text.strip()
 
+def remove_after_last_punctuation(s):
+    # 마지막 '!', '.', '?'의 인덱스 찾기
+    last_index = max(s.rfind('!'), s.rfind('.'), s.rfind('?'))
+    
+    # 구두점이 없으면 원래 문자열 반환
+    if last_index == -1:
+        return s
+    
+    # 마지막 구두점까지의 문자열 반환
+    return s[:last_index + 1]
+
+def refine_info(species,sex):
+    result_species, result_sex = None, None
+    if species=="CAT":
+        result_species = "고양이"
+    else:
+        result_species = "강아지"
+    if sex=="W":
+        result_sex = "여성"
+    else:
+        result_sex = "남성"
+    return result_species, result_sex
+
 def llm_post(user):
     if user.char_num == -1:
-        user.char_num = random.randrange(0,7)
+        user.char_num = random.randrange(0,5)
     logger.info(f"Starting llm_post for user: {user.username}")
     # 프로파일 데이터 가져오기
     profile = ProfileSerializer(user)
     profile_data = profile.data
 
-    # 템플릿 정의 (한국어)
     template = """
-    당신은 동물의 입장에서 유쾌하고 재미있는 글을 작성해야 합니다.
-    이 글의 목적은 입양자와 동물의 유대감을 형성하는 것입니다.
+    [Persona]
+    - 당신은 **{nickname}**입니다.
+    - 당신의 역할은 오늘 당신을 기쁘게한 일을 200~300자 분량의 글로 작성하는 것입니다.
+    - 당신은 당신이 {species}점에 유의해서 {species}가 겪을 수 있는 현실적인 글을 작성해야 합니다.
+    - 당신에게 유기동물이기 때문에 주인은 없고 당신을 돌보는 보호님이 있습니다. 이점을 신경써서 글을 작성합니다.
 
-    프로필 정보:
-    - 종: {species}
-    - 이름: {nickname}
-    - 성별: {sex}
-    - 성격: {personality}
-
-    위 정보를 바탕으로, 약 200-300자 정도의 짧은 글을 작성해 주세요. 
-    이 글은 동물의 독특한 성격과 경험을 반영해야 합니다.
-    글은 진솔하고 따뜻하며, 아래에 제공된 예시 스타일과 일치해야 합니다:
-
-    스타일 예시:
-    {style_example}
-
-    글은 스타일 예시에서 제시된 어투로 작성되어야 하며, 동물의 성격을 반영해야합니다. 창의적이고 유쾌한 글을 작성해 주세요.
-
-    글을 작성하세요:
     """
 
+    
     prompt_template = PromptTemplate.from_template(template)
 
     # 콜백 관리자를 설정하여 출력 스트리밍 지원
@@ -89,91 +99,53 @@ def llm_post(user):
         callback_manager=callback_manager,  # 콜백 관리자 설정
         verbose=True,  # 자세한 로그 출력을 위해 활성화
         n_threads=8,  # 스레드 수 설정 
+        temperature=0.5,
+        n_ctx = 4096
     )
 
     # 성격 및 스타일 예시
-    characters = [
-        "쾌활하지만 철학적인 사고를 자주함",
-        "음식을 좋아하는 미식가임. 음식의 특징을 잘 파악하며 소탈한 말투로 음식 리뷰글을 씀",
-        "망상을 자주하는 INFP임", 
-        "문학적 감각이 뛰어나고 일기를 짧은 시처럼 씀", 
-        "집순이로 밖에 나가기를 싫어함", 
-        "재밌는 사행시를 잘 지음",
-        "아재 개그를 자주함"
-    ]
 
-    output_styles = [
-        """
-        허허,,, 저랑은 좀,, 반대네요,,, 손주 학교 앞에 가면,,, 형이냐구 막;;; 물어보던디;;; ㅎㅎㅎ,,,
-        자랑은 아닙니다,, ㅎㅎㅎ 젊게 사는 게 좋지요~~,, 꽃 한 송이 놓구 갑니다~~@>~~~~
-        """,
-        """
-        ✨오리젠✨
-
-        평점: 8.5/10
-
-        닭, 칠면조, 계란의 조합으로 만들어진 사료는 달콤하면서도 단백질 함량이 높아 맛의 밸런스가 뛰어난 조합이었소. 
-        신선하고 단백질이 풍부한 사료가 먹고 싶다면 이 제품을 추천하오. 일반사료에 비해 씹는 맛이 있었소.
-        """,
-        """
-        뻘하게 갖고 싶은 능력들
-
-        1. 이빨에 치석을 제거하는 능력
-        2. 발톱이 항상 적정 길이로 유지되는 능력
-        3. 털에 묻은 물이 바로 마르는 능력
-        4. 스파이 패밀리의 본드 포저처럼 미래를 예지하는 능력
-        5. 웰레스와 그로밋의 그로밋처럼 계산을 잘하는 능력
-        """,
-        f"""
-        배식소
-
-                            {profile_data['profile']['nickname']}
-        유기견 보호사는 항상 많이 먹으라한다.
-
-        많이 줘야 많이 먹지...
-        """,
-        f"""
-        뚱냥이: {profile_data['profile']['nickname']}
-
-        아침부터 "너 산책 가기 싫어?"라는 말을 들었다.
-
-        진정 나를 잘 이해하는 유기견 보호사와 함께 지내고 있다.
-        """,
-        """
-        '아나바다'로 사행시를 지어보겠습니다~~ 
-        아: 아버지
-        나: 나를 낳으시고
-        바: 바지석삼
-        다: 다 적시셨네.
-        """,
-        """
-        돼지가 떨어지면?
-
-        돈벼락
-        """,
+    tones    = [
+    # 표준어 종결어미
+    ["-다", "-요", "-습니다", "-니", "-냐", "-세요", "-십시오", "-자", "-아요", "-어요", "-구나", "-군요", "-네"],
+    
+    # 경상도 사투리 종결어미
+    ["-마소", "-합시데이", "-차리나", "-해삣다", "-가끼가"],
+    
+    # 전라도 사투리 종결어미
+    ["-으까잉", "-여", "-능가", "-쓰까", "-하소"],
+    
+    # 충청도 사투리 종결어미
+    ["-가유", "-굴러가유", "-해유", "-있쥬", "-봅세"],
+    
+    # 강원도 사투리 종결어미
+    ["-드래요", "-굽소야", "-교", "-하대", "-오시우야"]
     ]
 
     num = user.char_num
-
+    species, sex = refine_info(profile_data['profile']['species'],profile_data['profile']['sex'])
     input_data = {
-        'species': profile_data['profile']['species'],
+        'species': species,
         'nickname': profile_data['profile']['nickname'],
-        'sex': profile_data['profile']['sex'],
-        'personality': characters[num],
-        'style_example': output_styles[num]
+        'sex': sex,
+        #'bio': extract_text_from_html(profile_data['profile']['bio'])[:300],
+        'tone': tones[num]
     }
 
     prompt = prompt_template.format(**input_data)
+    print("!"*30)
+    print(f"prompt:{prompt}")
     logger.info(f"Generated prompt: {prompt}")
 
     logger.info("Generating post content")
     # 모델에 프롬프트를 전달하고 응답을 받음
     response = llm.invoke(prompt)
-
+    response = remove_after_last_punctuation(response)
     logger.info(f"Generated post content for user {user.username}: {response[:100]}...")  # 처음 100자만 로깅
     post = Post(user=user, content=response.strip(), view_count=0)
     post.save()
     logger.info(f"Post saved for user {user.username} with ID: {post.id}")
+
 
     return post
 
@@ -182,7 +154,7 @@ User = get_user_model()
 def update_animals():
     logger.info("Starting update_animals function")
     logger.info(f"Current working directory: {os.getcwd()}")
-    users = User.objects.filter(is_animal=True)[:3]
+    users = User.objects.filter(is_animal=True)[20:24]
     logger.info(f"Found {len(users)} animal users to update")
     for user in users:
         try:

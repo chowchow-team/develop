@@ -40,7 +40,7 @@ function AnimalDMForm() {
             });
             setProfile(response.data);
         } catch (error) {
-            alert('프로필 정보를 불러오는데 실패했습니다');
+            //alert('프로필 정보를 불러오는데 실패했습니다');
         }
     };
 
@@ -56,7 +56,7 @@ function AnimalDMForm() {
                     });
                     setChat(response.data);
                 } catch (error) {
-                    alert('채팅 내용을 불러오는데 실패했습니다');
+                    //alert('채팅 내용을 불러오는데 실패했습니다');
                 }
             }
         };
@@ -102,7 +102,7 @@ function AnimalDMForm() {
             setChat(response.data.reverse());
         })
         .catch(error => {
-            alert('채팅 내용을 불러오는데 실패했습니다');
+            //alert('채팅 내용을 불러오는데 실패했습니다');
         });
     }, [username]);
 
@@ -169,6 +169,9 @@ function AnimalDMForm() {
         <div className="dm-container">
             <BackButton />
             <div className="dm-messages" ref={messagesEndRef}>
+                {isLoading && (
+                    <div className="message-bubble their-message">대화 중...</div>
+                )}
                 {chat.map((msg, index) => (
                     <div key={msg.id} className={`message-container ${msg.sender === user.username ? 'my-message' : 'their-message'}`}>
                         <div className="message-content">
@@ -181,9 +184,6 @@ function AnimalDMForm() {
                         </div>
                     </div>
                 ))}
-                {isLoading && (
-                    <div className="message-bubble their-message">대화 중...</div>
-                )}
             </div>
             <div className="chat-input">
                 <input 

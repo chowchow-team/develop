@@ -43,7 +43,7 @@ def get_llm():
                 n_batch=n_batch,
                 f16_kv=True,
                 callback_manager=callback_manager,
-                temperature=0.5,
+                temperature=0.9,
                 verbose=True,
                 n_threads=16,
                 max_tokens=100,
@@ -62,6 +62,17 @@ def remove_html_tags(text):
     clean_text = re.sub(r'\s+', ' ', clean_text).strip()
     return clean_text
 
+def remove_after_last_punctuation(s):
+    # 마지막 '!', '.', '?'의 인덱스 찾기
+    last_index = max(s.rfind('!'), s.rfind('.'), s.rfind('?'))
+    
+    # 구두점이 없으면 원래 문자열 반환
+    if last_index == -1:
+        return s
+    
+    # 마지막 구두점까지의 문자열 반환
+    return s[:last_index + 1]
+
 def generate_prompt(profile_data, query):
     now = datetime.now()
     formatted_time = now.strftime("%p %I시")
@@ -70,7 +81,7 @@ def generate_prompt(profile_data, query):
     name = profile_data['profile']['nickname']
     gender = profile_data['profile']['sex']
     current_time = formatted_time
-    personality = remove_html_tags(profile_data['profile']['bio'])[:200]
+    personality = remove_html_tags(profile_data['profile']['bio'])[:100]
 
     output_style = """
     허허,,, 저랑은 좀,, 반대네요,,, 손주 학교 앞에 가면,,, 형이냐구 막;;; 물어보던디;;; ㅎㅎㅎ,,,
@@ -88,7 +99,7 @@ def generate_prompt(profile_data, query):
     bot_prompt = f"""
     {input_text}
     - 이제, 너가 위에서 설명된 인물이라 생각하고 대화해줘. 
-    - 상대방과 자연스럽게 대화해야해. 제시된 성격을 반영해야 해. 또한 친근하고 유머러스한 말투를 사용해야 해.
+    - 상대방과 자연스럽게 대화해야해. 또한 친근하고 유머러스한 말투를 사용해야 해.
     - 너무 길지않고 간단하게 말해야해.
     이제 질문에 대한 채팅답변을 작성해줘.
 
@@ -125,7 +136,8 @@ def chat(query, user):
         answer = "죄송합니다. 답변을 생성하는 데 문제가 발생했습니다."
     
     chat_log.append(f"Q : {query}\nA : {answer}")
-    return answer
+    
+    return remove_after_last_punctuation(answer)
 
 if __name__ == "__main__":
     from django.contrib.auth import get_user_model
