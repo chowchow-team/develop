@@ -7,12 +7,12 @@ services:
     ports:
       - "6379:6379" 
   django_container:
-    image: mongle_django_image:2
+    image: chow_django_image:1
     networks:
       - network
     volumes:
-      - static-volume:/app/mongle/backend/staticfiles
-      - media-volume:/app/mongle/backend/media
+      - static-volume:/app/develop/backend/staticfiles
+      - media-volume:/app/develop/backend/media
     secrets:
       - MYSQL_PASSWORD
       - DJANGO_SECRET_KEY
@@ -20,7 +20,7 @@ services:
     environment:
       REDIS_URL: redis://redis
   react_container:
-    image: mongle_react_image:2
+    image: chow_react_image:1
     networks:
       - network
     volumes:
@@ -40,8 +40,8 @@ services:
       - MYSQL_ROOT_PASSWORD
       - MYSQL_PASSWORD
     environment:  
-      MYSQL_DATABASE: mongle
-      MYSQL_USER: mongle
+      MYSQL_DATABASE: chow
+      MYSQL_USER: chow
       MYSQL_PASSWORD_FILE: /run/secrets/MYSQL_PASSWORD
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/MYSQL_ROOT_PASSWORD
 
