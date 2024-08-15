@@ -27,17 +27,15 @@ class IPAnalyzerMiddleware:
         current_time = time.time()
         requests = cache.get(f"requests_{ip}", [])
         requests.append(current_time)
-        # 최근 5분 동안의 요청만 유지
+
         requests = [r for r in requests if current_time - r <= 300]
         cache.set(f"requests_{ip}", requests, timeout=300)
 
     def is_ip_suspicious(self, ip):
         requests = cache.get(f"requests_{ip}", [])
-        # 5분 동안 100회 이상의 요청을 의심스러운 활동으로 정의
         if len(requests) > 100:
             return True
         
-        # 특정 엔드포인트에 대한 과도한 요청을 의심스러운 활동으로 정의
         endpoint_counts = cache.get(f"endpoint_counts_{ip}", {})
         if any(count > 50 for count in endpoint_counts.values()):
             return True
@@ -45,4 +43,4 @@ class IPAnalyzerMiddleware:
         return False
 
     def add_to_blacklist(self, ip):
-        cache.set(f"blacklist_{ip}", True, timeout=3600)  # 1시간 동안 블랙리스트에 추가
+        cache.set(f"blacklist_{ip}", True, timeout=3600)
