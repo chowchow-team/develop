@@ -13,8 +13,8 @@ ALLOWED_HOSTS = ['챠우챠우(미정).com'] # 도메인 구입 후 변경
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "mongle",
-        "USER": "mongle",
+        "NAME": "chow",
+        "USER": "chow",
         "PASSWORD": read_secret('MYSQL_PASSWORD'),
         "HOST": "mariadb",
         "PORT": "3306",
@@ -50,7 +50,8 @@ EMAIL_HOST_PASSWORD = read_secret('EMAIL_HOST_PASSWORD')   # 이메일 비밀번
 EMAIL_USE_TLS = True
 
 CRONJOBS=[
-    ('0 6 * * *', 'accountapp.cron.my_scheduled_job')
+    ('0 6 * * *', 'accountapp.cron.my_scheduled_job'),
+    ('*/1 * * * *', 'llmapp.cron.update_animals'),
 ]
 
 from django.conf import settings
