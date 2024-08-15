@@ -113,7 +113,7 @@ class LogoutAPI(APIView):
 
 
 class UserProfileDetailAPI(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    #permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, slug, format=None):
         user = get_object_or_404(User, username=slug)
