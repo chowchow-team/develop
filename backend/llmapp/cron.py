@@ -115,14 +115,19 @@ def llm_post(user):
         profile = ProfileSerializer(user)
         profile_data = profile.data
 
-        print(f"profile_data: {profile_data}")
-
         template = """
-        [Persona]
-        - 당신은 **{nickname}**입니다.
-        - 당신의 역할은 오늘 당신을 기쁘게한 일을 200~300자 분량의 글로 작성하는 것입니다.
-        - 당신은 당신이 {species}점에 유의해서 {species}가 겪을 수 있는 현실적인 글을 작성해야 합니다.
-        - 당신에게 유기동물이기 때문에 주인은 없고 당신을 돌보는 보호님이 있습니다. 이점을 신경써서 글을 작성합니다.
+        Knowledge:
+        - 종: {species}
+        - 이름: {nickname}
+        - 성별: {sex}
+        - 정보: {bio}
+
+        Persona
+        - 이제, 너가 Knowledge에 설명된 인물이라 생각하고 대화해줘.
+        - 상대방과 자연스럽게 대화해야해. 또한 친근하고 유머러스한 말투를 사용해야 해.
+        - 200~300자 정도로 아래 질문에 답변해줘.
+
+        질문: {query}
         """
 
         prompt_template = PromptTemplate.from_template(template)
@@ -145,21 +150,14 @@ def llm_post(user):
 
         print("LlamaCpp 모델 초기화 완료")
 
-        tones = [
-            ["-다", "-요", "-습니다", "-니", "-냐", "-세요", "-십시오", "-자", "-아요", "-어요", "-구나", "-군요", "-네"],
-            ["-마소", "-합시데이", "-차리나", "-해삣다", "-가끼가"],
-            ["-으까잉", "-여", "-능가", "-쓰까", "-하소"],
-            ["-가유", "-굴러가유", "-해유", "-있쥬", "-봅세"],
-            ["-드래요", "-굽소야", "-교", "-하대", "-오시우야"]
-        ]
-
         num = user.char_num
         species, sex = refine_info(profile_data['profile']['species'], profile_data['profile']['sex'])
         input_data = {
             'species': species,
             'nickname': profile_data['profile']['nickname'],
             'sex': sex,
-            'tone': tones[num]
+            'bio': profile_data['profile']['bio'][:200],
+            'query': "오늘 너의 일상을 얘기해줘."
         }
 
         prompt = prompt_template.format(**input_data)
@@ -200,7 +198,7 @@ User = get_user_model()
 
 def update_animals():
     logger.info("Starting update_animals function")
-    users = User.objects.filter(is_animal=True)[:1]
+    users = User.objects.filter(is_animal=True)
     logger.info(f"Found {len(users)} animal users to update")
     
     for user in users:
