@@ -14,21 +14,21 @@ channels==4.0.0
 channels-redis==4.2.0
 charset-normalizer==3.3.2
 constantly==23.10.4
-cryptography==41.0.7
+cryptography==42.0.8
 daphne==4.0.0
 dataclasses-json==0.6.7
 diskcache==5.6.3
-Django==4.2.9
+Django==4.2.15
 django-cors-headers==4.3.1
 django-crontab==0.7.1
 django-environ==0.11.2
 django-ratelimit==4.1.0
 django-redis==5.4.0
-djangorestframework==3.14.0
+djangorestframework==3.15.2
 frozenlist==1.4.1
-gunicorn==21.2.0
+gunicorn==22.0.0
 hyperlink==21.0.0
-idna==3.6
+idna==3.7
 incremental==22.10.0
 Jinja2==3.1.4
 jsonpatch==1.33
@@ -67,7 +67,7 @@ rich==13.7.1
 service-identity==24.1.0
 six==1.16.0
 SQLAlchemy==2.0.32
-sqlparse==0.4.4
+sqlparse==0.5.0
 stevedore==5.2.0
 tenacity==8.5.0
 Twisted==23.10.0
@@ -78,3 +78,5 @@ urllib3==2.2.2
 whitenoise==6.6.0
 yarl==1.9.4
 zope.interface==6.1
+setuptools>=70.0.0 # not directly required, pinned by Snyk to avoid a vulnerability
+zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
