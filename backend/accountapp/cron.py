@@ -101,7 +101,7 @@ def create_animal_account(animal):
     user.is_active = True
     user.save()
 
-    animal_num = animal.get('ANIMAL_NO', random.randint(1000, 9999))
+    animal_num = animal.get('ANIMAL_NO')
 
     # species 매핑
     species_map = {
@@ -120,6 +120,13 @@ def create_animal_account(animal):
             'breed': animal.get('BREEDS', 'Breed')
         }
     )
+    if not created:
+    # 객체가 이미 존재한다면, 필요한 필드를 업데이트합니다.
+        animal_user.animal_num = animal_num
+        animal_user.center = center
+        animal_user.species = animal.get('SPCS', 'Dog')
+        animal_user.breed = animal.get('BREEDS', 'Breed')
+        animal_user.save()
 
     youtube_url = animal.get('INTRCN_MVP_URL', '')
     profile_pic_url = get_youtube_thumbnail_url(youtube_url)

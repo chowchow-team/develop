@@ -47,11 +47,24 @@ def extract_text_from_html(html_content):
     text = re.sub(r'\s+', ' ', text)  # 연속된 공백 제거
     return text.strip()
 
-def remove_after_last_punctuation(s):
-    last_index = max(s.rfind('!'), s.rfind('.'), s.rfind('?'))  # 마지막 '!', '.', '?'의 인덱스 찾기
-    if last_index == -1:
-        return s  # 구두점이 없으면 원래 문자열 반환
-    return s[:last_index + 1]  # 마지막 구두점까지의 문자열 반환
+def extract_korean_text(html_text):
+    # 정규 표현식을 사용하여 한글만 추출
+    korean_text = re.findall(r'[가-힣\s]+', html_text)
+    # 추출된 한글 문자열을 하나의 문자열로 결합
+    result = ''.join(korean_text).strip()
+    return result
+
+def refine_answer(text):
+    text = re.sub(r'\b주인\w*', '보호사님', text)
+    
+    if text.startswith("답변:"):
+        text = text[len("답변:"):].strip()
+    
+    last_index = max(text.rfind('!'), text.rfind('.'), text.rfind('?'))
+    if last_index != -1:
+        text = text[:last_index + 1].strip()
+    
+    return text
 
 def refine_info(species, sex):
     result_species = "고양이" if species == "CAT" else "강아지"
@@ -124,8 +137,9 @@ def llm_post(user):
 
         Persona
         - 이제, 너가 Knowledge에 설명된 인물이라 생각하고 대화해줘.
-        - 상대방과 자연스럽게 대화해야해. 또한 친근하고 유머러스한 말투를 사용해야 해.
-        - 너는 답변에서 '주인', '주인님'이라는 단어를 사용할 수 없어.
+        - 상대방과 자연스럽게 대화해야 해. 또한 친근하고 유머러스한 말투를 사용해야 해.
+        - 금지어: '주인', '주인님'.
+        - 이 단어들을 사용하지 않고도 상대방과 친근하고 유머러스하게 대화할 수 있어. 이 규칙을 지키면 대화가 훨씬 매끄럽고 재미있어질 거야.
         - 200~300자 정도로 아래 질문에 답변해줘.
 
         질문: {query}
@@ -157,7 +171,7 @@ def llm_post(user):
             'species': species,
             'nickname': profile_data['profile']['nickname'],
             'sex': sex,
-            'bio': profile_data['profile']['bio'][:200],
+            'bio': extract_korean_text(profile_data['profile']['bio'])[:200],
             'query': "오늘 너의 일상을 얘기해줘."
         }
 
@@ -169,7 +183,7 @@ def llm_post(user):
         logger.info("Generating post content")
         print("LlamaCpp 모델에 프롬프트 전달 중...")
         response = llm.invoke(prompt)
-        response = remove_after_last_punctuation(response)
+        response = refine_answer(response)
         print(f"생성된 응답: {response[:100]}")  # 처음 100자만 출력
 
         logger.info(f"Generated post content for user {user.username}: {response[:100]}...")
@@ -199,7 +213,7 @@ User = get_user_model()
 
 def update_animals():
     logger.info("Starting update_animals function")
-    users = User.objects.filter(is_animal=True)[:5]
+    users = User.objects.filter(is_animal=True)
     logger.info(f"Found {len(users)} animal users to update")
     
     for user in users:
