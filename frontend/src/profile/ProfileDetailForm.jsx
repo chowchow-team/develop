@@ -12,6 +12,11 @@ import send from '../static/img/send.png';
 import './profile.css';
 
 
+function decodeHtml(html) {
+    var txt = document.createElement("textarea");
+    txt.innerHTML = html;
+    return txt.value;
+}
 
 function ProfileDetailForm() {
     const [profile, setProfile] = useState({
@@ -158,7 +163,7 @@ function ProfileDetailForm() {
     // 악성 html 코드 확인 -> dangerouslySetInnerHTML 사용전 악성 html인지 확인이 필요
     const createMarkup = (html) => {           
         return {
-            __html: DOMPurify.sanitize(html)
+            __html: DOMPurify.sanitize(decodeHtml(html))
         };
     };
 
