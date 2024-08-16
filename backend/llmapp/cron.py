@@ -6,27 +6,32 @@ import select
 from langchain_community.llms import LlamaCpp
 from langchain_core.callbacks import CallbackManager, StreamingStdOutCallbackHandler
 from langchain_core.prompts import PromptTemplate
-from django.contrib.auth import get_user_model
-import django
 import logging
-from django.conf import settings
 import random
-
+import requests
+import traceback
 
 # 프로젝트 루트를 Python 경로에 추가
-current_dir = os.path.dirname(os.path.abspath(__file__)) #'/develop/backend'
+current_dir = os.path.dirname(os.path.abspath(__file__))
 backend_dir = os.path.dirname(current_dir)
 sys.path.append(backend_dir)
 
 # Django 설정
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings.local')
+
+import django
+from django.conf import settings
+from django.contrib.auth import get_user_model
+
 django.setup()
 
-MODEL_PATH = os.path.join(current_dir, "llm", "EEVEQ4.gguf")
-
+from mainapp.models import PostImage
 from accountapp.serializers import ProfileSerializer
 from mainapp.models import Post
 from mainapp.serializers import PostSerializer
+
+# MODEL_PATH 정의
+MODEL_PATH = os.path.join(current_dir, "llm", "EEVEQ4.gguf")
 
 # 로깅 설정
 logger = logging.getLogger(__name__)
@@ -38,133 +43,174 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 def extract_text_from_html(html_content):
-    # HTML 태그 제거
-    text = re.sub(r'<[^>]+>', '', html_content)
-    # 연속된 공백 제거
-    text = re.sub(r'\s+', ' ', text)
+    text = re.sub(r'<[^>]+>', '', html_content)  # HTML 태그 제거
+    text = re.sub(r'\s+', ' ', text)  # 연속된 공백 제거
     return text.strip()
 
 def remove_after_last_punctuation(s):
-    # 마지막 '!', '.', '?'의 인덱스 찾기
-    last_index = max(s.rfind('!'), s.rfind('.'), s.rfind('?'))
-    
-    # 구두점이 없으면 원래 문자열 반환
+    last_index = max(s.rfind('!'), s.rfind('.'), s.rfind('?'))  # 마지막 '!', '.', '?'의 인덱스 찾기
     if last_index == -1:
-        return s
-    
-    # 마지막 구두점까지의 문자열 반환
-    return s[:last_index + 1]
+        return s  # 구두점이 없으면 원래 문자열 반환
+    return s[:last_index + 1]  # 마지막 구두점까지의 문자열 반환
 
-def refine_info(species,sex):
-    result_species, result_sex = None, None
-    if species=="CAT":
-        result_species = "고양이"
-    else:
-        result_species = "강아지"
-    if sex=="W":
-        result_sex = "여성"
-    else:
-        result_sex = "남성"
+def refine_info(species, sex):
+    result_species = "고양이" if species == "CAT" else "강아지"
+    result_sex = "여성" if sex == "W" else "남성"
     return result_species, result_sex
 
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from io import BytesIO
+
+def call_api(animal_num, post):
+    key = settings.ANIMAL_API_KEY
+    url = f"http://openapi.seoul.go.kr:8088/{key}/json/TbAdpWaitAnimalPhotoView/1/387/"
+    response = requests.get(url, timeout=10)
+    
+    if response.status_code != 200:
+        logger.error(f"Failed to fetch data from API, status code: {response.status_code}")
+        return
+    
+    data = response.json()
+    photo_urls = []
+    for item in data['TbAdpWaitAnimalPhotoView']['row']:
+        if item['ANIMAL_NO'] == str(animal_num):
+            photo_url = item['PHOTO_URL'].replace('&amp;', '&')
+            full_url = f"https://{photo_url}"
+            photo_urls.append(full_url)
+
+    if len(photo_urls) < 4:
+        logger.warning(f"Not enough photos found for animal number: {animal_num}")
+        return
+
+    images = []
+    for item in random.sample(photo_urls, 4):
+        image_response = requests.get(item)
+        if image_response.status_code == 200:
+            images.append(image_response.content)
+        else:
+            logger.error(f"Failed to download image from {item}")
+
+    for i, image in enumerate(images):
+        image_io = BytesIO(image)
+        image_file = InMemoryUploadedFile(
+            file=image_io,
+            field_name=None,
+            name=f"{animal_num}_{i}.jpg",  # 고유한 파일 이름 생성
+            content_type='image/jpeg',
+            size=image_io.getbuffer().nbytes,
+            charset=None
+        )
+        PostImage.objects.create(post=post, image=image_file)
+
+
 def llm_post(user):
-    if user.char_num == -1:
-        user.char_num = random.randrange(0,5) # 비보안 목적의 단순 무작위 선택입니다. (0부터 5까지) 보안취약점 없음.
-    logger.info(f"Starting llm_post for user: {user.username}")
-    # 프로파일 데이터 가져오기
-    profile = ProfileSerializer(user)
-    profile_data = profile.data
+    try:
+        print("llm_post 시작")
+        if user.char_num == -1:
+            user.char_num = random.randrange(0, 5)
+        logger.info(f"Starting llm_post for user: {user.username}")
 
-    template = """
-    [Persona]
-    - 당신은 **{nickname}**입니다.
-    - 당신의 역할은 오늘 당신을 기쁘게한 일을 200~300자 분량의 글로 작성하는 것입니다.
-    - 당신은 당신이 {species}점에 유의해서 {species}가 겪을 수 있는 현실적인 글을 작성해야 합니다.
-    - 당신에게 유기동물이기 때문에 주인은 없고 당신을 돌보는 보호님이 있습니다. 이점을 신경써서 글을 작성합니다.
+        print(f"user: {user.username}, char_num: {user.char_num}")
+        
+        profile = ProfileSerializer(user)
+        profile_data = profile.data
 
-    """
+        template = """
+        Knowledge:
+        - 종: {species}
+        - 이름: {nickname}
+        - 성별: {sex}
+        - 정보: {bio}
 
+        Persona
+        - 이제, 너가 Knowledge에 설명된 인물이라 생각하고 대화해줘.
+        - 상대방과 자연스럽게 대화해야해. 또한 친근하고 유머러스한 말투를 사용해야 해.
+        - 200~300자 정도로 아래 질문에 답변해줘.
+
+        질문: {query}
+        """
+
+        prompt_template = PromptTemplate.from_template(template)
+
+        print("PromptTemplate 생성 완료")
+
+        callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
+
+        llm = LlamaCpp(
+            model_path=MODEL_PATH,
+            n_gpu_layers=-1,
+            n_batch=1024,
+            f16_kv=True,
+            callback_manager=callback_manager,
+            verbose=True,
+            n_threads=8,
+            temperature=0.5,
+            n_ctx=4096
+        )
+
+        print("LlamaCpp 모델 초기화 완료")
+
+        num = user.char_num
+        species, sex = refine_info(profile_data['profile']['species'], profile_data['profile']['sex'])
+        input_data = {
+            'species': species,
+            'nickname': profile_data['profile']['nickname'],
+            'sex': sex,
+            'bio': profile_data['profile']['bio'][:200],
+            'query': "오늘 너의 일상을 얘기해줘."
+        }
+
+        prompt = prompt_template.format(**input_data)
+        print(f"Prompt 생성 완료: {prompt}")
+
+        logger.info(f"Generated prompt: {prompt}")
+
+        logger.info("Generating post content")
+        print("LlamaCpp 모델에 프롬프트 전달 중...")
+        response = llm.invoke(prompt)
+        response = remove_after_last_punctuation(response)
+        print(f"생성된 응답: {response[:100]}")  # 처음 100자만 출력
+
+        logger.info(f"Generated post content for user {user.username}: {response[:100]}...")
+        
+        post = Post(user=user, content=response.strip(), view_count=0)
+        post.save()
+        logger.info(f"Post saved for user {user.username} with ID: {post.id}")
+        print(f"Post 저장 완료: {post.id}")
+        
+        if hasattr(user, 'animaluser'):
+            print('-'*50)
+            print(user.animaluser)
+            call_api(user.animaluser.animal_num, post)
+            print("API 호출 완료")
+        else:
+            logger.warning(f"No AnimalUser associated with user: {user.username}")
+
+        return post
     
-    prompt_template = PromptTemplate.from_template(template)
-
-    # 콜백 관리자를 설정하여 출력 스트리밍 지원
-    callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
-
-    # LlamaCpp 모델 초기화
-    llm = LlamaCpp(
-        model_path=MODEL_PATH,
-        n_gpu_layers=-1,  # GPU 레이어 수 설정
-        n_batch=1024,  # 배치 크기 설정
-        f16_kv=True,  # f16_kv 설정 활성화 
-        callback_manager=callback_manager,  # 콜백 관리자 설정
-        verbose=True,  # 자세한 로그 출력을 위해 활성화
-        n_threads=8,  # 스레드 수 설정 
-        temperature=0.5,
-        n_ctx = 4096
-    )
-
-    # 성격 및 스타일 예시
-
-    tones    = [
-    # 표준어 종결어미
-    ["-다", "-요", "-습니다", "-니", "-냐", "-세요", "-십시오", "-자", "-아요", "-어요", "-구나", "-군요", "-네"],
-    
-    # 경상도 사투리 종결어미
-    ["-마소", "-합시데이", "-차리나", "-해삣다", "-가끼가"],
-    
-    # 전라도 사투리 종결어미
-    ["-으까잉", "-여", "-능가", "-쓰까", "-하소"],
-    
-    # 충청도 사투리 종결어미
-    ["-가유", "-굴러가유", "-해유", "-있쥬", "-봅세"],
-    
-    # 강원도 사투리 종결어미
-    ["-드래요", "-굽소야", "-교", "-하대", "-오시우야"]
-    ]
-
-    num = user.char_num
-    species, sex = refine_info(profile_data['profile']['species'],profile_data['profile']['sex'])
-    input_data = {
-        'species': species,
-        'nickname': profile_data['profile']['nickname'],
-        'sex': sex,
-        #'bio': extract_text_from_html(profile_data['profile']['bio'])[:300],
-        'tone': tones[num]
-    }
-
-    prompt = prompt_template.format(**input_data)
-    print("!"*30)
-    print(f"prompt:{prompt}")
-    logger.info(f"Generated prompt: {prompt}")
-
-    logger.info("Generating post content")
-    # 모델에 프롬프트를 전달하고 응답을 받음
-    response = llm.invoke(prompt)
-    response = remove_after_last_punctuation(response)
-    logger.info(f"Generated post content for user {user.username}: {response[:100]}...")  # 처음 100자만 로깅
-    post = Post(user=user, content=response.strip(), view_count=0)
-    post.save()
-    logger.info(f"Post saved for user {user.username} with ID: {post.id}")
-
-
-    return post
+    except Exception as e:
+        logger.error(f"An error occurred during post creation for user {user.username}: {str(e)}")
+        logger.error(traceback.format_exc())  # 에러의 스택 트레이스를 로그에 기록
+        print(f"에러 발생: {e}")
+        print(traceback.format_exc())
 
 User = get_user_model()
 
 def update_animals():
     logger.info("Starting update_animals function")
-    logger.info(f"Current working directory: {os.getcwd()}")
-    users = User.objects.filter(is_animal=True)[20:24]
+    users = User.objects.filter(is_animal=True)
     logger.info(f"Found {len(users)} animal users to update")
+    
     for user in users:
         try:
             post = llm_post(user)
-            logger.info(f"Successfully created post for user {user.username}: {post.id}")
+            if post:
+                logger.info(f"Successfully created post for user {user.username}: {post.id}")
         except Exception as e:
             logger.error(f"Error creating post for user {user.username}: {str(e)}")
+            logger.error(traceback.format_exc())  # 전체 스택 트레이스 로깅
 
 if __name__ == "__main__":
     logger.info("Script started")
-    logger.info(f"Current working directory: {os.getcwd()}")
     update_animals()
     logger.info("Script completed")

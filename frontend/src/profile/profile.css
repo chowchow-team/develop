@@ -206,7 +206,25 @@ textarea {
     padding-right: 10px;
 }
 
-.my-space-container .edit-profile-btn, .my-space-container .follow-btn {
+.my-space-container .nickname-and-btn .nickname-and-btn__send{
+    display: flex;
+    flex-direction: row;
+}
+
+
+.my-space-container .nickname-and-btn img{
+    height: 32px;
+    border-radius: 2rem;
+    border: solid black;
+    box-shadow: -10px 0 15px -5px rgba(0, 0, 0, 0.1),  /* 좌측 그림자 */
+    10px 0 15px -5px rgba(0, 0, 0, 0.1),   /* 우측 그림자 */
+    0 -10px 15px -5px rgba(0, 0, 0, 0.1),  /* 상단 그림자 */
+    0 5px 10px -5px rgba(0, 0, 0, 0.05); 
+    margin-top: 10px;
+    margin-left: .5rem;
+
+}
+.my-space-container .follow-btn {
     background-color: #323C4D;
     color: white;
     border: none;
@@ -215,6 +233,22 @@ textarea {
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.3s;
+    height: 40px;
+    margin-top: 8px;
+    margin-right: 5px;
+}
+.my-space-container .edit-profile-btn{
+    background-color: #323C4D;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 2rem;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+    height: 20px;
+    margin-top: 8px;
+    margin-right: 5px;  
 }
 
 .my-space-container__profile-follow {

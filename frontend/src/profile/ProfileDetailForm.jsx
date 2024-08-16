@@ -7,6 +7,7 @@ import defaultImg from '../static/img/logo.png';
 import { URLManagement, getCookie } from '../snippets';
 import PostForm from '../main/PostForm';
 import DOMPurify from 'dompurify';
+import send from '../static/img/send.png';
 
 import './profile.css';
 
@@ -199,23 +200,34 @@ function ProfileDetailForm() {
                     />
                     <div className='my-space-container__profile-main-info'>
                         <div className='nickname-and-btn'>
-                            {profile && <p className='nickname'>{profile.profile?.nickname || profile.nickname}</p>}
+                        {profile && <p className='nickname'>{profile.profile?.nickname || profile.nickname}</p>}
+                        <div className='nickname-and-btn__send'>
                             {isOwnProfile ? (
                                 <Link to="/profile/edit" className="edit-profile-btn">수정</Link>
                             ) : (
-                                <button 
+                                user && (
+                                <>
+                                    <button 
                                     className='follow-btn'
                                     onClick={() => isFollowing ? handleUnfollowClick(username) : handleFollowClick(username)}
-                                >
+                                    >
                                     {isFollowing ? '언팔로우' : '팔로우'}
-                                </button>
+                                    </button>
+                                    {profile.is_animal && (
+                                    <Link to={`/animal-dm/${username}`}>
+                                        <img src={send} alt="메세지" />
+                                    </Link>
+                                    )}
+                                </>
+                                )
                             )}
+                            </div>
+
                         </div>
-                        
-                        <p className='username'>@{username}</p>
-                        <p className='bio'>{profile.is_animal? '' : profile.profile?.bio || profile.bio}</p>
-                        <Link to={`/animal-dm/${username}`}>메세지</Link>
                     </div>
+                    
+
+                    
                 </div>
                 <div className='my-space-container__profile-follow'>
                     <Link to={`/profile/followlist/${username}/follower`} state={{ nickname: profile.profile?.nickname }}>
