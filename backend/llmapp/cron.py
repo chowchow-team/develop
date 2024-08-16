@@ -213,7 +213,7 @@ User = get_user_model()
 
 def update_animals():
     logger.info("Starting update_animals function")
-    users = User.objects.filter(is_animal=True)
+    users = User.objects.filter(is_animal=True)[:5]
     logger.info(f"Found {len(users)} animal users to update")
     
     for user in users:

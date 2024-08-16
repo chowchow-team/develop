@@ -90,7 +90,7 @@ class ActivateAccountAPI(APIView):
         
 # 로그인
 class LoginAPI(APIView):
-    @method_decorator(ratelimit(key='ip', rate='5/h', method=['POST'], block=True))
+    @method_decorator(ratelimit(key='ip', rate='20/h', method=['POST'], block=True))
     def post(self, request, format=None):
         username = request.data.get("username")
         password = request.data.get("password")

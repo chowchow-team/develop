@@ -52,7 +52,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware', # 개발용
-    'backend.middleware.IPAnalyzerMiddleware', # IP 분석 미들웨어 추가
+    #'backend.middleware.IPAnalyzerMiddleware', # IP 분석 미들웨어 추가
 ]
 
 CACHES = {
