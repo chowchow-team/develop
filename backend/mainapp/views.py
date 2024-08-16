@@ -9,26 +9,13 @@ from accountapp.serializers import AccountCreateSerializer
 from .services import FollowService
 import random
 from django.db import transaction
+from django.core.exceptions import ValidationError
+from django.http import FileResponse
+import os
+import mimetypes
+from urllib.parse import quote
 
 User = get_user_model()
-
-'''
-class PostRecentAPIView(APIView): # 가장 최근에 포스트된 게시물 5개를 받아오는 역할 -> 잘 동작함
-    def get(self,request):
-        page = int(request.GET.get('page'))
-        #if page in self.uploaded_pages:
-        #    return Response([])
-        all_posts = Post.objects.all().order_by('-timestamp')
-        total_posts = all_posts.count()
-        start_index = (page-1)*5
-        end_index = start_index + 5
-        if start_index >= total_posts:
-            return Response([])
-        posts = all_posts[start_index:end_index]
-        serializer = PostSerializer(posts,many=True)
-        self.uploaded_pages.add(page)
-        return Response(serializer.data)
-'''
 class PostRecentAPIView(APIView):
     def get(self, request):
         limit = int(request.GET.get('limit', 10))
@@ -41,28 +28,6 @@ class PostRecentAPIView(APIView):
             "results": serializer.data,
             "next": has_next
         })
-
-'''
-class PostFollowAPIView(APIView): # 팔로우하는 객체의 포스팅 5개를 받아오는 역할 -> 잘 동작함
-    def get(self,request):
-        user_id = 3 #request.GET.get('user_id') -> 'user_id'는 frontend에서 전달
-        try:
-            user = User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            return Response({"status": "error", "message": "User not found"}, status=status.HTTP_400_BAD_REQUEST)
-        following_ids = FollowService.get_following(user)
-        followings = User.objects.filter(id__in=following_ids)
-        if not followings:
-            return Response([])
-        selected_followings = random.sample(list(followings),min(len(followings),5))
-        posts = []
-        for following in selected_followings:
-            post = Post.objects.filter(user=following).order_by('-timestamp').first()
-            if post:
-                posts.append(post)
-        serializer = PostSerializer(posts,many=True)
-        return Response({"status": "success", "posts": serializer.data}, status=status.HTTP_200_OK)
-'''
 
 class PostFollowAPIView(APIView):
     def get(self, request):
@@ -87,65 +52,44 @@ class PostFollowAPIView(APIView):
             "next": has_next
         })
 
-'''
+# 현장미션0816
 class PostControlAPIView(APIView):
     def post(self, request):
-        images = request.FILES.getlist('images')
-        serializer = PostSerializer(data=request.data, context={'images': images, 'request': request})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        images = request.FILES.getlist('images', [])
+        file = request.FILES.get('file')
+
+        if file and file.size > 200 * 1024 * 1024:  # 200MB
+            return Response({"error": "파일 크기는 200MB를 초과할 수 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if len(images) > 4:
+            return Response({"error": "최대 4개의 이미지만 업로드할 수 있습니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = PostSerializer(data=request.data, context={'images': images, 'file': file, 'request': request})
+        
+        try:
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except ValidationError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": "게시물을 생성하는 중 오류가 발생했습니다."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def get(self, request):
         post_id = request.GET.get('post_id')
+        download = request.GET.get('download', 'false').lower() == 'true'
+
         if not post_id:
             return Response({"status": "error", "message": "Post ID is required"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            post = Post.objects.get(id=post_id)
+            post = get_object_or_404(Post, id=post_id)
+
+            if download:
+                return self.download_file(post)
+
             viewed_posts = request.COOKIES.get('viewed_posts', '')
-
-            if viewed_posts:
-                viewed_posts_list = viewed_posts.split(',')
-            else:
-                viewed_posts_list = []
-
-            if str(post_id) not in viewed_posts_list:
-                post.increment_view_count()
-                viewed_posts_list.append(str(post_id))
-                new_viewed_posts = ','.join(viewed_posts_list)
-                
-                response = Response(PostSerializer(post).data)
-                response.set_cookie('viewed_posts', new_viewed_posts, max_age=60*24*60*60)
-                return response
-            else:
-                return Response(PostSerializer(post).data)
-        except Post.DoesNotExist:
-            return Response({"status": "error", "message": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
- '''
-class PostControlAPIView(APIView):
-    def post(self, request):
-        images = request.FILES.getlist('images')
-        serializer = PostSerializer(data=request.data, context={'images': images, 'request': request})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    def get(self, request):
-        post_id = request.GET.get('post_id')
-        if not post_id:
-            return Response({"status": "error", "message": "Post ID is required"}, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            post = Post.objects.get(id=post_id)
-            viewed_posts = request.COOKIES.get('viewed_posts', '')
-
-            if viewed_posts:
-                viewed_posts_list = viewed_posts.split(',')
-            else:
-                viewed_posts_list = []
+            viewed_posts_list = viewed_posts.split(',') if viewed_posts else []
 
             if str(post_id) not in viewed_posts_list:
                 post.increment_view_count()
@@ -159,10 +103,52 @@ class PostControlAPIView(APIView):
             else:
                 serializer = PostSerializer(post, context={'request': request})
                 return Response(serializer.data)
+
         except Post.DoesNotExist:
             return Response({"status": "error", "message": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
 
-   
+
+    def download_file(self, post):
+        if post.file:
+            file_path = post.file.path
+            
+            if os.path.exists(file_path):
+                file_name = os.path.basename(file_path)
+                file_name_encoded = quote(file_name)
+                file_size = os.path.getsize(file_path)
+                
+                # MIME 타입 추측
+                content_type, encoding = mimetypes.guess_type(file_path)
+                if content_type is None:
+                    content_type = 'application/octet-stream'
+                
+                # 특정 파일 형식에 대한 MIME 타입 수동 설정
+                if file_name.endswith('.hwp'):
+                    content_type = 'application/x-hwp'
+                elif file_name.endswith('.xlsx'):
+                    content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                elif file_name.endswith('.docx'):
+                    content_type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                
+                #logger.info(f"File found. Size: {file_size}, Name: {file_name}, Type: {content_type}")
+                
+                try:
+                    response = FileResponse(open(file_path, 'rb'), content_type=content_type)
+                    #response['Content-Disposition'] = f'attachment; filename*=UTF-8\'\'{file_name}'
+                    response['Content-Disposition'] = f'attachment; filename="{file_name_encoded}"; filename*=UTF-8\'\'{file_name_encoded}'
+                    response['Content-Length'] = file_size
+                    #logger.info("File response created successfully")
+                    return response
+                except Exception as e:
+                    #logger.error(f"Error creating file response: {str(e)}")
+                    return Response({"error": "파일을 열 수 없습니다."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            else:
+                #logger.error(f"File not found: {file_path}")
+                return Response({"error": "파일을 찾을 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            #logger.error("No file associated with the post")
+            return Response({"error": "이 게시물에는 파일이 없습니다."}, status=status.HTTP_404_NOT_FOUND)
+
 class CommentControlAPIView(APIView):
     def post(self, request):
         post_id = request.data.get('post_id')
@@ -211,20 +197,6 @@ class FollowRecommandAPIView(APIView): # 동작함 -> 본인이 추천되는 것
         serializer = AccountCreateSerializer(users,many=True)
         return Response(serializer.data)
 
-'''
-class FollowerListAPIView(APIView): # 유저를 팔로우 하는 객체 리스트
-    def get(self, request):
-        user_id = request.GET.get('user_id')
-        try:
-            user = User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            return Response({"status": "error", "message": "User not found"}, status=status.HTTP_400_BAD_REQUEST)
-
-        follower_ids = FollowService.get_follower(user)
-        followers = User.objects.filter(id__in=follower_ids).select_related('profile', 'animalprofile')
-        serializer = FollowingListSerializer(followers, many=True)
-        return Response({"status": "success", "data": serializer.data}, status=200)
-'''
 class FollowerListAPIView(APIView): # 아이디, 유저네임 둘다 가능하게바꿨음.
     def get(self, request):
         user_id = request.GET.get('user_id')
@@ -268,22 +240,7 @@ class FollowingListAPIView(APIView):
         serializer = FollowingListSerializer(followings, many=True)
         return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
 
-"""
-class FollowRequestAPIView(APIView):
-    def post(self, request):
-        following_id = request.data.get('following_id')
-        follower_id = request.data.get('follower_id')
 
-        try:
-            follower = User.objects.get(id=follower_id)
-            following = User.objects.get(id=following_id)
-        except User.DoesNotExist:
-            return Response({"status": "error", "message": "User not found"}, status=status.HTTP_400_BAD_REQUEST)
-
-        FollowService.follow(follower, following)
-        
-        return Response({"status": "success"}, status=status.HTTP_201_CREATED)
-"""
 class FollowRequestAPIView(APIView):
     def post(self, request):
         following_id = request.data.get('following_id')

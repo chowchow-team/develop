@@ -6,6 +6,7 @@ import { UserContext } from '../UserContext';
 import { BackButton } from '../snippets';
 import comment from '../static/img/comment.png';
 import view from '../static/img/statistic.png';
+import downloadIcon from '../static/img/download.png';
 import { SEOMetaTag } from '../snippets';
 import './main.css'
 
@@ -20,6 +21,8 @@ function DetailForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
+
+  const [file, setFile] = useState(null);
 
   const [allCommentsLoaded, setAllCommentsLoaded] = useState(false);
 
@@ -49,6 +52,43 @@ function DetailForm() {
     alert('링크가 복사되었습니다.');
   };
 
+  /*
+  const decodeKoreanFilename = (url) => {
+    try {
+      const encodedFilename = url.split('/').pop();
+      const decodedFilename = decodeURIComponent(encodedFilename);
+      const cleanedFilename = decodedFilename.replace(/_[^.]+(\.[^.]+)$/, '$1');
+      
+      return cleanedFilename;
+    } catch (error) {
+      console.error('파일명 디코딩 중 오류 발생:', error);
+      return url.split('/').pop();
+    }
+  };*/
+
+  const decodeKoreanFilename = (url) => {
+    try {
+      // URL에서 파일명 부분만 추출
+      let encodedFilename = url.split('/').pop();
+      
+      // 반복적으로 디코딩 시도
+      let decodedFilename = encodedFilename;
+      let prevDecodedFilename;
+      do {
+        prevDecodedFilename = decodedFilename;
+        decodedFilename = decodeURIComponent(prevDecodedFilename.replace(/\+/g, ' '));
+      } while (decodedFilename !== prevDecodedFilename);
+      
+      // 파일명에서 확장자 앞의 언더스코어와 랜덤 문자열 제거
+      const cleanedFilename = decodedFilename.replace(/_[^.]+(\.[^.]+)$/, '$1');
+      
+      return cleanedFilename;
+    } catch (error) {
+      console.error('파일명 디코딩 중 오류 발생:', error);
+      return url.split('/').pop(); // 디코딩에 실패한 경우 원본 파일명 반환
+    }
+  };
+
   const deletePost = (e) => {
     e.preventDefault();
     if (window.confirm("정말로 삭제하시겠습니까?")) {
@@ -71,6 +111,7 @@ function DetailForm() {
       try {
         const postResponse = await axios.get(`/api/main/post/?post_id=${pk}`);
         setPost(postResponse.data);
+        setFile(postResponse.data.file);
 
         const commentsResponse = await axios.get(`/api/main/comment/?post_id=${pk}&limit=${limit}&offset=0`);
         setComments(commentsResponse.data.results);
@@ -184,6 +225,35 @@ function DetailForm() {
     }
   };
 
+  const handleDownload = async () => {
+    if (!file) return;
+    try {
+      const response = await axios.get(`/api/main/post/?post_id=${pk}&download=true`, {
+        responseType: 'blob',
+      });
+      // Content-Disposition 헤더에서 파일 이름 추출
+      const contentDisposition = response.headers['content-disposition'];
+      let fileName = 'download';
+      if (contentDisposition) {
+        const fileNameMatch = contentDisposition.match(/filename="?(.+)"?/i);
+        if (fileNameMatch.length === 2)
+          fileName = fileNameMatch[1];
+      }
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('파일 다운로드 중 오류 발생:', error);
+      alert('파일 다운로드에 실패했습니다.');
+    }
+  };
+
   if (!post) return <div>Loading...</div>;
 
   return (
@@ -224,6 +294,15 @@ function DetailForm() {
                 />
               </div>
             ))}
+          </div>
+        )}
+        {file && (
+          <div className='post-detail-container__file'>
+            <p>{decodeKoreanFilename(post.file)}</p>
+            <button onClick={handleDownload} className='download-button'>
+              <img src={downloadIcon} alt="Download" />
+              다운로드
+            </button>
           </div>
         )}
         <div className='post-detail-container__i'>

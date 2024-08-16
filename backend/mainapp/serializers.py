@@ -42,6 +42,8 @@ class PostSerializer(serializers.ModelSerializer):
     like_count = serializers.SerializerMethodField()
     is_liked = serializers.SerializerMethodField()
 
+    file = serializers.FileField(required=False)
+
     def get_comments_count(self, obj):
         return Comment.objects.filter(post=obj).count()
     
@@ -56,27 +58,43 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['id', 'user', 'user_id', 'content', 'timestamp', 'images', 'comments_count', 'view_count', 'like_count', 'is_liked']
+        fields = ['id', 'user', 'user_id', 'content', 'timestamp', 'images', 'comments_count', 'view_count', 'like_count', 'is_liked', 'file']
 
     def create(self, validated_data):
+        file = self.context.get('file', None)
         images_data = self.context.get('images', [])
         user_id = validated_data.pop('user_id', None)
         
         if user_id is None:
-            raise serializers.ValidationError("User ID is required to create a post.")
+            raise serializers.ValidationError("게시물을 생성하려면 사용자 ID가 필요합니다.")
         
         try:
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
-            raise serializers.ValidationError("User with provided ID does not exist.")
+            raise serializers.ValidationError("제공된 ID를 가진 사용자가 존재하지 않습니다.")
 
         post = Post.objects.create(user=user, **validated_data)
-        
+
+        if file:
+            try:
+                post.save_with_file(file)
+            except ValidationError as e:
+                post.delete()
+                raise serializers.ValidationError(f"파일 저장 중 오류 발생: {str(e)}")
+            except Exception as e:
+                post.delete()
+                raise serializers.ValidationError(f"파일 처리 중 예기치 않은 오류 발생: {str(e)}")
+
         for image_data in images_data:
-            PostImage.objects.create(post=post, image=image_data)
+            try:
+                PostImage.objects.create(post=post, image=image_data)
+            except Exception as e:
+                post.delete()
+                raise serializers.ValidationError(f"이미지 저장 중 오류 발생: {str(e)}")
         
         return post
     
+        
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like

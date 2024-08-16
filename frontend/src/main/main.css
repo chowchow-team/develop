@@ -649,7 +649,6 @@
 /* DETAIL FORM */
 
 
-
 .post-detail-container {
     max-width: 800px;
     width: 100%;
@@ -730,7 +729,18 @@
     margin-top: 1rem;
     margin-left: 50px;
 }
-
+.post-detail-container__file {
+    align-items: center;
+}
+.post-detail-container__file button {
+    background-color: #CCCCCC;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+.post-detail-container__file img {
+    height: 20px;
+    margin-right: 5px;
+}
 
 
 .post-detail-container-profile{
@@ -1098,6 +1108,14 @@
 .hidden-btn {
     display: none;
 }
+.submit-and-upload{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.iconbox{
+    display: flex;
+}
 .image-input {
     cursor: pointer;
     display: flex;
@@ -1105,6 +1123,16 @@
     align-items: center;
 }
 .image-input img {
+    height: 30px;
+    margin-left: 5px;
+}
+.file-input {
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.file-input img {
     height: 30px;
     margin-left: 5px;
 }

@@ -15,6 +15,17 @@ from django.db import transaction
 
 User = get_user_model()
 
+def validate_file_extension(value):
+    ext = os.path.splitext(value.name)[1]
+    valid_extensions = ['.pdf', '.hwp', '.xlsx', '.xls', '.docx', '.doc']
+    if not ext.lower() in valid_extensions:
+        raise ValidationError('지원되지 않는 파일 형식입니다.')
+
+def validate_file_size(value):
+    filesize = value.size
+    if filesize > 200 * 1024 * 1024:  # 200MB
+        raise ValidationError("최대 파일 크기는 200MB입니다.")
+
 class Post(models.Model):
     user = models.ForeignKey(User,related_name='page_writer',on_delete=models.CASCADE)
     content = models.TextField(max_length=1000)
@@ -22,6 +33,13 @@ class Post(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     view_count = models.IntegerField(default=0)
     likes = models.ManyToManyField(User, related_name='liked_posts', blank=True)
+    file = models.FileField(
+        upload_to='post_files/',
+        validators=[validate_file_extension, validate_file_size],
+        null=True,
+        blank=True
+    )
+
 
     def __str__(self):
         return self.content[:30]
@@ -32,6 +50,18 @@ class Post(models.Model):
     
     def like_count(self):
         return self.likes.count()
+    
+    @transaction.atomic
+    def save_with_file(self, file):
+        try:
+            self.full_clean()
+            if file:
+                self.file = file
+            super().save()
+        except ValidationError as e:
+            raise ValidationError(f"게시물 저장 실패: {str(e)}")
+        except Exception as e:
+            raise Exception(f"게시물 저장 중 오류 발생: {str(e)}")
     
     @transaction.atomic
     def save_with_images(self, image_files):
