@@ -221,7 +221,7 @@ class AnimalProfile(BaseProfile):
     species = models.CharField(max_length=2, choices=SPECIES_CHOICES, default='0')
     kind = models.CharField(max_length=10, blank=True)
     sex = models.CharField(max_length=1, blank=True)
-    age=models.CharField(max_length=5, blank=True)
+    age=models.CharField(max_length=12, blank=True) #max_length = 5
     weight = models.FloatField(null=True, blank=True)
     enter= models.DateTimeField(default=timezone.now)
     youtube=models.CharField(max_length=100, blank=True)

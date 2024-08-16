@@ -6,7 +6,7 @@ __pycache__/
 backend/media/
 db.sqlite3
 backend/llmapp/llm/*.gguf
-backend/*/migrations/__pycache__/
+backend/*/migrations/*
 
 
 #staticfiles/

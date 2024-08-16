@@ -51,10 +51,10 @@ def extract_name_and_center(nm):
 
 def get_youtube_video_id(youtube_url):
     patterns = [
-        r'(?:v=|\/)([0-9A-Za-z_-]{11}).*',  # 일반적인 YouTube URL
-        r'(?:embed\/|v\/|youtu.be\/)([0-9A-Za-z_-]{11})',  # 임베드 또는 짧은 URL
-        r'(?:watch\?feature=player_embedded&v=)([0-9A-Za-z_-]{11})',  # 플레이어 임베드 URL
-        r'^([0-9A-Za-z_-]{11})$'  # 비디오 ID만 있는 경우
+        r'(?:v=|\/)([0-9A-Za-z_-]{11}).*',
+        r'(?:embed\/|v\/|youtu.be\/)([0-9A-Za-z_-]{11})',
+        r'(?:watch\?feature=player_embedded&v=)([0-9A-Za-z_-]{11})',
+        r'^([0-9A-Za-z_-]{11})$'
     ]
     
     for pattern in patterns:
@@ -102,6 +102,15 @@ def create_animal_account(animal):
     user.save()
 
     animal_num = animal.get('ANIMAL_NO', random.randint(1000, 9999))
+
+    # species 매핑
+    species_map = {
+        'CAT': '0',
+        'DOG': '1',
+        'ETC': '2'
+    }
+    species = species_map.get(animal.get('SPCS').upper(), '2')
+
     animal_user, created = AnimalUser.objects.get_or_create(
         user=user,
         defaults={
@@ -120,35 +129,38 @@ def create_animal_account(animal):
     enter_date_str = animal.get('ENTRNC_DATE', timezone.now().strftime('%Y-%m-%d'))
     enter_date = datetime.strptime(enter_date_str, '%Y-%m-%d').replace(tzinfo=timezone.utc)
 
+    # bio 필드에서 HTML 태그 제거
+    bio = animal.get('INTRCN_CN', '').replace('<', '&lt;').replace('>', '&gt;')
+
     animal_profile, created = AnimalProfile.objects.get_or_create(
         user=user,
         defaults={
             'center': center,
-            'species': animal.get('SPCS', '0'),
+            'species': species,
             'kind': animal.get('BREEDS', 'Breed'),
             'sex': animal.get('SEXDSTN', 'M'),
             'age': animal.get('AGE', '1/0'),
             'weight': float(animal.get('BDWGH', 10.0)),
             'enter': enter_date,
             'youtube': youtube_url,
-            'profile_pic_url': profile_pic_url,  # URL을 새로운 필드에 저장
+            'profile_pic_url': profile_pic_url,
             'nickname': name,
-            'bio': animal.get('INTRCN_CN', '')
+            'bio': bio
         }
     )
 
     if not created:
         animal_profile.center = center
-        animal_profile.species = animal.get('SPCS', '0')
+        animal_profile.species = species
         animal_profile.kind = animal.get('BREEDS', 'Breed')
         animal_profile.sex = animal.get('SEXDSTN', 'M')
         animal_profile.age = animal.get('AGE', '1/0')
         animal_profile.weight = float(animal.get('BDWGH', 10.0))
         animal_profile.enter = enter_date
         animal_profile.youtube = youtube_url
-        animal_profile.profile_pic_url = profile_pic_url  # URL 업데이트
+        animal_profile.profile_pic_url = profile_pic_url
         animal_profile.nickname = name
-        animal_profile.bio = animal.get('INTRCN_CN', '')
+        animal_profile.bio = bio
         animal_profile.save()
 
     return user, animal_profile

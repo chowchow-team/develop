@@ -125,6 +125,7 @@ def llm_post(user):
         Persona
         - 이제, 너가 Knowledge에 설명된 인물이라 생각하고 대화해줘.
         - 상대방과 자연스럽게 대화해야해. 또한 친근하고 유머러스한 말투를 사용해야 해.
+        - 너는 답변에서 '주인', '주인님'이라는 단어를 사용할 수 없어.
         - 200~300자 정도로 아래 질문에 답변해줘.
 
         질문: {query}
@@ -144,7 +145,7 @@ def llm_post(user):
             callback_manager=callback_manager,
             verbose=True,
             n_threads=8,
-            temperature=0.5,
+            temperature=0.7,
             n_ctx=4096
         )
 
@@ -198,7 +199,7 @@ User = get_user_model()
 
 def update_animals():
     logger.info("Starting update_animals function")
-    users = User.objects.filter(is_animal=True)
+    users = User.objects.filter(is_animal=True)[:5]
     logger.info(f"Found {len(users)} animal users to update")
     
     for user in users:

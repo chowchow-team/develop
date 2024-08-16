@@ -33,11 +33,11 @@ class IPAnalyzerMiddleware:
 
     def is_ip_suspicious(self, ip):
         requests = cache.get(f"requests_{ip}", [])
-        if len(requests) > 100:
+        if len(requests) > 300:
             return True
         
         endpoint_counts = cache.get(f"endpoint_counts_{ip}", {})
-        if any(count > 50 for count in endpoint_counts.values()):
+        if any(count > 100 for count in endpoint_counts.values()):
             return True
 
         return False
