@@ -21,6 +21,8 @@ function DetailForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [filename, setFilename] = useState('');
+
 
   const [file, setFile] = useState(null);
 
@@ -52,20 +54,6 @@ function DetailForm() {
     alert('링크가 복사되었습니다.');
   };
 
-  /*
-  const decodeKoreanFilename = (url) => {
-    try {
-      const encodedFilename = url.split('/').pop();
-      const decodedFilename = decodeURIComponent(encodedFilename);
-      const cleanedFilename = decodedFilename.replace(/_[^.]+(\.[^.]+)$/, '$1');
-      
-      return cleanedFilename;
-    } catch (error) {
-      console.error('파일명 디코딩 중 오류 발생:', error);
-      return url.split('/').pop();
-    }
-  };*/
-
   const decodeKoreanFilename = (url) => {
     try {
       // URL에서 파일명 부분만 추출
@@ -86,6 +74,39 @@ function DetailForm() {
     } catch (error) {
       console.error('파일명 디코딩 중 오류 발생:', error);
       return url.split('/').pop(); // 디코딩에 실패한 경우 원본 파일명 반환
+    }
+  };
+
+  const extractFilenameFromUrl = (url) => {
+    try {
+      // Extract the part after '/media/post_files/'
+      const regex = /\/media\/post_files\/(.+)$/;
+      const match = url.match(regex);
+      
+      if (!match) {
+        throw new Error('Invalid URL format');
+      }
+      
+      const filenamePart = match[1];
+      
+      // Extract the encoded filename (remove the code part)
+      const encodedFilename = filenamePart.replace(/^[^_]+_/, '');
+      
+      // Decode the filename
+      let decodedFilename = encodedFilename;
+      let prevDecodedFilename;
+      do {
+        prevDecodedFilename = decodedFilename;
+        decodedFilename = decodeURIComponent(prevDecodedFilename.replace(/\+/g, ' '));
+      } while (decodedFilename !== prevDecodedFilename);
+      
+      // Remove the file extension
+      const cleanedFilename = decodedFilename.replace(/\.[^/.]+$/, '');
+      
+      return cleanedFilename;
+    } catch (error) {
+      console.error('파일명 추출 및 디코딩 중 오류 발생:', error);
+      return url.split('/').pop(); // 실패 시 원본 파일명 반환
     }
   };
 
@@ -302,7 +323,7 @@ function DetailForm() {
               <img src={downloadIcon} alt="Download" />
               다운로드
             </button>
-            <p>{decodeKoreanFilename(post.file)}</p>
+            <p>{extractFilenameFromUrl(post.file)}</p>
           </div>
         )}
         <div className='post-detail-container__i'>

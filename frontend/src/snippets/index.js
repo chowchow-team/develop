@@ -1,5 +1,4 @@
 export {default as NotFoundForm} from './NotFoundForm';
-export {default as PrepareForm} from './PrepareForm';
 export {default as FooterForm} from './FooterForm';
 
 export {default as BackButton} from './BackButton';

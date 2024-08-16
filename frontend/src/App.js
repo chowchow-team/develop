@@ -5,7 +5,7 @@ import { SignupForm, LoginForm, LogoutForm, FindIDForm, FindPWForm, ResetPWForm,
 import { ProfileForm, ProfileDetailForm, UserFollowListForm } from './profile';
 import { AnimalDMForm } from './chat';
 import { FriendListForm } from './friend';
-import { NotFoundForm, FooterForm, PrepareForm} from './snippets';
+import { NotFoundForm, FooterForm} from './snippets';
 
 import { UserProvider } from './UserContext';
 

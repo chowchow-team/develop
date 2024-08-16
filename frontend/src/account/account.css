@@ -1,5 +1,4 @@
 /* SignupForm */
-
 .signup-container {
   position: relative; /* 절대 위치에서 상대 위치로 변경 */
   margin: 10% auto 0; /* 상단에 여백을 주고 가운데 정렬 */
@@ -260,6 +259,7 @@ button:active {
   align-items: center;
   font-family: 'Arial', sans-serif;
   margin: 20px auto;
+  margin-top: 90px;
   padding: 20px;
   border: 1px solid #ddd;
   border-radius: 5px;
