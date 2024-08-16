@@ -73,8 +73,6 @@ class PostControlAPIView(APIView):
         except ValidationError as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            import traceback
-            print("!!!!",traceback.format_exc())
             return Response({"error": "게시물을 생성하는 중 오류가 발생했습니다."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def get(self, request):
@@ -123,7 +121,6 @@ class PostControlAPIView(APIView):
         content_type, encoding = mimetypes.guess_type(file_path)
         content_type = content_type or 'application/octet-stream'
         
-        # 특정 파일 형식에 대한 MIME 타입 수동 설정
         if file_name.endswith('.hwp'):
             content_type = 'application/x-hwp'
         elif file_name.endswith('.xlsx'):
