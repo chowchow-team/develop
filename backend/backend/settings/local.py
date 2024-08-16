@@ -57,7 +57,7 @@ ANIMAL_API_KEY = env('ANIMAL_API_KEY')
 
 CRONJOBS=[
     ('*/1 * * * *', 'accountapp.cron.my_scheduled_job'),
-    #('*/3 * * * *', 'llmapp.cron.update_animals'),
+    ('*/1 * * * *', 'llmapp.cron.update_animals'),
 ]
 
 from django.conf import settings

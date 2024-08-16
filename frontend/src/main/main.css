@@ -731,11 +731,13 @@
 }
 .post-detail-container__file {
     align-items: center;
+    display: flex;
 }
 .post-detail-container__file button {
     background-color: #CCCCCC;
     margin-top: 1rem;
     margin-bottom: 1rem;
+    margin-right: .5rem;
 }
 .post-detail-container__file img {
     height: 20px;

@@ -73,6 +73,8 @@ class PostControlAPIView(APIView):
         except ValidationError as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            import traceback
+            print("!!!!",traceback.format_exc())
             return Response({"error": "게시물을 생성하는 중 오류가 발생했습니다."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def get(self, request):
@@ -86,7 +88,7 @@ class PostControlAPIView(APIView):
             post = get_object_or_404(Post, id=post_id)
 
             if download:
-                return self.download_file(post)
+                return self.download_file(request, post)
 
             viewed_posts = request.COOKIES.get('viewed_posts', '')
             viewed_posts_list = viewed_posts.split(',') if viewed_posts else []
@@ -98,7 +100,7 @@ class PostControlAPIView(APIView):
                 
                 serializer = PostSerializer(post, context={'request': request})
                 response = Response(serializer.data)
-                response.set_cookie('viewed_posts', new_viewed_posts, max_age=60*24*60*60)
+                response.set_cookie('viewed_posts', new_viewed_posts, max_age=60*24*60*60, httponly=True, samesite='Lax')
                 return response
             else:
                 serializer = PostSerializer(post, context={'request': request})
@@ -107,47 +109,36 @@ class PostControlAPIView(APIView):
         except Post.DoesNotExist:
             return Response({"status": "error", "message": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
 
-
-    def download_file(self, post):
-        if post.file:
-            file_path = post.file.path
-            
-            if os.path.exists(file_path):
-                file_name = os.path.basename(file_path)
-                file_name_encoded = quote(file_name)
-                file_size = os.path.getsize(file_path)
-                
-                # MIME 타입 추측
-                content_type, encoding = mimetypes.guess_type(file_path)
-                if content_type is None:
-                    content_type = 'application/octet-stream'
-                
-                # 특정 파일 형식에 대한 MIME 타입 수동 설정
-                if file_name.endswith('.hwp'):
-                    content_type = 'application/x-hwp'
-                elif file_name.endswith('.xlsx'):
-                    content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                elif file_name.endswith('.docx'):
-                    content_type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                
-                #logger.info(f"File found. Size: {file_size}, Name: {file_name}, Type: {content_type}")
-                
-                try:
-                    response = FileResponse(open(file_path, 'rb'), content_type=content_type)
-                    #response['Content-Disposition'] = f'attachment; filename*=UTF-8\'\'{file_name}'
-                    response['Content-Disposition'] = f'attachment; filename="{file_name_encoded}"; filename*=UTF-8\'\'{file_name_encoded}'
-                    response['Content-Length'] = file_size
-                    #logger.info("File response created successfully")
-                    return response
-                except Exception as e:
-                    #logger.error(f"Error creating file response: {str(e)}")
-                    return Response({"error": "파일을 열 수 없습니다."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            else:
-                #logger.error(f"File not found: {file_path}")
-                return Response({"error": "파일을 찾을 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
-        else:
-            #logger.error("No file associated with the post")
+    def download_file(self, request, post):
+        if not post.file:
             return Response({"error": "이 게시물에는 파일이 없습니다."}, status=status.HTTP_404_NOT_FOUND)
+
+        file_path = post.file.path
+        if not os.path.exists(file_path):
+            return Response({"error": "파일을 찾을 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
+
+        file_name = os.path.basename(file_path)
+        file_size = os.path.getsize(file_path)
+        
+        content_type, encoding = mimetypes.guess_type(file_path)
+        content_type = content_type or 'application/octet-stream'
+        
+        # 특정 파일 형식에 대한 MIME 타입 수동 설정
+        if file_name.endswith('.hwp'):
+            content_type = 'application/x-hwp'
+        elif file_name.endswith('.xlsx'):
+            content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        elif file_name.endswith('.docx'):
+            content_type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        
+        try:
+            response = FileResponse(open(file_path, 'rb'), content_type=content_type)
+            response['Content-Disposition'] = f'attachment; filename="{quote(file_name)}"; filename*=UTF-8\'\'{quote(file_name)}'
+            response['Content-Length'] = file_size
+            return response
+        except Exception as e:
+            return Response({"error": "파일을 열 수 없습니다."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class CommentControlAPIView(APIView):
     def post(self, request):

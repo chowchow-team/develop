@@ -298,11 +298,11 @@ function DetailForm() {
         )}
         {file && (
           <div className='post-detail-container__file'>
-            <p>{decodeKoreanFilename(post.file)}</p>
             <button onClick={handleDownload} className='download-button'>
               <img src={downloadIcon} alt="Download" />
               다운로드
             </button>
+            <p>{decodeKoreanFilename(post.file)}</p>
           </div>
         )}
         <div className='post-detail-container__i'>
