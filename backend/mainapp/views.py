@@ -14,6 +14,7 @@ from django.http import FileResponse
 import os
 import mimetypes
 from urllib.parse import quote
+from django.conf import settings
 
 User = get_user_model()
 class PostRecentAPIView(APIView):
@@ -106,12 +107,21 @@ class PostControlAPIView(APIView):
 
         except Post.DoesNotExist:
             return Response({"status": "error", "message": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
-
+    
     def download_file(self, request, post):
         if not post.file:
             return Response({"error": "이 게시물에는 파일이 없습니다."}, status=status.HTTP_404_NOT_FOUND)
 
         file_path = post.file.path
+        
+        try:
+            file_path = os.path.abspath(file_path)
+            base_dir = os.path.abspath(settings.MEDIA_ROOT)
+            if not file_path.startswith(base_dir):
+                return Response({"error": "잘못된 파일 경로입니다."}, status=status.HTTP_400_BAD_REQUEST)
+        except ValueError:
+            return Response({"error": "잘못된 파일 경로입니다."}, status=status.HTTP_400_BAD_REQUEST)
+
         if not os.path.exists(file_path):
             return Response({"error": "파일을 찾을 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
 
@@ -135,6 +145,7 @@ class PostControlAPIView(APIView):
             return response
         except Exception as e:
             return Response({"error": "파일을 열 수 없습니다."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 
 class CommentControlAPIView(APIView):
