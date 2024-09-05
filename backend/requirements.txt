@@ -14,11 +14,11 @@ channels==4.0.0
 channels-redis==4.2.0
 charset-normalizer==3.3.2
 constantly==23.10.4
-cryptography==41.0.7
+cryptography==43.0.1
 daphne==4.0.0
 dataclasses-json==0.6.7
 diskcache==5.6.3
-Django==4.2.9
+Django==4.2.16
 django-cors-headers==4.3.1
 django-crontab==0.7.1
 django-environ==0.11.2
