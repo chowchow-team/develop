@@ -23,7 +23,7 @@ RUN npm install
 
 RUN npm run build
 
-FROM nginx:1.19.5 as production-stage
+FROM nginx:1.26.1 as production-stage
 
 # 빌드 단계에서 생성된 빌드 파일을 Nginx 서버로 복사
 COPY --from=builder /app/mongle/frontend/build /usr/share/nginx/html
