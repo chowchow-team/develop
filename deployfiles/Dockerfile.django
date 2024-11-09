@@ -1,4 +1,4 @@
-FROM python:3.9.19
+FROM python:3.13.0rc2
 
 # SSH 설정 (배포시엔 GitHub 비공개할거니까)
 RUN mkdir /root/.ssh/
