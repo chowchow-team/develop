@@ -18,7 +18,7 @@ cryptography==41.0.7
 daphne==4.0.0
 dataclasses-json==0.6.7
 diskcache==5.6.3
-Django==4.2.9
+Django==4.2.17
 django-cors-headers==4.3.1
 django-crontab==0.7.1
 django-environ==0.11.2
