@@ -57,7 +57,7 @@ pycparser==2.21
 pydantic==2.8.2
 pydantic_core==2.20.1
 Pygments==2.18.0
-pyOpenSSL==23.3.0
+pyOpenSSL==24.0.0
 python-magic==0.4.27
 pytz==2023.3.post1
 PyYAML==6.0.2
