@@ -18,7 +18,7 @@ cryptography==41.0.7
 daphne==4.0.0
 dataclasses-json==0.6.7
 diskcache==5.6.3
-Django==4.2.9
+Django==4.2.20
 django-cors-headers==4.3.1
 django-crontab==0.7.1
 django-environ==0.11.2
@@ -30,7 +30,7 @@ gunicorn==21.2.0
 hyperlink==21.0.0
 idna==3.6
 incremental==22.10.0
-Jinja2==3.1.4
+Jinja2==3.1.6
 jsonpatch==1.33
 jsonpointer==3.0.0
 langchain==0.2.12
